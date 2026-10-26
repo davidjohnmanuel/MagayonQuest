@@ -141,6 +141,7 @@ The function only answers people who are signed in and on the study list. Your k
 - **Earning coins:**
   - 50 when you choose your hero, plus 10 per check-in and 15 for clearing the daily quests
   - 1 per 10 minutes of training
+  - Study commitments: 10 for keeping one, plus 1 per 5 minutes of overtime (up to 20 more). See below.
   - 2 per battle card or loot claim, and 5 per skill sign-off
   - Quiz duels: 2 per correct answer, 5 for finishing, 10 for beating your partner
   - Battles: 2 per correct answer, 10 for finishing, 25 for a win
@@ -150,11 +151,31 @@ The function only answers people who are signed in and on the study list. Your k
   - Locked heroes
   - Titles shown under your name
 - **Sound:** original 8-bit sound effects, made live in the browser. Mute with the speaker button at the top.
+- **Losing coins:** stopping a study commitment early costs 2 coins per 5 minutes short. If that takes you below zero, the balance shows 0 and the next coins you earn pay off the difference first.
 - **Editing prices:** prices live in the `ITEMS`, `TITLES`, `SKILL_PRICES` and `HERO_PRICE` lists in `index.html`.
 
-## Profiles and photo posts
+## Study commitments
 
-Every player has a profile, opened from **Party → View profile** or by tapping a name in the feed or the members list. Players can post updates with an optional photo, either taken with the camera or picked from the gallery. Others can like and comment on them. The **Party feed** on the Party screen shows everyone's posts, newest first.
+On **Base**, pick a mission, choose **Commit to** 15, 30, 45, 60 or 90 minutes, and tap **Start**. The timer counts down to your commitment, then counts up as overtime.
+
+- **Finish on or after the time:** +10 coins and +10 XP, plus 1 coin and 1 XP per 5 minutes of overtime (up to 20 each).
+- **Finish early:** −2 coins for every 5 minutes short (rounded up). The app shows the cost and asks you to confirm first.
+- **Discarding:** a session can be thrown away for free only in its first 2 minutes. After that, the only way out is **Finish**.
+- **Pause** doesn't count toward the time.
+- **Today's log** lists each session as kept or missed, with a **Share** button that posts it to the feed. Your profile shows how many commitments you've kept.
+- **+15m / +30m buttons:** these log time you spent away from the app. They don't count as commitments.
+
+To change the rewards, edit `sessDelta` in `index.html`.
+
+## Base feed, profiles and photo posts
+
+**Base** works like a Facebook home page. Your daily quests and the training timer are in one column, and the party feed is in the other. On a phone, the feed comes after the quests and timer.
+
+- **Your party:** a row of everyone's avatars at the top of the feed. Tap one to open that profile.
+- **Posting:** anything you post on Base also shows on your profile. Posts can have an optional photo, taken with the camera or picked from the gallery. Others can like and comment.
+- **Question of the day:** a get-to-know-you question sits above the post box. Tap **Answer** to post your answer under it, or **Another** for a different question. When someone else answers one, an **Answer this too** button on their post lets you answer the same question. The questions live in the `PROMPTS` list in `index.html`.
+- **Profile photo:** change it in **Settings → Profile photo**, or tap your avatar on your profile page. It's cropped to a square and stored in the same private `post-photos` bucket under your user id. It shows everywhere your initials used to.
+- **Profiles:** open one from **Party → View profile**, or by tapping a name in the feed, the people row or the members list. The **Party feed** on the Party screen shows the same posts.
 
 To turn it on, open the Supabase **SQL Editor** and run section 5 of `supabase/schema.sql`, from `-- 5. Player profiles` to the end. It creates the `posts`, `post_likes` and `post_comments` tables and a private `post-photos` storage bucket. Only people on the study list can see posts and photos. Photos are shrunk to 1600px before upload and can be up to 5 MB.
 

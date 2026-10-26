@@ -710,6 +710,55 @@ body.locked{overflow:hidden}
 .photoview{position:fixed;inset:0;z-index:45;background:rgba(5,4,16,.94);display:grid;place-items:center;padding:56px 12px calc(12px + env(safe-area-inset-bottom,0px))}
 .photoview img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 .photoview .back{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:16px;color:var(--ink)}
+/* Study commitments */
+.commit{display:grid;gap:6px}
+.commit p{font-size:13px;line-height:1.4}
+.commit b.good{color:var(--green)} .commit b.bad{color:var(--red)}
+.commitbar{width:min(100%,320px)}
+.clock.over,.timerbar .t.over{color:var(--gold);text-shadow:0 0 18px rgba(255,200,61,.45)}
+.timerbar{position:relative;overflow:hidden}
+.tprog{position:absolute;left:0;bottom:0;height:3px;background:var(--cyan);width:0;transition:width 1s linear}
+.coinfloat.lose{color:var(--red);text-shadow:0 3px 0 #5A1010,0 0 18px rgba(255,107,107,.5)}
+.sesslist{display:grid;gap:2px;margin-bottom:6px}
+.sess{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--edge)}
+.sess .qbox{width:24px;height:24px;font-size:12px;display:grid;place-items:center}
+.sess.kept .qbox{background:var(--green);border-color:#A5F5B8;color:#0B2A14}
+.sess.miss .qbox{border-color:var(--red);color:var(--red)}
+.sinfo{display:grid;min-width:0}
+.sinfo small{color:var(--dim);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sdelta{font-family:var(--f-hud);font-size:12px}
+.sess.kept .sdelta{color:var(--green)} .sess.miss .sdelta{color:var(--red)}
+.sess .linkbtn{min-height:32px;padding:0 4px;font-size:13px}
+.profhead .kept{font-size:13px}
+.profhead .kept b{color:var(--green)}
+/* Base: the feed sits below the day's quests on phones; secondary panels drop under it */
+.late{order:1}
+.people{padding:10px 12px}
+.ppl{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none}
+.pp{display:grid;justify-items:center;gap:4px;background:none;border:0;padding:0;color:var(--ink);flex:none;width:64px}
+.ppav{position:relative;display:block}
+.ppav img{width:56px;height:56px;border-radius:50%;border:3px solid var(--pink);display:block;object-fit:cover}
+.pp.me .ppav img{border-color:var(--gold)}
+.ppav .dot{position:absolute;right:2px;bottom:2px;width:13px;height:13px;border-radius:50%;background:var(--green);border:2.5px solid var(--panel)}
+.sess .qbox svg{width:14px;height:14px}
+.ppn{font-size:12px;font-weight:700;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-prompt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(255,119,174,.14),rgba(112,104,208,.14));border:1px solid rgba(255,119,174,.35);border-radius:12px;padding:8px 10px}
+.pc-prompt>span{display:grid;gap:2px;flex:1;min-width:180px}
+.pc-prompt b{font-size:14.5px}
+.pc-prompt .linkbtn{min-height:36px;padding:0 4px;font-size:13px;color:var(--muted)}
+.pc-prompt .gbtn{min-height:36px;padding:4px 14px;font-size:13px}
+.pc-q{position:relative;display:grid;gap:2px;background:rgba(255,119,174,.12);border-left:3px solid var(--pink);border-radius:8px;padding:8px 40px 8px 12px}
+.pc-q .mact{position:absolute;top:6px;right:6px;opacity:1}
+.post-q{display:grid;gap:2px;background:rgba(255,119,174,.1);border-left:3px solid var(--pink);border-radius:8px;padding:8px 12px}
+.post-q b{font-size:15.5px}
+.post-q .linkbtn{justify-self:start;min-height:30px;padding:0;font-size:13px}
+.pc-top img,.cform img,.comment img,.post-who img,.acct-top img{object-fit:cover}
+.morefeed{justify-self:center}
+.avbtn{padding:0;cursor:pointer}
+.avcam{position:absolute;right:-4px;bottom:-4px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--gold-ink);display:grid;place-items:center;border:2px solid var(--bg)}
+.avcam svg{width:15px;height:15px}
+.avrow{display:flex!important;align-items:center;gap:12px}
+.avrow img{width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;flex:none}
 /* Laptop and desktop: a website layout. The tabs move into a sticky top bar (placeTabs), pages widen into main + side columns, and sheets become centred dialogs. Phones and the Android app keep the app layout, where the column wrappers vanish. */
 .cols,.cols>.main,.cols>.side{display:contents}
 .landing,.sitefoot{display:none}
@@ -747,6 +796,7 @@ body.locked{overflow:hidden}
   .cols>.side{grid-column:2}
   .cols.sl>.main{grid-column:2}
   .cols.sl>.side{grid-column:1}
+  .late{order:0}
   .cols>.main:empty{display:none}
   .cols:has(>.main:empty){grid-template-columns:minmax(0,1fr)}
   .cols:has(>.main:empty)>.side{grid-column:1}
@@ -1672,7 +1722,7 @@ const daysBack=n=>{const out=[];for(let k=n-1;k>=0;k--){const x=new Date();x.set
 const fmtMin=m=>m>=60?`${Math.floor(m/60)}h${m%60?" "+String(m%60).padStart(2,"0")+"m":""}`:`${m}m`;
 
 const REACTS=["❤️","😂","😮","😢","😡","👍"];
-function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,updated:""};}
+function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],av:"",updated:""};}
 const okId=k=>typeof k==="string"&&k.length<24&&/^[a-z0-9]+$/.test(k);
 function normalize(raw){
   const d=blank(); if(!raw||typeof raw!=="object")return d;
@@ -1700,15 +1750,24 @@ function normalize(raw){
   if(raw.cert&&typeof raw.cert==="object"&&typeof raw.cert.t==="string"&&Number.isInteger(raw.cert.sc)&&Number.isInteger(raw.cert.n)&&raw.cert.n>0&&raw.cert.sc/raw.cert.n>=EXAM_PASS&&typeof raw.cert.id==="string")d.cert={t:raw.cert.t.slice(0,40),sc:raw.cert.sc,n:raw.cert.n,id:raw.cert.id.slice(0,24)};
   if(typeof raw.note==="string")d.note=raw.note.slice(0,140);
   if(GOALS.includes(raw.goal))d.goal=raw.goal;
+  if(Array.isArray(raw.sess))d.sess=raw.sess.filter(x=>x&&typeof x.t==="string"&&!isNaN(Date.parse(x.t))&&MOD[x.m]&&GOALS.includes(x.c)&&Number.isInteger(x.s)&&x.s>=0&&x.s<=600).map(x=>({t:x.t.slice(0,40),m:x.m,c:x.c,s:x.s})).slice(-400);
+  if(typeof raw.av==="string"&&AV_RE.test(raw.av))d.av=raw.av;
   if(typeof raw.updated==="string")d.updated=raw.updated.slice(0,40);
   return d;
 }
+// Study commitments: pick a time before training. Keeping it pays coins and XP (more for overtime); stopping early costs coins.
+const AV_RE=/^[0-9a-f-]{36}\/av[a-z0-9]{4,24}\.jpg$/;
+const GRACE_MS=120000; // a session can be thrown away for free only in its first 2 minutes
+const sessKept=x=>x.s>=x.c;
+const sessDelta=x=>sessKept(x)?10+Math.min(20,Math.floor((x.s-x.c)/5)):-2*Math.ceil((x.c-x.s)/5);
+const sessCoins=d=>d.sess.reduce((s,x)=>s+sessDelta(x),0);
+const sessXP=d=>d.sess.reduce((s,x)=>s+(sessKept(x)?sessDelta(x):0),0);
 const minsOn=(d,day)=>Object.values(d.time[day]||{}).reduce((s,v)=>s+v,0);
 const totalMins=d=>Object.keys(d.time).reduce((s,day)=>s+minsOn(d,day),0);
 const weekByTopic=d=>{const o={};daysBack(7).forEach(day=>{const t=d.time[day]||{};for(const k in t)o[k]=(o[k]||0)+t[k];});return o;};
 const weekMins=d=>Object.values(weekByTopic(d)).reduce((s,v)=>s+v,0);
 const bonusDays=d=>Object.keys(d.time).filter(day=>minsOn(d,day)>=d.goal&&Object.keys(d.time[day]).length>=2).length;
-function xpOf(d,owner){return appsXP(d)+(d.cert?200:0)+battleXPFor(d,owner)+Object.keys(d.checks).length*10+Object.values(d.cards).filter(v=>v==="got").length*5+Object.keys(d.res).length*5+d.log.length*15+Math.floor(totalMins(d)/5)+bonusDays(d)*10+quizXP(d);}
+function xpOf(d,owner){return appsXP(d)+(d.cert?200:0)+battleXPFor(d,owner)+Object.keys(d.checks).length*10+Object.values(d.cards).filter(v=>v==="got").length*5+Object.keys(d.res).length*5+d.log.length*15+Math.floor(totalMins(d)/5)+bonusDays(d)*10+quizXP(d)+sessXP(d);}
 function battleXPFor(d,owner){if(typeof players!=="object"||!d.bt||!Object.keys(d.bt).length)return 0;owner=owner||myId||"me";const cands=[{id:myId||"me",d:mine},...Object.keys(players).filter(id=>id!==myId).map(id=>({id,d:normalize(players[id])}))].filter(c=>c.id!==owner);let x=0;const pool={};[d,...cands.map(c=>c.d)].forEach(p=>(p.battles||[]).forEach(z=>{if(!pool[z.id])pool[z.id]=z;}));for(const bid in d.bt){const b=pool[bid];if(!b)continue;const A=d.bt[bid].ans;x+=A.filter((r,i)=>b.qs[i]&&r.k===b.qs[i].a).length*3;const o=cands.find(c=>c.d.bt[bid]);if(o){const st=battleState(b,A,o.d.bt[bid].ans);if(st.winner!==null)x+=st.winner===0?35:10;}}return x;}
 function quizXP(d){let x=0;const pool={};d.quizzes.forEach(z=>pool[z.id]=z);if(typeof players==="object")for(const id in players){const p=players[id];if(p&&Array.isArray(p.quizzes))p.quizzes.forEach(z=>{if(z&&z.id&&!pool[z.id]){const qs=cleanQs(z.qs);if(qs.length)pool[z.id]={qs};}});}for(const k in d.qa){const z=pool[k];if(!z)continue;const r=d.qa[k];x+=r.ans.filter((v,i)=>z.qs[i]&&v===z.qs[i].a).length*3;if(r.ans.length>=z.qs.length)x+=5;}return x;}
 function levelOf(xp){let i=0;LEVELS.forEach((l,j)=>{if(xp>=l.min)i=j;});const cur=LEVELS[i],nxt=LEVELS[i+1];return{i,name:cur.n,next:nxt?nxt.n:null,pct:nxt?Math.round((xp-cur.min)/(nxt.min-cur.min)*100):100,toNext:nxt?nxt.min-xp:0};}
@@ -1728,7 +1787,8 @@ let dirty=false, writing=false, again=false, saveTimer=null, saveMsg="";
 let view="today", current=null, pickTopic=null;
 const deckPos={}, revealed={};
 {const h=(location.hash||"").slice(1);if(["today","missions","arena","us","chat","trophies"].includes(h))view=h;else if(MOD[h]){view="missions";current=h;}}
-let timer=null; try{const t=JSON.parse(localStorage.getItem(LS_T)||"null");if(t&&MOD[t.topic]&&typeof t.acc==="number")timer=t;}catch(e){}
+let timer=null; try{const t=JSON.parse(localStorage.getItem(LS_T)||"null");if(t&&MOD[t.topic]&&typeof t.acc==="number"){if(!GOALS.includes(t.c))delete t.c;timer=t;}}catch(e){}
+let pickCommit=null; // minutes chosen for the next training session; defaults to the daily goal
 const saveTimerState=()=>{try{timer?localStorage.setItem(LS_T,JSON.stringify(timer)):localStorage.removeItem(LS_T);}catch(e){}};
 const elapsed=()=>timer?Math.max(0,timer.acc+(timer.start?Date.now()-timer.start:0)):0;
 
@@ -1741,7 +1801,7 @@ function levelUp(lv){
 }
 const mate=()=>{const ids=Object.keys(players).filter(id=>id!==myId);ids.sort((a,b)=>totalMins(normalize(players[b]))-totalMins(normalize(players[a])));return ids;};
 
-function popCoins(n){if(n<=0)return;const s=document.createElement("div");s.className="xpfloat coinfloat";s.innerHTML=COIN_SVG+`<span>+${n}</span>`;document.body.appendChild(s);setTimeout(()=>s.remove(),1300);try{sfx.coin();}catch(e){}}
+function popCoins(n){if(!n)return;const s=document.createElement("div");s.className="xpfloat coinfloat"+(n<0?" lose":"");s.innerHTML=COIN_SVG+`<span>${n>0?"+":"−"}${Math.abs(n)}</span>`;document.body.appendChild(s);setTimeout(()=>s.remove(),1300);try{n>0?sfx.coin():sfx.wrong();}catch(e){}}
 function change(fn,opt){
   if(mode==="readonly"){toast("View only: ask David to add your email to the study list");return;}
   const xp0=xpOf(mine), before=levelOf(xp0).i, c0=coinsEarned(mine);
@@ -1752,7 +1812,7 @@ function change(fn,opt){
   const after=levelOf(xp1);
   try{localStorage.setItem(LS,JSON.stringify(mine));}catch(e){}
   if(!(opt&&opt.quiet))popXP(xp1-xp0);
-  {const dc=coinsEarned(mine)-c0;if(dc>0)setTimeout(()=>popCoins(dc),250);}
+  {const dc=coinsEarned(mine)-c0;if(dc)setTimeout(()=>popCoins(dc),250);}
   if(after.i>before)setTimeout(()=>levelUp(after),500);
   if(mode==="shared"){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(flush,opt&&opt.now?0:700);}
   render();
@@ -1769,12 +1829,14 @@ async function flush(){
   if(again){again=false;return flush();}
   dirty=false; renderNote();
 }
-function addTime(topic,mins){
-  mins=Math.round(mins); if(!MOD[topic]||mins<1)return;
-  const t=todayKey(), first=!mine.log.includes(t);
-  change(d=>{d.time[t]=d.time[t]||{};d.time[t][topic]=Math.min(1440,(d.time[t][topic]||0)+mins);if(!d.log.includes(t)){d.log.push(t);d.log.sort();}});
+// commit: minutes promised for a timed session; the result is saved with the time so coins can be worked out from it.
+function addTime(topic,mins,commit){
+  mins=Math.round(mins); if(!MOD[topic]||(mins<1&&!commit))return;
+  const t=todayKey(), first=mins>=1&&!mine.log.includes(t), rec=commit?{t:new Date().toISOString(),m:topic,c:commit,s:mins}:null;
+  change(d=>{if(mins>=1){d.time[t]=d.time[t]||{};d.time[t][topic]=Math.min(1440,(d.time[t][topic]||0)+mins);if(!d.log.includes(t)){d.log.push(t);d.log.sort();}}if(rec)d.sess=[...d.sess,rec].slice(-400);});
   const both=mate().some(id=>normalize(players[id]).log.includes(t));
-  toast(first&&both?"Co-op bonus: you both showed up today ♡":`Logged ${fmtMin(mins)} on ${MOD[topic].title}`);
+  if(rec){const n=sessDelta(rec);toast(sessKept(rec)?`Commitment kept: ${fmtMin(mins)} of ${fmtMin(commit)} · +${n} coins`:`Stopped ${fmtMin(commit-mins)} short of ${fmtMin(commit)} · −${-n} coins`);}
+  else toast(first&&both?"Co-op bonus: you both showed up today ♡":`Logged ${fmtMin(mins)} on ${MOD[topic].title}`);
 }
 
 // ---- icons
@@ -1809,10 +1871,10 @@ function renderNote(){
   renderWho();
   const n=$("save-note");n.className="note"+(saveMsg?" err":"");n.textContent=saveMsg||(mode==="shared"?(dirty?"Saving…":"Synced with your party"):mode==="readonly"?"View only":"Saved on this device");
 }
-const myAvatar=()=>(profilesCache[myId]&&profilesCache[myId].avatarUrl)||(viewer&&viewer.avatarUrl)||AV_BLANK;
+const myAvatar=()=>myId?avatarFor(myId,myName()):(viewer&&viewer.avatarUrl)||AV_BLANK;
 const myName=()=>(profilesCache[myId]&&profilesCache[myId].name)||(viewer&&viewer.name)||"Player 1";
 const mateName=id=>(profilesCache[id]&&profilesCache[id].name)||PARTNER;
-const mateAvatar=id=>(profilesCache[id]&&profilesCache[id].avatarUrl)||AV_BLANK;
+const mateAvatar=id=>avatarFor(id,mateName(id));
 async function refreshProfiles(){
   if(!user||!myId)return;
   try{const ps=await user.profiles([myId,...mate()]);let changed=false;for(const id in ps){const p=ps[id];const old=profilesCache[id];if(!old||old.name!==p.name||old.avatarUrl!==p.avatarUrl)changed=true;profilesCache[id]={name:p.name,avatarUrl:p.avatarUrl};}
@@ -1857,16 +1919,19 @@ function renderToday(){
   const t=todayKey(), todayMins=minsOn(mine,t), goal=mine.goal, entries=mine.time[t]||{};
   const ids=mate(), m0=ids[0]?normalize(players[ids[0]]):null, s=suggestion();
   if(!pickTopic)pickTopic=s.m.id;
+  const commit=pickCommit||goal;
   const topicsToday=Object.keys(entries).length;
+  const sessToday=mine.sess.map((x,i)=>({...x,i})).filter(x=>dayKey(new Date(x.t))===t), keptToday=sessToday.some(sessKept);
   const quests=[
     {n:"Check in today",p:mine.log.includes(t)?1:0,r:"+15 XP",sub:mine.log.includes(t)?"Done":"Log any study time"},
     {n:`Train ${goal} minutes`,p:Math.min(1,todayMins/goal),r:`+${Math.floor(goal/5)} XP`,sub:`${todayMins} / ${goal} min`},
+    {n:"Keep a training commitment",p:keptToday?1:0,r:"+10 coins",sub:keptToday?"Kept":sessToday.length?"Missed one. Try again":"Pick a time and stick to it"},
     {n:"Train 2 different missions",p:Math.min(1,topicsToday/2),r:"Combo +10",sub:`${Math.min(topicsToday,2)} / 2 missions`}];
   const allDone=quests.every(q=>q.p>=1);
   $("view").innerHTML=`<div class="wrap" style="gap:16px">
    ${playerHUD()}
    ${coopHTML()}
-   <div class="cols"><div class="main">
+   <div class="cols sl home"><div class="side">
    <section class="panel">
      <div class="ptitle"><h3>Daily quests</h3><div class="goalpick"><span class="hud">Goal</span>${GOALS.map(g=>`<button data-goal="${g}" aria-pressed="${g===goal}">${g}m</button>`).join("")}</div></div>
      <div>${quests.map(q=>`<div class="quest${q.p>=1?" done":""}"><span class="qbox">${q.p>=1?IC.check:""}</span><div style="min-width:0"><div class="qname">${esc(q.n)}</div><div class="hud" style="font-size:10px">${esc(q.sub)}</div><div class="qbar"><i style="width:${Math.round(q.p*100)}%"></i></div></div><span class="reward">${esc(q.r)}</span></div>`).join("")}</div>
@@ -1876,36 +1941,45 @@ function renderToday(){
    <section class="panel">
      <div class="ptitle"><h3>Training session</h3><span class="hud">Pick a mission</span></div>
      <div class="chips" role="group" aria-label="Mission">${MODULES.map(m=>`<button class="tchip" data-topic="${m.id}" aria-pressed="${m.id===pickTopic}">${esc(m.title)}</button>`).join("")}</div>
-     ${timer?`<div style="display:grid;gap:4px;justify-items:center;padding:6px 0"><span class="clock" id="bigclock">00:00</span><span class="hud">Training: ${esc(MOD[timer.topic].title)}</span></div>`:`<button class="gbtn gold big" id="start">Start training</button>`}
+     ${timer?`<div style="display:grid;gap:6px;justify-items:center;padding:6px 0"><span class="clock" id="bigclock">00:00</span><span class="hud" id="bigleft">${timer.c?"left":"Training"}</span>${timer.c?`<div class="qbar commitbar"><i id="bigprog"></i></div><span class="hud">Committed to ${fmtMin(timer.c)} · ${esc(MOD[timer.topic].title)}</span>`:`<span class="hud">${esc(MOD[timer.topic].title)}</span>`}</div>`
+       :`<div class="commit"><div class="goalpick" role="group" aria-label="Commit to"><span class="hud">Commit to</span>${GOALS.map(g=>`<button data-commit="${g}" aria-pressed="${g===commit}">${g}m</button>`).join("")}</div>
+       <p class="muted">Finish on time for <b class="good">+10 coins</b>, plus 1 for every 5 minutes over. Stop early and lose <b class="bad">2 coins</b> for every 5 minutes short.</p></div>
+       <button class="gbtn gold big" id="start">Start ${fmtMin(commit)} session</button>`}
      <span class="hud">Or log time you already spent</span>
      <div class="quick">${[15,30,45,60].map(n=>`<button class="gbtn" data-add="${n}">+${n}m</button>`).join("")}</div>
    </section>
-   </div><div class="side">
 
-   <section class="panel next">
+   <section class="panel">
+     <div class="ptitle"><h3>Today's log</h3><span class="hud">${fmtMin(todayMins)} total</span></div>
+     ${sessToday.length?`<div class="sesslist">${sessToday.slice().reverse().map(x=>{const n=sessDelta(x),k=sessKept(x);return `<div class="sess ${k?"kept":"miss"}"><span class="qbox">${k?IC.check:"✕"}</span><span class="sinfo"><b>${fmtMin(x.s)} of ${fmtMin(x.c)}</b><small>${esc(MOD[x.m].title)} · ${k?(x.s>x.c?`${fmtMin(x.s-x.c)} overtime`:"Kept"):"Stopped early"}</small></span><span class="sdelta">${n>0?"+":"−"}${Math.abs(n)}</span>${mode==="shared"?`<button class="linkbtn" data-sshare="${x.i}">Share</button>`:""}</div>`;}).join("")}</div>`:""}
+     ${Object.keys(entries).length?`<div class="entries">${Object.entries(entries).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="entry"><span>${esc(MOD[k].title)}</span><b>${fmtMin(v)}</b></div>`).join("")}</div>`:`<p class="muted">No training logged yet. Start a session above.</p>`}
+   </section>
+
+   <section class="panel next late">
      <span class="hud">Recommended quest</span>
      <h3 style="font-size:20px">${esc(s.m.title)}</h3>
      <p class="muted">${s.mins?`Only ${fmtMin(s.mins)} trained here this week.`:"Not trained this week yet."} ${s.r?`Start with <a href="${esc(s.r.u)}" target="_blank" rel="noopener">${esc(s.r.t)}</a>.`:"Clear its battle cards."}</p>
      <div class="row"><button class="gbtn cyan" data-open="${s.m.id}">Enter mission</button>${timer?"":`<button class="gbtn" data-studynow="${s.m.id}">Train now</button>`}</div>
    </section>
 
-   <section class="panel">
-     <div class="ptitle"><h3>Today's log</h3><span class="hud">${fmtMin(todayMins)} total</span></div>
-     ${Object.keys(entries).length?`<div class="entries">${Object.entries(entries).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="entry"><span>${esc(MOD[k].title)}</span><b>${fmtMin(v)}</b></div>`).join("")}</div>`:`<p class="muted">No training logged yet. Start a session above.</p>`}
-   </section>
-
-   ${m0?`<section class="panel" style="border-color:var(--pink)"><div class="ptitle"><h3>${esc(mateName(ids[0]))}</h3><span class="pill ${statusOf(m0).cls}">${esc(statusOf(m0).t)}</span></div><p class="muted">${minsOn(m0,t)?`Trained <b style="color:var(--ink)">${fmtMin(minsOn(m0,t))}</b> today.`:"Hasn't checked in yet today."}</p>${m0.note?`<p class="pnote">“${esc(m0.note)}”</p>`:""}</section>`:""}
+   ${m0?`<section class="panel late" style="border-color:var(--pink)"><div class="ptitle"><h3>${esc(mateName(ids[0]))}</h3><span class="pill ${statusOf(m0).cls}">${esc(statusOf(m0).t)}</span></div><p class="muted">${minsOn(m0,t)?`Trained <b style="color:var(--ink)">${fmtMin(minsOn(m0,t))}</b> today.`:"Hasn't checked in yet today."}</p>${m0.note?`<p class="pnote">“${esc(m0.note)}”</p>`:""}</section>`:""}
+   </div><div class="main">
+   ${mode==="shared"?`${peopleHTML()}${feedSectionHTML("")}`:`<section class="panel"><div class="ptitle"><h3>Party feed</h3></div><p class="muted">Sign in with study-list access to post updates and see your party's.</p></section>`}
    </div></div>
   </div>`;
   const V=$("view");
   V.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>change(d=>{d.goal=Number(b.dataset.goal);}));
+  V.querySelectorAll("[data-commit]").forEach(b=>b.onclick=()=>{pickCommit=Number(b.dataset.commit);render();});
   V.querySelectorAll("[data-topic]").forEach(b=>b.onclick=()=>{pickTopic=b.dataset.topic;if(timer){timer.topic=pickTopic;saveTimerState();}render();});
   V.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addTime(pickTopic,Number(b.dataset.add)));
   const st=$("start"); if(st)st.onclick=()=>startTimer(pickTopic);
   V.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>go("missions",b.dataset.open));
   V.querySelectorAll("[data-studynow]").forEach(b=>b.onclick=()=>{pickTopic=b.dataset.studynow;startTimer(pickTopic);});
+  V.querySelectorAll("[data-sshare]").forEach(b=>b.onclick=()=>shareSession(Number(b.dataset.sshare),b));
   const cur=V.querySelector('.tchip[aria-pressed="true"]'); if(cur)cur.scrollIntoView({block:"nearest",inline:"center"});
   bindHudShop();
+  if(mode==="shared"){bindPeople(V);bindFeedSection();}
+  tick();
 }
 
 function renderMap(){
@@ -2119,11 +2193,79 @@ const CAM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const PIC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/></svg>';
 const LIKE_SVG = on => `<svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.6 4 4.5 7.2 4.5c2 0 3.6 1.1 4.8 2.8 1.2-1.7 2.8-2.8 4.8-2.8 3.2 0 5.6 3.1 4.4 6.7-1.7 4.7-9.2 9.3-9.2 9.3z" fill="${on ? "#FF77AE" : "none"}" stroke="${on ? "#FF77AE" : "currentColor"}" stroke-width="2"/></svg>`;
 let feed = { posts: [], loaded: false, err: "" }, feedCh = null, profileId = null;
-let draft = { text: "", blob: null, preview: "", busy: false, err: "" };
+let draft = { text: "", blob: null, preview: "", busy: false, err: "", q: "", qi: -1 };
 const photoUrls = {}, openComments = new Set();
 let cam = null; // desktop camera sheet: {stream}
+let feedMax = 10; // posts shown before "See more posts"
 
-const whoOf = id => { const isMe = id === myId, name = isMe ? myName() : (profCache[id] || mateName(id)); return { isMe, name: name || "New player", av: isMe ? myAvatar() : initialsAvatar(name || "?") }; };
+// Profile photos sit in the same private bucket as post photos, at <user id>/av<id>.jpg. The path rides in the
+// owner's progress record (d.av), so it syncs to everyone without a schema change.
+function avPath(id){ const d = id === myId ? mine : players[id], p = d && d.av; return typeof p === "string" && AV_RE.test(p) && p.startsWith(id + "/") ? p : ""; }
+function avatarFor(id, name){ const p = avPath(id), u = p && photoUrls[p]; return u ? u.u : initialsAvatar(name || "?"); }
+async function signAvatars(){
+  if (!sb || !started) return;
+  const now = Date.now(), need = [...new Set([myId, ...Object.keys(players)].map(avPath).filter(p => p && !(photoUrls[p] && photoUrls[p].exp > now + 6e5)))];
+  if (!need.length) return;
+  const { data } = await sb.storage.from(PHOTO_BUCKET).createSignedUrls(need, PHOTO_TTL);
+  let got = false;
+  (data || []).forEach(x => { if (x.signedUrl){ photoUrls[x.path] = { u: x.signedUrl, exp: now + PHOTO_TTL * 1000 }; got = true; } });
+  if (got && !(document.activeElement && document.activeElement.id === "mynote")) render();
+}
+function pickAvatar(){
+  if (!sb || !myId || mode !== "shared"){ toast("Sign in with study-list access to change your photo"); return; }
+  const i = document.createElement("input"); i.type = "file"; i.accept = "image/*";
+  i.onchange = () => { const f = i.files && i.files[0]; if (f) setAvatar(f); };
+  i.click();
+}
+async function setAvatar(file){
+  let blob = null;
+  try { blob = await shrinkPhoto(file, 512); } catch (e){}
+  if (!blob){ toast("That photo couldn't be opened. Try a JPEG or PNG."); return; }
+  toast("Uploading your photo…");
+  const path = `${myId}/av${msgId()}.jpg`, old = avPath(myId);
+  const { error } = await sb.storage.from(PHOTO_BUCKET).upload(path, blob, { contentType: "image/jpeg" });
+  if (error){ toast(/bucket|not found/i.test(error.message || "") ? "Photo storage isn't set up yet. Run section 5 of supabase/schema.sql." : "Couldn't upload your photo. Try again."); return; }
+  photoUrls[path] = { u: URL.createObjectURL(blob), exp: Infinity };
+  change(d => { d.av = path; }, { now: true, quiet: true });
+  if (old) sb.storage.from(PHOTO_BUCKET).remove([old]);
+  toast("Profile photo updated"); try { sfx.coin(); } catch (e){}
+}
+function removeAvatar(){
+  const old = avPath(myId); if (!old || !window.confirm("Remove your profile photo?")) return;
+  change(d => { d.av = ""; }, { now: true, quiet: true });
+  sb.storage.from(PHOTO_BUCKET).remove([old]);
+  toast("Profile photo removed");
+}
+
+// "Your party" strip at the top of the Base feed, like stories: tap someone to open their profile.
+function peopleHTML(){
+  const ids = [...new Set([myId, ...Object.keys(players)].filter(Boolean))];
+  return `<section class="panel people" aria-label="Your party"><div class="ppl">${ids.map(id => { const w = whoOf(id), on = !w.isMe && onlineIds.has(id); return `<button class="pp${w.isMe ? " me" : ""}" data-profile="${esc(id)}"><span class="ppav"><img alt="" src="${esc(w.av)}">${on ? '<span class="dot" title="Active now"></span>' : ""}</span><span class="ppn">${w.isMe ? "You" : esc(w.name.split(" ")[0])}</span></button>`; }).join("")}</div></section>`;
+}
+function bindPeople(root){ root.querySelectorAll(".people [data-profile]").forEach(b => b.onclick = () => openProfile(b.dataset.profile)); }
+
+// Get-to-know-you questions. Answers are ordinary posts whose first line is "💬 <question>".
+const PROMPTS = ["What made you smile today?", "What's a song you've had on repeat lately?", "What's your comfort food after a long day?", "What's one thing you're proud of this week?", "Where would you go if you could fly out tomorrow?", "What's a childhood memory you still think about?", "What's something you're looking forward to?", "What's the best advice anyone has given you?", "What's a small thing that instantly improves your mood?", "Which show or movie could you rewatch forever?", "What's a skill you'd love to learn just for fun?", "Coffee or tea, and how do you take it?", "What's your ideal lazy Sunday?", "What's something most people don't know about you?", "What's a goal you have for this year outside of work?", "Who's someone who shaped who you are?", "What's the last thing that made you laugh out loud?", "What's your favorite way to spend a rainy day?", "What's a place that feels like home to you?", "What's a food you could eat every day?", "What's one thing you'd tell your younger self?", "What's your dream job if money didn't matter?", "What's the most beautiful place you've been to?", "What are you grateful for right now?", "What's a habit you're trying to build?", "What's your go-to karaoke song?", "What's the best gift you've ever received?", "What does a perfect date look like to you?", "What's stressing you out lately, and how can I help?", "What's one thing you want us to do together soon?"];
+const Q_MARK = "💬 ";
+const dailyPrompt = () => PROMPTS[Math.floor(Date.parse(todayKey() + "T00:00:00Z") / 864e5) % PROMPTS.length];
+const splitQ = body => { if (!body.startsWith(Q_MARK)) return null; const n = body.indexOf("\n"), q = (n < 0 ? body : body.slice(0, n)).slice(Q_MARK.length).trim(); return q ? { q, a: n < 0 ? "" : body.slice(n + 1).trim() } : null; };
+function askQuestion(q){
+  draft.q = q.slice(0, 160);
+  if (!$("pcompose")) go("today");
+  refreshComposer();
+  const t = $("posttext"); if (t){ t.scrollIntoView({ block: "center", behavior: "smooth" }); t.focus({ preventScroll: true }); }
+}
+async function shareSession(i, btn){
+  const x = mine.sess[i]; if (!x || !sb || mode !== "shared") return;
+  const body = sessKept(x) ? `⏱️ Trained ${fmtMin(x.s)} on ${MOD[x.m].title} and kept my ${fmtMin(x.c)} commitment${x.s > x.c ? ` with ${fmtMin(x.s - x.c)} of overtime` : ""}.` : `⏱️ Committed to ${fmtMin(x.c)} on ${MOD[x.m].title} but stopped at ${fmtMin(x.s)}. Hold me to it next time.`;
+  if (btn) btn.disabled = true;
+  const { error } = await sb.from("posts").insert({ body });
+  if (error){ if (btn && btn.isConnected) btn.disabled = false; toast("Couldn't share that just now"); return; }
+  if (btn && btn.isConnected) btn.textContent = "Shared";
+  toast("Shared to the feed"); loadFeed();
+}
+
+const whoOf = id => { const isMe = id === myId, name = isMe ? myName() : (profCache[id] || mateName(id)); return { isMe, name: name || "New player", av: isMe ? myAvatar() : avatarFor(id, name) }; };
 function postTime(iso){
   const m = Math.round((Date.now() - Date.parse(iso)) / 6e4);
   if (m < 1) return "Just now";
@@ -2162,7 +2304,7 @@ function subscribeFeed(){
 }
 function resetFeed(){
   if (feedCh){ sb.removeChannel(feedCh); feedCh = null; }
-  feed = { posts: [], loaded: false, err: "" }; profileId = null; openComments.clear(); clearDraft(); closeCamSheet(); closePhoto();
+  feed = { posts: [], loaded: false, err: "" }; feedMax = 10; profileId = null; openComments.clear(); clearDraft(); closeCamSheet(); closePhoto();
 }
 
 function feedListHTML(uid){
@@ -2170,16 +2312,17 @@ function feedListHTML(uid){
   if (feed.err) return `<p class="amsg">${esc(feed.err)}</p>`;
   const list = uid ? feed.posts.filter(p => p.user_id === uid) : feed.posts;
   if (!list.length) return `<div class="empty-mate feedempty"><b>${uid && uid !== myId ? `${esc(whoOf(uid).name)} hasn't posted yet` : "No posts yet"}</b>${uid && uid !== myId ? "Their updates will show up here." : "Share a win, a photo of your study setup, or what you're tackling next."}</div>`;
-  return list.map(postHTML).join("");
+  return list.slice(0, feedMax).map(postHTML).join("") + (list.length > feedMax ? `<button class="gbtn morefeed" data-feedmore>See more posts</button>` : "");
 }
 function postHTML(p){
   const w = whoOf(p.user_id), liked = p.post_likes.some(l => l.user_id === myId), nl = p.post_likes.length, cs = p.post_comments, open = openComments.has(p.id);
   const img = p.image_path && photoUrls[p.image_path];
   const likers = p.post_likes.map(l => l.user_id === myId ? "You" : whoOf(l.user_id).name);
-  const shown = open ? cs : cs.slice(-2);
+  const shown = open ? cs : cs.slice(-2), qa = p.body && splitQ(p.body), body = qa ? qa.a : p.body;
   return `<article class="panel post" data-post="${p.id}">
     <header class="post-h"><button class="post-who" data-profile="${esc(p.user_id)}"><img alt="" src="${esc(w.av)}"><span><b>${esc(w.name)}</b><span class="hud">${esc(postTime(p.created_at))}</span></span></button>${w.isMe ? `<button class="mact post-del" data-pdel="${p.id}" aria-label="Delete post" title="Delete post">✕</button>` : ""}</header>
-    ${p.body ? `<p class="post-body${!p.image_path && isJumbo(p.body) ? " jumbo" : ""}">${linkify(esc(p.body))}</p>` : ""}
+    ${qa ? `<div class="post-q"><span class="hud">Question</span><b>${esc(qa.q)}</b>${w.isMe ? "" : `<button class="linkbtn" data-pask="${esc(qa.q)}">Answer this too</button>`}</div>` : ""}
+    ${body ? `<p class="post-body${!p.image_path && !qa && isJumbo(body) ? " jumbo" : ""}">${linkify(esc(body))}</p>` : ""}
     ${p.image_path ? (img ? `<button class="post-img" data-photo="${esc(p.image_path)}" aria-label="Open photo"><img alt="Photo from ${esc(w.name)}" src="${esc(img.u)}" loading="lazy"></button>` : `<div class="post-img missing hud">Photo unavailable</div>`) : ""}
     ${nl || cs.length ? `<div class="post-stats">${nl ? `<span title="${esc(likers.join(", "))}">${LIKE_SVG(true)} ${nl === 1 ? esc(likers[0]) : liked ? `You and ${nl - 1} other${nl === 2 ? "" : "s"}` : nl}</span>` : "<span></span>"}${cs.length ? `<button class="linkbtn" data-pcom="${p.id}">${cs.length} comment${cs.length === 1 ? "" : "s"}</button>` : ""}</div>` : ""}
     <div class="post-acts"><button data-plike="${p.id}" aria-pressed="${liked}">${LIKE_SVG(liked)} Like</button><button data-pcom="${p.id}">Comment</button></div>
@@ -2190,7 +2333,9 @@ function postHTML(p){
 }
 function composerHTML(){
   return `<section class="panel pcompose" id="pcompose">
-    <div class="pc-top"><img alt="" src="${esc(myAvatar())}"><textarea id="posttext" maxlength="2000" rows="2" placeholder="What's new, ${esc(myName().split(" ")[0])}?" aria-label="Write a post"></textarea></div>
+    ${draft.q ? `<div class="pc-q"><span class="hud">Answering</span><b>${esc(draft.q)}</b><button class="mact" id="pcunq" aria-label="Don't answer a question">✕</button></div>`
+      : `<div class="pc-prompt"><span><span class="hud">Question of the day</span><b id="pcqtext">${esc(PROMPTS[draft.qi] || dailyPrompt())}</b></span><button class="linkbtn" id="pcqnext" aria-label="Another question">Another</button><button class="gbtn" id="pcqans">Answer</button></div>`}
+    <div class="pc-top"><img alt="" src="${esc(myAvatar())}"><textarea id="posttext" maxlength="1800" rows="2" placeholder="${draft.q ? "Your answer…" : `What's on your mind, ${esc(myName().split(" ")[0])}?`}" aria-label="Write a post"></textarea></div>
     <div id="pcpreview">${draft.preview ? `<div class="pc-photo"><img alt="Photo to post" src="${esc(draft.preview)}"><button class="mact" id="pcunpick" aria-label="Remove photo">✕</button></div>` : ""}</div>
     <p class="amsg" id="pcerr"${draft.err ? "" : " hidden"}>${esc(draft.err)}</p>
     <div class="row"><button class="gbtn pc-btn" id="pccam">${CAM_SVG}Camera</button><button class="gbtn pc-btn" id="pcgal">${PIC_SVG}Photo</button><span class="spacer"></span><button class="gbtn gold" id="pcpost"${draft.busy ? " disabled" : ""}>${draft.busy ? "Posting…" : "Post"}</button></div>
@@ -2209,6 +2354,9 @@ function bindComposer(){
   $("pccam").onclick = () => coarse() || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? $("pccamin").click() : openCamSheet();
   const un = $("pcunpick"); if (un) un.onclick = () => { setDraftPhoto(null); refreshComposer(); };
   $("pcpost").onclick = submitPost;
+  const uq = $("pcunq"); if (uq) uq.onclick = () => { draft.q = ""; refreshComposer(); };
+  const qn = $("pcqnext"); if (qn) qn.onclick = () => { const cur = PROMPTS.indexOf($("pcqtext").textContent); draft.qi = (cur + 1 + Math.floor(Math.random() * (PROMPTS.length - 1))) % PROMPTS.length; refreshComposer(); };
+  const qa = $("pcqans"); if (qa) qa.onclick = () => askQuestion($("pcqtext").textContent);
 }
 function refreshComposer(){
   const c = $("pcompose"); if (!c) return;
@@ -2220,15 +2368,22 @@ function setDraftPhoto(blob){
   if (draft.preview) URL.revokeObjectURL(draft.preview);
   draft.blob = blob; draft.preview = blob ? URL.createObjectURL(blob) : ""; draft.err = "";
 }
-function clearDraft(){ setDraftPhoto(null); draft.text = ""; draft.busy = false; draft.err = ""; }
+function clearDraft(){ setDraftPhoto(null); draft.text = ""; draft.busy = false; draft.err = ""; draft.q = ""; }
 // Phone photos are huge; shrink them to PHOTO_MAX px on the long side before uploading.
-async function shrinkPhoto(src){
+// With square set, crop the centre to a square of that many px instead (profile photos).
+async function shrinkPhoto(src, square){
   const url = URL.createObjectURL(src);
   try {
     const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
-    const s = Math.min(1, PHOTO_MAX / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
-    c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
-    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    const W = img.naturalWidth, H = img.naturalHeight, c = document.createElement("canvas");
+    if (square){
+      const side = Math.min(W, H); c.width = c.height = Math.min(square, side);
+      c.getContext("2d").drawImage(img, (W - side) / 2, (H - side) / 2, side, side, 0, 0, c.width, c.height);
+    } else {
+      const s = Math.min(1, PHOTO_MAX / Math.max(W, H));
+      c.width = Math.round(W * s); c.height = Math.round(H * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    }
     return await new Promise(ok => c.toBlob(ok, "image/jpeg", 0.85));
   } finally { URL.revokeObjectURL(url); }
 }
@@ -2240,8 +2395,8 @@ async function usePhoto(file){
 }
 async function submitPost(){
   if (draft.busy) return;
-  const text = draft.text.trim().slice(0, 2000);
-  if (!text && !draft.blob){ $("posttext").focus(); toast("Write something or add a photo"); return; }
+  const answer = draft.text.trim().slice(0, 1800), text = draft.q ? `${Q_MARK}${draft.q}\n${answer}` : answer;
+  if (!answer && !draft.blob){ $("posttext").focus(); toast("Write something or add a photo"); return; }
   if (!sb || !myId || mode !== "shared"){ toast("Sign in with study-list access to post"); return; }
   draft.busy = true; draft.err = ""; refreshComposer();
   let path = null;
@@ -2301,6 +2456,8 @@ function bindFeed(root){
   root.querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => deletePost(b.dataset.pdel));
   root.querySelectorAll("[data-cdel]").forEach(b => b.onclick = () => deleteComment(b.dataset.cdel));
   root.querySelectorAll("[data-photo]").forEach(b => b.onclick = () => openPhoto(b.dataset.photo));
+  root.querySelectorAll("[data-pask]").forEach(b => b.onclick = () => askQuestion(b.dataset.pask));
+  root.querySelectorAll("[data-feedmore]").forEach(b => b.onclick = () => { feedMax += 10; refreshFeed(); });
   root.querySelectorAll("[data-cform]").forEach(f => f.onsubmit = e => { e.preventDefault(); sendComment(f.dataset.cform, f.querySelector("input")); });
 }
 // Redraw just the post list so the composer and anything being typed survive live updates.
@@ -2326,18 +2483,20 @@ function renderProfile(){
     <div class="cols sl"><div class="side">
     <section class="panel profhead ${w.isMe ? "me" : "mate"}">
       <div class="profcover"></div>
-      <div class="profid"><div class="avatar" style="background-image:url('${esc(w.av)}')"><span class="lvbadge">LV ${lv.i + 1}</span></div>
+      <div class="profid">${w.isMe ? `<button class="avatar avbtn" id="profav" style="background-image:url('${esc(w.av)}')" aria-label="Change profile photo"><span class="lvbadge">LV ${lv.i + 1}</span><span class="avcam">${CAM_SVG}</span></button>` : `<div class="avatar" style="background-image:url('${esc(w.av)}')"><span class="lvbadge">LV ${lv.i + 1}</span></div>`}
         <div style="min-width:0"><h2>${esc(w.name)}</h2><div class="ptitle-tag">${esc(lv.name.toUpperCase())}${title ? ` · ${esc(title.toUpperCase())}` : ""}${h ? ` · ${esc(h.n.toUpperCase())}` : ""}</div></div>
         <span class="pill ${st.cls}">${esc(st.t)}</span></div>
       ${d.note ? `<p class="pnote">“${esc(d.note)}”</p>` : ""}
       ${d.cert ? `<span class="certbadge">★ Certified FDE · ${Math.round(d.cert.sc / d.cert.n * 100)}%</span>` : ""}
       <div class="pstats"><div><b id="postcount">${feed.posts.filter(p => p.user_id === id).length}</b><span>posts</span></div><div><b>${xp}</b><span>XP</span></div><div><b>${streakOf(d.log)}</b><span>combo</span></div><div><b>${fmtMin(totalMins(d))}</b><span>all time</span></div></div>
-      ${w.isMe ? `<button class="gbtn" id="profedit">Edit name and settings</button>` : ""}
+      ${(() => { const k = d.sess.filter(sessKept).length; return d.sess.length ? `<p class="muted kept">Kept <b>${k}</b> of ${d.sess.length} study commitment${d.sess.length === 1 ? "" : "s"}</p>` : ""; })()}
+      ${w.isMe ? `<div class="row"><button class="gbtn" id="profphoto">Change photo</button><button class="gbtn" id="profedit">Edit name and settings</button></div>` : ""}
     </section>
     </div><div class="main">${feedSectionHTML(id)}</div></div>
   </div>`;
   $("profback").onclick = () => go("us");
   const pe = $("profedit"); if (pe) pe.onclick = () => go("settings");
+  [$("profav"), $("profphoto")].forEach(b => { if (b) b.onclick = pickAvatar; });
   bindFeedSection();
 }
 
@@ -3279,7 +3438,8 @@ function coinsEarned(d, owner){
   return (d.hero ? 50 : 0) + appsCoins(d) + (d.cert ? 150 : 0) + d.log.length * 10 + bonusDays(d) * 15 + Math.floor(totalMins(d) / 10)
     + Object.values(d.cards).filter(v => v === "got").length * 2 + Object.keys(d.res).length * 2 + Object.keys(d.checks).length * 5
     + q.correct * 2 + q.finished * 5 + q.won * 10
-    + b.correct * 2 + b.finished * 10 + b.won * 25;
+    + b.correct * 2 + b.finished * 10 + b.won * 25
+    + sessCoins(d);
 }
 const coinsSpent = d => d.buys.reduce((s, x) => s + x.p, 0);
 const coinBalance = (d, owner) => Math.max(0, coinsEarned(d, owner) - coinsSpent(d));
@@ -3812,28 +3972,45 @@ function bindPlay(){$("view").querySelectorAll("[data-play]").forEach(b=>b.oncli
 function refreshChat(){if(view==="chat"){renderChat();renderBadge();}}
 
 // ---- timer
-function startTimer(topic){timer={topic,start:Date.now(),acc:0};saveTimerState();render();toast(`Training started: ${MOD[topic].title}`);}
+// A session started from the app carries c, the minutes committed to. The clock counts down to it, then up as overtime.
+function startTimer(topic){const c=pickCommit||mine.goal;timer={topic,start:Date.now(),acc:0,c};saveTimerState();render();toast(`Committed to ${fmtMin(c)} on ${MOD[topic].title}`);}
+function finishTimer(){
+  const ms=elapsed(), c=timer.c, tp=timer.topic;
+  if(!c){const mins=Math.max(1,Math.round(ms/60000));timer=null;saveTimerState();addTime(tp,Math.min(mins,600));return;}
+  const mins=Math.min(600,Math.floor(ms/60000));
+  if(mins<c&&!window.confirm(`You committed to ${fmtMin(c)} and have trained ${fmtMin(mins)}.\n\nFinishing now costs ${-sessDelta({c,s:mins})} coins. Finish anyway?`))return;
+  timer=null;saveTimerState();addTime(tp,mins,c);
+}
 function renderTimer(){
   const bar=$("timerbar");
   if(!timer){bar.hidden=true;bar.innerHTML="";return;}
+  const free=!timer.c||elapsed()<GRACE_MS;
   bar.hidden=false; bar.className="timerbar"+(timer.start?"":" paused");
-  bar.innerHTML=`<span class="pulse"></span><span class="t" id="tclock">00:00</span><span class="topic">${esc(MOD[timer.topic].title)}</span>
-    <button id="tpause">${timer.start?"Pause":"Resume"}</button><button id="tdiscard" aria-label="Discard timer">✕</button><button class="stop" id="tstop">Log it</button>`;
+  bar.innerHTML=`<span class="pulse"></span><span class="t" id="tclock">00:00</span><span class="topic" id="tlabel">${esc(MOD[timer.topic].title)}</span>
+    <button id="tpause">${timer.start?"Pause":"Resume"}</button>${free?`<button id="tdiscard" aria-label="Discard timer" title="${timer.c?"Free to discard in the first 2 minutes":"Discard timer"}">✕</button>`:""}<button class="stop" id="tstop">${timer.c?"Finish":"Log it"}</button>${timer.c?`<i class="tprog" id="tprog"></i>`:""}`;
   $("tpause").onclick=()=>{if(timer.start){timer.acc+=Date.now()-timer.start;timer.start=0;}else timer.start=Date.now();saveTimerState();renderTimer();};
-  $("tstop").onclick=()=>{const mins=Math.max(1,Math.round(elapsed()/60000)),tp=timer.topic;timer=null;saveTimerState();addTime(tp,Math.min(mins,600));};
-  $("tdiscard").onclick=()=>{const b=$("tdiscard");if(b.dataset.armed){timer=null;saveTimerState();render();toast("Session discarded");}else{b.dataset.armed="1";b.textContent="Discard?";setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent="✕";}},2500);}};
+  $("tstop").onclick=finishTimer;
+  const dz=$("tdiscard"); if(dz)dz.onclick=()=>{if(dz.dataset.armed){timer=null;saveTimerState();render();toast("Session discarded");}else{dz.dataset.armed="1";dz.textContent="Discard?";setTimeout(()=>{if(dz.isConnected){delete dz.dataset.armed;dz.textContent="✕";}},2500);}};
   tick();
 }
+const clockTxt=s=>s>=3600?`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`:`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 function tick(){
   if(!timer)return;
-  const s=Math.floor(elapsed()/1000), txt=s>=3600?`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`:`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
-  const a=$("tclock"); if(a)a.textContent=txt; const b=$("bigclock"); if(b)b.textContent=txt;
+  const ms=elapsed(), goal=(timer.c||0)*60000, over=goal&&ms>=goal;
+  const txt=!goal?clockTxt(Math.floor(ms/1000)):over?"+"+clockTxt(Math.floor((ms-goal)/1000)):clockTxt(Math.ceil((goal-ms)/1000));
+  const a=$("tclock"); if(a){a.textContent=txt;a.classList.toggle("over",!!over);}
+  const b=$("bigclock"); if(b){b.textContent=txt;b.classList.toggle("over",!!over);}
+  const l=$("tlabel"); if(l&&goal)l.textContent=`${over?"Overtime":"left"} · ${MOD[timer.topic].title}`;
+  const bl=$("bigleft"); if(bl&&goal)bl.textContent=over?"Overtime: every 5 minutes earns a coin":"left in your commitment";
+  if(goal){const p=Math.min(100,ms/goal*100);[$("tprog"),$("bigprog")].forEach(el=>{if(el)el.style.width=p+"%";});}
+  if(over&&!timer.hit){timer.hit=1;saveTimerState();toast("Commitment reached! Finish now, or keep going for overtime coins");try{sfx.coin();}catch(e){}}
+  if(goal&&ms>=GRACE_MS&&$("tdiscard"))renderTimer();
 }
 setInterval(tick,1000);
 
 // ---- navigation
 function setHash(h){try{history.replaceState(null,"","#"+h);}catch(e){}}
-function go(v,mission){view=v;current=mission||null;setHash(v==="missions"&&current?current:v);render();window.scrollTo({top:0,behavior:"auto"});}
+function go(v,mission){view=v;current=mission||null;feedMax=10;setHash(v==="missions"&&current?current:v);render();window.scrollTo({top:0,behavior:"auto"});}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{try{sfx.click();}catch(e){}go(b.dataset.view);});
 // On a laptop the screen tabs sit in the top bar like a website's nav; on phones they stay in the bottom dock.
 const WIDE=matchMedia("(min-width:1024px) and (hover:hover) and (pointer:fine)");
@@ -3859,7 +4036,7 @@ async function loadProfiles(){
   (data || []).forEach(p => { profCache[p.id] = p.display_name || ""; });
 }
 // Small adapters so the study screens can stay the same
-user = { profiles: async ids => { const o = {}; [].concat(ids).forEach(id => { const n = profCache[id] || ""; o[id] = { id, name: n, avatarUrl: initialsAvatar(n || "?") }; }); return o; } };
+user = { profiles: async ids => { const o = {}; [].concat(ids).forEach(id => { const n = profCache[id] || ""; o[id] = { id, name: n, avatarUrl: avatarFor(id, n) }; }); return o; } };
 db = { doc(path){ const uid = path.split("/")[1]; return { set: async data => {
   const { error } = await sb.from("progress").upsert({ user_id: uid, data, updated_at: new Date().toISOString() });
   if (error) throw { code: error.code === "42501" ? "invalid_argument" : "unavailable", message: error.message };
@@ -3869,7 +4046,7 @@ function renderWho(){
   const w = $("who");
   if (viewer && started){
     w.className = "who";
-    w.innerHTML = `<img alt="" src="${esc(viewer.avatarUrl)}"><span class="nm"></span><button class="signout" id="signout">Sign out</button>`;
+    w.innerHTML = `<img alt="" src="${esc(myAvatar())}"><span class="nm"></span><button class="signout" id="signout">Sign out</button>`;
     w.querySelector(".nm").textContent = viewer.name || viewer.email;
     $("signout").onclick = () => sb.auth.signOut();
   } else w.innerHTML = "";
@@ -4042,7 +4219,7 @@ async function pull(){
       else { mine = remote; try { localStorage.setItem(LS, JSON.stringify(mine)); } catch (e){} }
     } else if (firstSnap && mine.updated){ dirty = true; flush(); }
   }
-  firstSnap = false; dataReady = true;
+  firstSnap = false; dataReady = true; signAvatars();
   if (document.activeElement && document.activeElement.id === "mynote"){ renderNote(); return; }
   render();
 }
@@ -4283,7 +4460,7 @@ function memberRows(){
     const isMe = id === myId, d = isMe ? mine : normalize(players[id]), xp = xpOf(d, id), lv = levelOf(xp), st = statusOf(d), on = !isMe && onlineIds.has(id);
     const name = isMe ? myName() : (profCache[id] || mateName(id)), last = d.log.length ? fmtDay(d.log[d.log.length - 1] + "T12:00:00") : "";
     const sub = on ? "Active now" : isMe ? "That's you" : last ? `Last trained ${last.toLowerCase() === "today" || last.toLowerCase() === "yesterday" ? last.toLowerCase() : "on " + last}` : "No training logged yet";
-    return { isMe, xp, html: `<div class="mem${isMe ? " me" : ""}" data-profile="${esc(id)}" role="button" tabindex="0" aria-label="Open ${esc(name || "player")}'s profile"><div class="cav"><img alt="" src="${esc(isMe ? myAvatar() : initialsAvatar(name || "?"))}">${on ? '<span class="dot" title="Active now"></span>' : ""}</div>
+    return { isMe, xp, html: `<div class="mem${isMe ? " me" : ""}" data-profile="${esc(id)}" role="button" tabindex="0" aria-label="Open ${esc(name || "player")}'s profile"><div class="cav"><img alt="" src="${esc(isMe ? myAvatar() : avatarFor(id, name))}">${on ? '<span class="dot" title="Active now"></span>' : ""}</div>
       <div class="meminfo"><b>${esc(name || "New player")}${isMe ? "<small>YOU</small>" : ""}</b><span class="hud">LV ${lv.i + 1} · ${esc(lv.name.toUpperCase())} · ${xp} XP · ${streakOf(d.log)} DAY COMBO</span><span class="sub">${esc(sub)}</span></div>
       <span class="pill ${st.cls}">${esc(st.t)}</span></div>` };
   });
@@ -4307,10 +4484,12 @@ function accountCardHTML(){
 function bindMembers(){ $("set-members").querySelectorAll("[data-profile]").forEach(r => { r.onclick = () => openProfile(r.dataset.profile); r.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openProfile(r.dataset.profile); } }; }); }
 function renderSettings(){
   const root = $("settings-root"), m = memberRows();
-  if (root){ // already on screen: refresh the live parts only, so typing and the admin list aren't reset
+  const avImg = $("set-avimg"), avStale = avImg && avImg.dataset.av !== avPath(myId); // a new photo needs the full redraw
+  if (root && !avStale){ // already on screen: refresh the live parts only, so typing and the admin list aren't reset
     $("set-members").innerHTML = m.html; bindMembers(); $("set-mcount").textContent = `${m.n} player${m.n === 1 ? "" : "s"}`;
     $("set-notif").innerHTML = NOTIF.html(); NOTIF.bind();
     $("set-sound").setAttribute("aria-checked", String(SFX.on));
+    if (avImg) avImg.src = myAvatar();
     $("view").querySelectorAll("[data-goal]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.goal) === mine.goal)));
     return;
   }
@@ -4318,6 +4497,8 @@ function renderSettings(){
   $("view").innerHTML = `<div class="wrap setwrap" id="settings-root">
     <div class="row"><button class="back" id="setback">← Back</button><span class="spacer"></span><span class="hud">Settings</span></div>
     ${accountCardHTML()}
+    ${mode === "shared" ? `<section class="panel"><div class="ptitle"><h3>Profile photo</h3></div>
+      <div class="setrow"><span class="avrow"><img alt="Your profile photo" src="${esc(myAvatar())}" id="set-avimg" data-av="${esc(avPath(myId))}"><small>Your party sees it on posts, chat and your profile.</small></span><div class="row"><button class="gbtn" id="set-avpick">Change photo</button>${avPath(myId) ? `<button class="linkbtn danger" id="set-avdel">Remove</button>` : ""}</div></div></section>` : ""}
     <section class="panel"><div class="ptitle"><h3>Display name</h3></div>
       <form class="nameform" id="nameform"><div class="field"><label class="hud" for="setname">Display name</label><input id="setname" maxlength="40" required autocomplete="nickname" value="${esc(myName())}"></div><button class="gbtn gold" type="submit">Save</button></form>
       <p class="muted" id="namemsg" style="font-size:13px">This is the name your party sees in chat, battles and on the board.</p></section>
@@ -4331,6 +4512,8 @@ function renderSettings(){
   </div>`;
   $("setback").onclick = () => go("us");
   const mp = $("set-myprofile"); if (mp) mp.onclick = () => openProfile(myId);
+  const ap = $("set-avpick"); if (ap) ap.onclick = pickAvatar;
+  const ad = $("set-avdel"); if (ad) ad.onclick = removeAvatar;
   { const r = $("set-role"); if (r && isAdmin !== null) r.hidden = false; }
   $("nameform").onsubmit = async e => {
     e.preventDefault();
