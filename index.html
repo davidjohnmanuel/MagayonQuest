@@ -567,6 +567,10 @@ details.intel[open] summary::after{content:"-"}
 .spot.aura .cmp svg{filter:drop-shadow(0 0 3px #FFC83D)}
 @keyframes aura{50%{opacity:.45;transform:scale(1.06)}}
 .den{gap:10px}
+.den.locked .stagebg{filter:grayscale(.7) brightness(.45)}
+.denlock{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:4px;text-align:center;color:var(--ink)}
+.denlock svg{width:34px;height:34px;color:var(--gold)}
+.denlock b{font-family:var(--f-display);font-size:18px}
 .denscene{position:relative;height:clamp(190px,48vw,230px);margin:-4px -4px 0;border-radius:12px;border:3px solid var(--shadow);overflow:hidden;background:#1C1840}
 .walker{position:absolute;bottom:10px;left:34%;--sw:clamp(70px,20vw,92px);cursor:pointer;animation:pace 18s linear infinite;-webkit-tap-highlight-color:transparent}
 .walker .face{animation:face 18s steps(1) infinite}
@@ -2090,9 +2094,9 @@ function renderToday(){
   const allDone=quests.every(q=>q.p>=1);
   $("view").innerHTML=`<div class="wrap" style="gap:16px">
    ${playerHUD()}
-   ${heroDenHTML()}
    ${coopHTML()}
    <div class="cols sl home"><div class="side">
+   ${heroDenHTML()}
    <section class="panel">
      <div class="ptitle"><h3>Daily quests</h3><div class="goalpick"><span class="hud">Goal</span>${GOALS.map(g=>`<button data-goal="${g}" aria-pressed="${g===goal}">${g}m</button>`).join("")}</div></div>
      <div>${quests.map(q=>`<div class="quest${q.p>=1?" done":""}"><span class="qbox">${q.p>=1?IC.check:""}</span><div style="min-width:0"><div class="qname">${esc(q.n)}</div><div class="hud" style="font-size:10px">${esc(q.sub)}</div><div class="qbar"><i style="width:${Math.round(q.p*100)}%"></i></div></div><span class="reward">${esc(q.r)}</span></div>`).join("")}</div>
@@ -3182,7 +3186,15 @@ function denBackdrop(){
   s += `<g class="flame">${R(93, 41, 8, 4, "#FF8A3C") + R(95, 38, 4, 3, "#FF8A3C") + R(96, 40, 2, 5, "#FFE27A") + R(96, 36, 2, 2, "#FFC83D")}</g>`;
   return DEN_BG = `<svg class="stagebg" viewBox="0 0 128 56" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
 }
+const DEN_LEVEL = 2; // level index: the camp opens at level 3
 function heroDenHTML(){
+  const lv = levelOf(xpOf(mine));
+  if (lv.i < DEN_LEVEL){
+    const need = LEVELS[DEN_LEVEL].min, xp = xpOf(mine);
+    return `<section class="panel den locked"><div class="denscene">${denBackdrop()}<div class="denlock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><b>Hero camp</b><span class="hud">Unlocks at level ${DEN_LEVEL + 1}</span></div></div>
+      <div><div class="xpbar"><i style="width:${Math.min(100, Math.round(xp / need * 100))}%"></i></div><div class="xptext"><span>${xp} / ${need} XP</span><span>${need - xp} XP to go</span></div></div>
+      <p class="muted" style="margin:0">Reach ${esc(LEVELS[DEN_LEVEL].n)} to set up camp. Your hero will rest by the fire here, and their companion will join them as they level up.</p></section>`;
+  }
   const h = myHero();
   if (!h) return `<section class="panel den"><span class="hud">Your hero</span><p class="muted">Pick a hero to guard your base and fight in the Arena.</p><button class="gbtn gold" id="denpick">Choose your hero</button></section>`;
   const tier = heroTier(mine, h.id);
