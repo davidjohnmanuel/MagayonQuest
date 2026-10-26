@@ -1961,7 +1961,7 @@ const daysBack=n=>{const out=[];for(let k=n-1;k>=0;k--){const x=new Date();x.set
 const fmtMin=m=>m>=60?`${Math.floor(m/60)}h${m%60?" "+String(m%60).padStart(2,"0")+"m":""}`:`${m}m`;
 
 const REACTS=["❤️","😂","😮","😢","😡","👍"];
-function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],hiddenBattles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],av:"",updated:""};}
+function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],hiddenBattles:[],removedBattles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],av:"",updated:""};}
 const okId=k=>typeof k==="string"&&k.length<24&&/^[a-z0-9]+$/.test(k);
 function normalize(raw){
   const d=blank(); if(!raw||typeof raw!=="object")return d;
@@ -1973,7 +1973,7 @@ function normalize(raw){
     const days=Object.keys(raw.time).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-120);
     for(const day of days){const t=raw.time[day];if(!t||typeof t!=="object")continue;const o={};for(const k in t){const v=Math.round(Number(t[k]));if(MOD[k]&&v>0&&v<=1440)o[k]=v;}if(Object.keys(o).length)d.time[day]=o;}
   }
-  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":"m"};if(o.k==="q"||o.k==="b")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;if(o.k==="m"&&typeof m.i==="string"&&CHAT_IMG_RE.test(m.i)){o.i=m.i;if(m.w>0&&m.h>0&&m.w<=4000&&m.h<=4000){o.w=Math.round(m.w);o.h=Math.round(m.h);}}return o;}).slice(-120);
+  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":m.k==="br"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"br":"m"};if(o.k==="q"||o.k==="b"||o.k==="br")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;if(o.k==="m"&&typeof m.i==="string"&&CHAT_IMG_RE.test(m.i)){o.i=m.i;if(m.w>0&&m.h>0&&m.w<=4000&&m.h<=4000){o.w=Math.round(m.w);o.h=Math.round(m.h);}}return o;}).slice(-120);
   if(raw.rx&&typeof raw.rx==="object")Object.keys(raw.rx).filter(k=>/^[a-z0-9]{4,24}$/.test(k)&&REACTS.includes(raw.rx[k])).slice(-200).forEach(k=>{d.rx[k]=raw.rx[k];});
   if(typeof raw.seen==="string"&&!isNaN(Date.parse(raw.seen)))d.seen=raw.seen.slice(0,40);
   if(Array.isArray(raw.quizzes))d.quizzes=raw.quizzes.filter(z=>z&&typeof z.id==="string"&&/^q[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs)})).filter(z=>z.m.length&&z.qs.length).slice(-8);
@@ -1982,6 +1982,7 @@ function normalize(raw){
   if(raw.heroXp&&typeof raw.heroXp==="object")for(const k in raw.heroXp){const v=Math.round(Number(raw.heroXp[k]));if(HERO[k]&&v>=0&&v<1e7)d.heroXp[k]=v;}
   if(Array.isArray(raw.battles))d.battles=raw.battles.filter(z=>z&&typeof z.id==="string"&&/^b[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs,20)})).filter(z=>z.m.length&&z.qs.length>=3).slice(-6);
   if(Array.isArray(raw.hiddenBattles))d.hiddenBattles=[...new Set(raw.hiddenBattles.filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
+  if(Array.isArray(raw.removedBattles))d.removedBattles=[...new Set(raw.removedBattles.filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
   if(raw.bt&&typeof raw.bt==="object"){const keys=Object.keys(raw.bt).filter(k=>/^b[a-z0-9]{4,20}$/.test(k)).slice(-20);for(const k of keys){const r=raw.bt[k];if(!r||!HERO[r.h]||!Array.isArray(r.ans))continue;d.bt[k]={h:r.h,tl:Math.min(6,Math.max(1,Math.round(Number(r.tl))||1)),ans:r.ans.filter(a=>a&&Number.isInteger(a.k)&&a.k>=-1&&a.k<4).slice(0,20).map(a=>({k:a.k,ms:Math.min(60000,Math.max(0,Math.round(Number(a.ms))||0)),s:typeof a.s==="string"&&SKILLS[a.s]?a.s:"",it:typeof a.it==="string"&&ITEMS[a.it]?a.it:""}))};}}
   if(Array.isArray(raw.buys))d.buys=raw.buys.filter(x=>x&&typeof x.i==="string"&&/^(item:(potion|hourglass|scroll|flask)|sk:[a-z]{2,12}:[1-6]|hero:[a-z]{2,12}|title:[a-z]{2,12})$/.test(x.i)&&Number.isInteger(x.p)&&x.p>=0&&x.p<=5000).map(x=>({i:x.i,p:x.p,t:typeof x.t==="string"?x.t.slice(0,40):""})).slice(-400);
   if(typeof raw.title==="string"&&/^[a-z]{2,12}$/.test(raw.title))d.title=raw.title;
@@ -3498,6 +3499,9 @@ function allBattles(){
   mate().forEach(id => add(normalize(players[id]), id));
   return out;
 }
+function battleRemoved(id){
+  return [...mate().map(pid => normalize(players[pid])), mine].some(d => (d.removedBattles || []).includes(id));
+}
 function opponentOf(bid){ // first other player who joined this battle
   for (const id of mate()){ const d = normalize(players[id]); if (d.bt[bid]) return { id, d }; }
   return null;
@@ -3595,6 +3599,7 @@ function cleanQsN(list, max){ const q = cleanQs(Array.isArray(list) ? list.slice
 let fight = null; // {id, qStart:{}, armed:null, shownTurn:-1, resultUntil:0}
 function openBattle(id){
   const b = allBattles()[id]; if (!b){ toast("That battle isn't available any more"); return; }
+  if (battleRemoved(id)){ toast("This battle was removed"); return; }
   if (!mine.bt[id]){
     const h = myHero(); if (!h){ go2heroes(id); return; }
     change(d => { d.bt[id] = { h: h.id, tl: heroTier(d, h.id), ans: [] }; }, { now: true, quiet: true });
@@ -3634,6 +3639,7 @@ function evText(e, names){
 function renderBattle(){
   const b = fight && allBattles()[fight.id];
   if (!b){ view = "arena"; fight = null; renderArena(); return; }
+  if (battleRemoved(b.id)){ view = "arena"; fight = null; toast("This battle was removed"); renderArena(); return; }
   const v = battleView(b), st = v.st, meRec = v.me, opp = v.opp;
   const myH = HERO[meRec && meRec.h] || myHero(), opH = opp ? HERO[opp.d.bt[b.id].h] : null;
   const names = ["You", opp ? mateName(opp.id) : "Opponent"];
@@ -3749,7 +3755,7 @@ function renderArena(){
   const hx = (mine.heroXp && mine.heroXp[h.id]) || 0, tier = heroTier(mine, h.id), next = HERO_TIERS[tier];
   const hidden = new Set(mine.hiddenBattles || []);
   const battles = Object.values(allBattles()).sort((a, b) => a.t < b.t ? 1 : -1).map(b => [b, battleView(b)]);
-  const list = battles.filter(([b]) => !hidden.has(b.id));
+  const list = battles.filter(([b]) => !hidden.has(b.id) && !battleRemoved(b.id));
   const won = battles.filter(([, v]) => v.st.winner === 0).length, lost = battles.filter(([, v]) => v.st.winner === 1).length;
   const rid = mate()[0], rd = rid ? normalize(players[rid]) : null, rh = rd && HERO[rd.hero];
   const ghost = `<span class="ghost">${heroSprite(HEROES[0])}<i>?</i></span>`;
@@ -3793,24 +3799,27 @@ function renderArena(){
   $("view").querySelectorAll("[data-openb]").forEach(b => b.onclick = () => openBattle(b.dataset.openb));
   $("view").querySelectorAll("[data-removeb]").forEach(b => b.onclick = () => {
     const id = b.dataset.removeb;
-    if (!id || !window.confirm("Remove this fight card from your Arena? The battle history and rewards will be kept, and the card will remain visible to your partner.")) return;
+    if (!id || mode === "readonly") return toast("View only: ask David to add your email to the study list");
+    if (!window.confirm("Remove this battle for both players? It will be disabled in chat and removed from both Arenas. Battle history and rewards will be kept.")) return;
     const battle = allBattles()[id];
-    if (!battle) return;
+    if (!battle || battleRemoved(id)) return;
     change(d => {
       d.hiddenBattles = [...new Set([...(d.hiddenBattles || []), id])].slice(-40);
-      d.chat.push({ id: "c" + msgId(), t: new Date().toISOString(), x: `Removed my fight card from the Arena: ${quizTitle(battle)}`, k: "m" });
+      d.removedBattles = [...new Set([...(d.removedBattles || []), id])].slice(-40);
+      d.chat.push({ id: "c" + msgId(), t: new Date().toISOString(), x: `The battle was removed: ${quizTitle(battle)}`, k: "br", q: id });
       if (d.chat.length > 120) d.chat = d.chat.slice(-120);
     }, { now: true, quiet: true });
-    toast("Fight card removed from your Arena");
+    toast("Battle removed for both players");
   });
 }
 function battleCardHTML(m){
   const b = allBattles()[m.q];
   if (!b) return `<span class="bub">${esc(m.x)}</span>`;
-  const v = battleView(b), st = v.st;
-  const label = st.winner !== null ? (st.winner === "draw" ? "Draw" : st.winner === 0 ? "You won" : `${esc(mateName(v.opp ? v.opp.id : m.who))} won`) : v.me && v.opp ? `Turn ${st.turns + 1} · ${st.hp[0]} vs ${st.hp[1]} HP` : v.me ? "Waiting for opponent" : "Open challenge";
+  const v = battleView(b), st = v.st, removed = battleRemoved(b.id);
+  const label = removed ? "Battle was removed" : st.winner !== null ? (st.winner === "draw" ? "Draw" : st.winner === 0 ? "You won" : `${esc(mateName(v.opp ? v.opp.id : m.who))} won`) : v.me && v.opp ? `Turn ${st.turns + 1} · ${st.hp[0]} vs ${st.hp[1]} HP` : v.me ? "Waiting for opponent" : "Open challenge";
+  const action = removed ? `<button class="gbtn" disabled>Battle removed</button>` : `<button class="gbtn ${st.winner !== null ? "cyan" : "gold"}" data-battle="${esc(b.id)}">${st.winner !== null ? "View battle" : v.me ? "Enter arena" : "Accept challenge"}</button>`;
   return `<span class="bub qinvite battleinv"><span class="hud">${m.me ? "You issued a battle challenge" : `${esc(mateName(m.who))} challenges you to battle`}${b.src === "ai" ? " · AI" : ""}</span><b>${esc(quizTitle(b))}</b><span>${b.qs.length} questions · ${label}</span>
-    <button class="gbtn ${st.winner !== null ? "cyan" : "gold"}" data-battle="${esc(b.id)}">${st.winner !== null ? "View battle" : v.me ? "Enter arena" : "Accept challenge"}</button></span>`;
+    ${action}</span>`;
 }
 
 // ---- 8-bit sound effects (original chiptune, synthesized live; no audio files)
@@ -4532,7 +4541,7 @@ function chatLogHTML(){
     const quote=m.r?`<button class="rquote" data-jump="${esc(m.r)}"><span class="hud">${esc(replyLabel(m,q))}</span><span>${esc(q?msgPreview(q):"Message no longer available")}</span></button>`:"";
     const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):m.k==="m"&&m.i?picHTML(m):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
     const chip=rs.length?`<span class="rxs" data-rxlist="${esc(m.id)}" role="button" tabindex="0" aria-label="See reactions">${[...new Set(rs.map(r=>r.e))].join("")}${rs.length>1?`<b>${rs.length}</b>`:""}</span>`:"";
-    const more=m.k!=="u"?`<button class="mact" data-more="${esc(m.id)}" aria-label="Message options">⋯</button>`:"";
+    const more=m.k!=="u"&&m.k!=="br"?`<button class="mact" data-more="${esc(m.id)}" aria-label="Message options">⋯</button>`:"";
     html+=`<div class="${cls}" data-mid="${esc(m.id)}">${m.me?"":`<img class="mav${last?"":" blank"}" alt="" src="${esc(mateAvatar(m.who))}">`}<div class="mcol">${quote}<div class="mrow">${body}${more}${chip}</div><span class="meta">${m.me?"You":esc(mateName(m.who))} · ${esc(fmtDay(m.t))} ${esc(fmtTime(m.t))}</span></div></div>`;
     if(lastMine&&m===lastMine&&!next&&m.k!=="u"){
       const sent=mode!=="shared"||(players[myId]&&Array.isArray(players[myId].chat)&&players[myId].chat.some(x=>x&&x.id===m.id));
