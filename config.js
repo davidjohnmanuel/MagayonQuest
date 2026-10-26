@@ -10,7 +10,7 @@ window.FDE_CONFIG = {
   // The website's address. The Android app calls its /api routes and sends email links there.
   appUrl: "https://magayonquest.vercel.app",
   // Set to true after adding android/app/google-services.json (see README, "Android app").
-  androidPush: false,
+  androidPush: true,
   // Public key for push notifications (safe to commit). Its private half goes in Vercel only.
   vapidPublicKey: "BKvLc-2w06r3dMt28FqkhpC6FtJw7rX5lcT4SrM5s0IsBSap-jTb9XozeAs6iECrGFsPg0nG6VBI8j97G-3Agu0"
 };

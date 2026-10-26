@@ -630,6 +630,86 @@ body:not(.authed) main,body:not(.authed) .dock,body:not(.authed) #save-note{disp
 .lock .gate{margin:0;text-align:left}
 .lock .lockic{width:44px;height:44px;color:var(--gold)}
 body.locked{overflow:hidden}
+/* Profiles and the party feed */
+.linkbtn.danger{color:var(--red)}
+.acct{border-color:var(--gold)}
+.acct-top{display:flex;align-items:center;gap:12px}
+.acct-top img{width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);flex:none}
+.acct-top h3{font-size:20px;overflow-wrap:anywhere}
+.acct .setrow{padding:6px 0}
+.acctval{font-weight:700;overflow-wrap:anywhere}
+.delsheet{border-color:var(--red);box-shadow:0 0 50px rgba(255,107,107,.25)}
+.delsheet p{font-size:14.5px;line-height:1.45}
+.admin-user-info small{color:var(--dim);font-size:12.5px;overflow-wrap:anywhere}
+.profbtn{justify-self:start;padding:0;min-height:30px;font-size:13px}
+.mem[data-profile]{cursor:pointer}
+.feedtitle{margin-bottom:-4px}
+.feed{display:grid;gap:12px}
+.feedmsg{text-align:center;padding:12px 0}
+.feedempty{border-color:var(--edge-hi);color:var(--muted)}
+.pcompose{gap:10px}
+.pc-top{display:flex;gap:10px;align-items:flex-start}
+.pc-top img,.cform img,.comment img{width:40px;height:40px;border-radius:50%;flex:none;border:2px solid var(--gold)}
+.pc-top textarea{flex:1;min-width:0;resize:none;font:inherit;font-size:16px;line-height:1.4;background:var(--shadow);color:var(--ink);border:2px solid var(--edge);border-radius:14px;padding:10px 12px;min-height:46px}
+.pc-top textarea:focus{border-color:var(--edge-hi);outline:none}
+.pc-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;font-size:14px}
+.pc-btn svg,#camsnap svg{width:18px;height:18px}
+.pc-photo{position:relative;border-radius:12px;overflow:hidden;border:2px solid var(--edge);background:var(--shadow)}
+.pc-photo img{display:block;width:100%;max-height:360px;object-fit:contain}
+.pc-photo .mact,.post-del{opacity:1;position:absolute;top:8px;right:8px;background:rgba(11,9,32,.8);color:var(--ink)}
+.post{gap:10px;padding:14px}
+.post-h{display:flex;align-items:center;gap:8px;position:relative}
+.post-who{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;color:var(--ink);text-align:left;min-width:0;min-height:44px}
+.post-who img{width:42px;height:42px;border-radius:50%;border:2px solid var(--pink);flex:none}
+.post-who span{display:grid;gap:1px;min-width:0}
+.post-who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.post-who .hud{font-size:9.5px}
+.post-del{position:static;margin-left:auto}
+.post-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px;line-height:1.45}
+.post-body.jumbo{font-size:44px;line-height:1.1}
+.post-body a,.cbub a{color:var(--cyan)}
+.post-img{display:block;padding:0;border:0;background:var(--shadow);border-radius:12px;overflow:hidden;margin:0 -2px}
+.post-img img{display:block;width:100%;max-height:520px;object-fit:cover}
+.post-img.missing{padding:28px;text-align:center}
+.post-stats{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.post-stats span{display:inline-flex;align-items:center;gap:4px}
+.post-stats svg{width:15px;height:15px}
+.post-stats .linkbtn{padding:0;min-height:28px;font-size:13px;color:var(--muted);font-weight:600}
+.post-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);padding:4px 0}
+.post-acts button{display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;border-radius:8px;color:var(--muted);font-weight:700;font-size:14px;min-height:40px}
+.post-acts button:active{background:var(--panel2)}
+.post-acts button svg{width:19px;height:19px}
+.post-acts button[aria-pressed="true"]{color:var(--pink)}
+.morecom{justify-self:start;padding:0;min-height:28px;font-size:13px}
+.comments{display:grid;gap:8px}
+.comment{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:start}
+.comment img{width:32px;height:32px;border-color:var(--edge-hi)}
+.cbub{background:var(--panel2);border-radius:14px;padding:7px 12px;display:grid;gap:1px;min-width:0;justify-self:start;max-width:100%}
+.cbub b{font-size:13px}
+.cbub span{font-size:14.5px;overflow-wrap:anywhere;white-space:pre-wrap}
+.cmeta{grid-column:2;font-size:9.5px;padding:2px 12px 0;display:flex;gap:4px;align-items:center}
+.cmeta .linkbtn{padding:0;min-height:22px;font-size:11px;color:var(--dim)}
+.cform{display:flex;gap:8px;align-items:center}
+.cform img{width:32px;height:32px}
+.cform input{flex:1;min-width:0;font:inherit;font-size:16px;background:var(--shadow);color:var(--ink);border:2px solid var(--edge);border-radius:20px;padding:8px 14px;min-height:42px}
+.cform .gbtn{min-height:42px;width:42px;padding:0;display:grid;place-items:center;border-radius:50%}
+.cform .gbtn svg{width:18px;height:18px}
+.profhead{overflow:hidden;padding-top:0;gap:12px}
+.profcover{height:84px;margin:0 -16px;background:linear-gradient(120deg,#3A3170,#5B3B8C 55%,#24516A);border-bottom:2px solid var(--edge)}
+.profhead.mate .profcover{background:linear-gradient(120deg,#4A2350,#6E2F63 55%,#3A3170)}
+.profid{display:flex;align-items:flex-end;gap:12px;margin-top:-44px}
+.profid h2{font-size:22px;overflow-wrap:anywhere}
+.profid .pill{align-self:center;margin-top:40px}
+.profhead.mate .avatar{border-color:var(--pink)}
+.camsheet{width:100%;max-width:560px}
+.camview{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center}
+.camview video{width:100%;height:100%;object-fit:cover}
+.camview video.mirror{transform:scaleX(-1)}
+.camview p{position:absolute;padding:16px;text-align:center}
+#camsnap{display:inline-flex;align-items:center;gap:8px}
+.photoview{position:fixed;inset:0;z-index:45;background:rgba(5,4,16,.94);display:grid;place-items:center;padding:56px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.photoview img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.photoview .back{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:16px;color:var(--ink)}
 </style>
 
 </head>
@@ -663,6 +743,9 @@ body.locked{overflow:hidden}
 <div class="sheetwrap" id="battlesheet" hidden role="dialog" aria-modal="true" aria-label="Battle challenge"></div>
 <div class="sheetwrap" id="quizsheet" hidden role="dialog" aria-modal="true" aria-label="New quiz duel"></div>
 <div class="sheetwrap" id="topicsheet" hidden role="dialog" aria-modal="true" aria-label="Topics"></div>
+<div class="sheetwrap" id="confirmsheet" hidden role="alertdialog" aria-modal="true" aria-label="Confirm delete"></div>
+<div class="sheetwrap" id="camsheet" hidden role="dialog" aria-modal="true" aria-label="Take a photo"></div>
+<div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
 <div class="lock" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-t"></div>
 
@@ -1529,11 +1612,11 @@ let profilesCache={};
 
 // ---- render
 function render(){
-  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-current",String(b.dataset.view===({quiz:"chat",battle:"arena",heroes:"arena",trophies:"us",shop:"arena",exam:"missions",cert:"missions"}[view]||view))));
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-current",String(b.dataset.view===({quiz:"chat",battle:"arena",heroes:"arena",trophies:"us",shop:"arena",exam:"missions",cert:"missions",profile:"us"}[view]||view))));
   const ae=document.activeElement, keep=ae&&ae.id&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA")&&ae.type!=="checkbox"?{id:ae.id,v:ae.value}:null;
   checkIncoming();
   if(dataReady&&!mine.hero&&view!=="heroes"&&mode!=="readonly"){view="heroes";}
-  if(view==="today")renderToday(); else if(view==="missions")renderMissions(); else if(view==="us")renderUs(); else if(view==="chat")renderChat(); else if(view==="quiz")renderQuiz(); else if(view==="arena")renderArena(); else if(view==="battle")renderBattle(); else if(view==="heroes")renderHeroes(); else if(view==="shop")renderShop(); else if(view==="exam")renderExam(); else if(view==="cert")renderCert(); else if(view==="settings")renderSettings(); else renderTrophies();
+  if(view==="today")renderToday(); else if(view==="missions")renderMissions(); else if(view==="us")renderUs(); else if(view==="chat")renderChat(); else if(view==="quiz")renderQuiz(); else if(view==="arena")renderArena(); else if(view==="battle")renderBattle(); else if(view==="heroes")renderHeroes(); else if(view==="shop")renderShop(); else if(view==="exam")renderExam(); else if(view==="cert")renderCert(); else if(view==="settings")renderSettings(); else if(view==="profile")renderProfile(); else renderTrophies();
   renderSoundBtn();
   {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
   renderBadge();
@@ -1741,19 +1824,41 @@ async function adminRequest(method="GET", body){
   const result = await response.json().catch(() => ({}));
   return { response, result };
 }
+// Deleting an account can't be undone, so the admin has to type the player's email before the button unlocks.
+function confirmDelete(email, name){
+  return new Promise(done => {
+    const s = $("confirmsheet"), who = name || email;
+    s.hidden = false;
+    s.innerHTML = `<div class="box qsheet delsheet"><div class="row"><h3>Delete ${esc(who)}?</h3><span class="spacer"></span><button class="back" id="delclose" aria-label="Cancel">✕</button></div>
+      <p>This permanently deletes <b>${esc(who)}</b>${name ? ` (${esc(email)})` : ""}: their login, profile, progress, posts and photos. It can't be undone.</p>
+      <div class="field"><label class="hud" for="delconfirm">Type their email to confirm</label><input id="delconfirm" type="email" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(email)}"></div>
+      <div class="row"><button class="gbtn" id="delcancel">Cancel</button><span class="spacer"></span><button class="gbtn red" id="delok" disabled>Delete account</button></div></div>`;
+    const inp = $("delconfirm"), ok = $("delok");
+    const finish = yes => { s.hidden = true; s.innerHTML = ""; confirmDelete.close = null; done(yes); };
+    confirmDelete.close = () => finish(false);
+    inp.oninput = () => { ok.disabled = inp.value.trim().toLowerCase() !== email.toLowerCase(); };
+    inp.onkeydown = e => { if (e.key === "Enter" && !ok.disabled) finish(true); if (e.key === "Escape") finish(false); };
+    ok.onclick = () => finish(true);
+    $("delcancel").onclick = $("delclose").onclick = () => finish(false);
+    s.onclick = e => { if (e.target === s) finish(false); };
+    inp.focus();
+  });
+}
+let isAdmin = null; // null until the server has answered
+function showRole(admin){ isAdmin = admin; const r = $("set-role"); if (r){ r.textContent = admin ? "Admin" : "Player"; r.className = "pill " + (admin ? "good" : "warn"); r.hidden = false; } }
 async function loadAdminUsers(panel){
   const status = panel.querySelector("[data-admin-status]");
   try {
     const { response, result } = await adminRequest();
     if (!panel.isConnected) return;
-    if (response.status === 403 || response.status === 503){ panel.hidden = true; return; }
-    panel.hidden = false;
+    if (response.status === 403 || response.status === 503){ panel.hidden = true; showRole(false); return; }
+    panel.hidden = false; showRole(response.ok);
     if (!response.ok){ status.textContent = result.error || "Could not load user settings."; return; }
     const list = panel.querySelector("[data-admin-list]");
     status.textContent = `${result.users.length} account${result.users.length === 1 ? "" : "s"}`;
     list.innerHTML = result.users.map(user=>{
       const state = user.isMember ? "Study-list access" : user.hasAccount ? (user.confirmed ? "No study-list access" : "Email not verified") : "Invited · no account yet";
-      return `<div class="admin-user"><div class="admin-user-info"><b>${esc(user.email)}</b><span class="hud">${state}</span></div><div class="admin-user-actions">${user.isMember ? `<button class="linkbtn" data-admin-action="remove" data-email="${esc(user.email)}">Remove access</button>` : `<button class="linkbtn" data-admin-action="add" data-email="${esc(user.email)}">Grant access</button>`}${user.hasAccount ? `<button class="linkbtn" data-admin-action="delete" data-email="${esc(user.email)}">Delete account</button>` : ""}</div></div>`;
+      return `<div class="admin-user"><div class="admin-user-info"><b>${esc(user.name || user.email)}</b>${user.name ? `<small>${esc(user.email)}</small>` : ""}<span class="hud">${state}</span></div><div class="admin-user-actions">${user.isMember ? `<button class="linkbtn" data-admin-action="remove" data-email="${esc(user.email)}">Remove access</button>` : `<button class="linkbtn" data-admin-action="add" data-email="${esc(user.email)}">Grant access</button>`}${user.hasAccount ? `<button class="linkbtn danger" data-admin-action="delete" data-email="${esc(user.email)}" data-name="${esc(user.name || "")}">Delete account</button>` : ""}</div></div>`;
     }).join("") || `<p class="muted">No users yet.</p>`;
     panel.querySelector("[data-admin-add]").onsubmit = async event=>{
       event.preventDefault();
@@ -1768,11 +1873,11 @@ async function loadAdminUsers(panel){
     };
     list.querySelectorAll("[data-admin-action]").forEach(button=>button.onclick=async()=>{
       const action = button.dataset.adminAction, email = button.dataset.email;
-      const prompt = action === "delete" ? `Permanently delete ${email} and their Supabase data?` : action === "remove" ? `Remove study-list access for ${email}?` : `Grant study-list access to ${email}?`;
-      if (!window.confirm(prompt)) return;
+      if (action === "delete"){ if (!(await confirmDelete(email, button.dataset.name))) return; }
+      else if (!window.confirm(action === "remove" ? `Remove study-list access for ${email}?` : `Grant study-list access to ${email}?`)) return;
       button.disabled = true; status.textContent = "Saving…";
       try {
-        const { response: actionResponse, result: actionResult } = await adminRequest("POST", { action, email });
+        const { response: actionResponse, result: actionResult } = await adminRequest("POST", { action, email, confirm: action === "delete" ? email : undefined });
         if (!actionResponse.ok) throw new Error(actionResult.error || "Could not update this user.");
         await loadAdminUsers(panel);
       } catch (error){ status.textContent = error.message; }
@@ -1789,6 +1894,7 @@ function renderUs(){
   const card=(id,d,isMe)=>{const xp=xpOf(d,isMe?(myId||"me"):id),lv=levelOf(xp),st=statusOf(d);
     return `<article class="panel pcard ${isMe?"me":"mate"}">
       <div class="ptop"><div class="avatar" style="background-image:url('${esc(isMe?myAvatar():mateAvatar(id))}')"><span class="lvbadge">LV ${lv.i+1}</span></div><div style="min-width:0"><div class="pname" style="font-size:17px">${esc(isMe?myName():mateName(id))}</div><div class="ptitle-tag">${isMe?"P1":"P2"} · ${esc(lv.name.toUpperCase())}${d.title&&TITLES[d.title]&&titleOwned(d,d.title)?` · ${esc(TITLES[d.title].n.toUpperCase())}`:""}</div></div><span class="pill ${st.cls}">${esc(st.t)}</span></div>
+      ${mode==="shared"?`<button class="linkbtn profbtn" data-profile="${esc(id)}">${isMe?"View your profile":"View profile"} →</button>`:""}
       <div><div class="xpbar"><i style="width:${lv.pct}%"></i></div><div class="xptext"><span>${xp} XP</span><span>${lv.next?`${lv.toNext} to next`:"Max rank"}</span></div></div>
       <div class="pstats"><div><b>${fmtMin(weekMins(d))}</b><span>this week</span></div><div><b>${streakOf(d.log)}</b><span>combo</span></div><div><b>${coinBalance(d,isMe?(myId||"me"):id)}</b><span>coins</span></div><div><b>${fmtMin(totalMins(d))}</b><span>all time</span></div></div>
       ${d.cert?`<span class="certbadge">★ Certified FDE · ${Math.round(d.cert.sc/d.cert.n*100)}%</span>`:""}
@@ -1802,6 +1908,7 @@ function renderUs(){
     <button class="gbtn" id="totrophies" style="justify-self:stretch">Trophy room · ${badges().filter(x=>x.on).length} / ${badges().length} unlocked</button>
     ${coopHTML()||`<section class="coop"><span class="lbl">Co-op mode unlocks when you both check in on the same day.</span><span class="hearts">${IC.heart(false)}</span></section>`}
     <div class="party">${card(myId||"me",mine,true)}${ids.slice(0,3).map(id=>card(id,normalize(players[id]),false)).join("")||`<div class="empty-mate"><b>Player 2: ${esc(PARTNER)}</b>${mode==="local"?"Progress saves on this device only in this view.":"Waiting to join. Their card appears after their first training session."}</div>`}</div>
+    ${mode==="shared"?`<div class="ptitle feedtitle"><h3>Party feed</h3><span class="hud">Updates from everyone</span></div>${feedSectionHTML("")}`:""}
     <section class="panel"><div class="ptitle"><h3>Last 14 days</h3><span class="hud">Brighter = more minutes</span></div>
       <div class="heat">${heatRow(myName(),mine,"")}${ids[0]?heatRow(mateName(ids[0]),normalize(players[ids[0]]),"mate"):""}</div></section>
     <section class="panel"><div class="ptitle"><h3>Training this week</h3><div class="legend"><span>${esc(myName())}</span>${ids[0]?`<span class="mate">${esc(mateName(ids[0]))}</span>`:""}</div></div>
@@ -1812,7 +1919,284 @@ function renderUs(){
   const nf=$("mynote"); if(nf){const save=()=>{const v=nf.value.trim().slice(0,140);if(v!==mine.note)change(d=>{d.note=v;});};nf.onchange=save;nf.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();nf.blur();}};}
   $("totrophies").onclick=()=>go("trophies");
   $("tosettings").onclick=()=>go("settings");
+  $("view").querySelectorAll(".party [data-profile]").forEach(b=>b.onclick=()=>openProfile(b.dataset.profile==="me"?myId:b.dataset.profile));
+  if(mode==="shared")bindFeedSection();
   refreshProfiles();
+}
+
+// ---- profiles and the party feed: status updates with photos, likes and comments (tables in supabase/schema.sql, section 5)
+const PHOTO_BUCKET = "post-photos", PHOTO_MAX = 1600, PHOTO_TTL = 6 * 3600;
+const CAM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+const PIC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/></svg>';
+const LIKE_SVG = on => `<svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.6 4 4.5 7.2 4.5c2 0 3.6 1.1 4.8 2.8 1.2-1.7 2.8-2.8 4.8-2.8 3.2 0 5.6 3.1 4.4 6.7-1.7 4.7-9.2 9.3-9.2 9.3z" fill="${on ? "#FF77AE" : "none"}" stroke="${on ? "#FF77AE" : "currentColor"}" stroke-width="2"/></svg>`;
+let feed = { posts: [], loaded: false, err: "" }, feedCh = null, profileId = null;
+let draft = { text: "", blob: null, preview: "", busy: false, err: "" };
+const photoUrls = {}, openComments = new Set();
+let cam = null; // desktop camera sheet: {stream}
+
+const whoOf = id => { const isMe = id === myId, name = isMe ? myName() : (profCache[id] || mateName(id)); return { isMe, name: name || "New player", av: isMe ? myAvatar() : initialsAvatar(name || "?") }; };
+function postTime(iso){
+  const m = Math.round((Date.now() - Date.parse(iso)) / 6e4);
+  if (m < 1) return "Just now";
+  if (m < 60) return `${m}m`;
+  if (m < 1440) return `${Math.round(m / 60)}h`;
+  if (m < 10080) return `${Math.round(m / 1440)}d`;
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: new Date(iso).getFullYear() === new Date().getFullYear() ? undefined : "numeric" });
+}
+
+async function loadFeed(){
+  if (!sb || !started) return;
+  const { data, error } = await sb.from("posts").select("id,user_id,body,image_path,created_at,post_likes(user_id),post_comments(id,user_id,body,created_at)").order("created_at", { ascending: false }).limit(80);
+  if (!started) return;
+  feed.loaded = true;
+  if (error){
+    feed.err = /relation|does not exist|schema cache/i.test(error.message || "") ? "Profiles aren't switched on yet. Run section 5 of supabase/schema.sql in the Supabase SQL editor." : "Couldn't load posts. Check your connection.";
+    refreshFeed(); return;
+  }
+  feed.err = "";
+  (data || []).forEach(p => p.post_comments.sort((a, b) => a.created_at.localeCompare(b.created_at)));
+  if ((data || []).some(p => !(p.user_id in profCache))) await loadProfiles();
+  const now = Date.now(), need = [...new Set((data || []).map(p => p.image_path).filter(p => p && !(photoUrls[p] && photoUrls[p].exp > now + 6e5)))];
+  if (need.length){
+    const { data: signed } = await sb.storage.from(PHOTO_BUCKET).createSignedUrls(need, PHOTO_TTL);
+    (signed || []).forEach(x => { if (x.signedUrl) photoUrls[x.path] = { u: x.signedUrl, exp: now + PHOTO_TTL * 1000 }; });
+  }
+  feed.posts = data || [];
+  refreshFeed();
+}
+function subscribeFeed(){
+  if (feedCh) sb.removeChannel(feedCh);
+  const ping = () => { clearTimeout(subscribeFeed.t); subscribeFeed.t = setTimeout(loadFeed, 400); };
+  feedCh = sb.channel("party-feed");
+  ["posts", "post_likes", "post_comments"].forEach(table => feedCh.on("postgres_changes", { event: "*", schema: "public", table }, ping));
+  feedCh.subscribe();
+}
+function resetFeed(){
+  if (feedCh){ sb.removeChannel(feedCh); feedCh = null; }
+  feed = { posts: [], loaded: false, err: "" }; profileId = null; openComments.clear(); clearDraft(); closeCamSheet(); closePhoto();
+}
+
+function feedListHTML(uid){
+  if (!feed.loaded) return `<p class="muted feedmsg">Loading posts…</p>`;
+  if (feed.err) return `<p class="amsg">${esc(feed.err)}</p>`;
+  const list = uid ? feed.posts.filter(p => p.user_id === uid) : feed.posts;
+  if (!list.length) return `<div class="empty-mate feedempty"><b>${uid && uid !== myId ? `${esc(whoOf(uid).name)} hasn't posted yet` : "No posts yet"}</b>${uid && uid !== myId ? "Their updates will show up here." : "Share a win, a photo of your study setup, or what you're tackling next."}</div>`;
+  return list.map(postHTML).join("");
+}
+function postHTML(p){
+  const w = whoOf(p.user_id), liked = p.post_likes.some(l => l.user_id === myId), nl = p.post_likes.length, cs = p.post_comments, open = openComments.has(p.id);
+  const img = p.image_path && photoUrls[p.image_path];
+  const likers = p.post_likes.map(l => l.user_id === myId ? "You" : whoOf(l.user_id).name);
+  const shown = open ? cs : cs.slice(-2);
+  return `<article class="panel post" data-post="${p.id}">
+    <header class="post-h"><button class="post-who" data-profile="${esc(p.user_id)}"><img alt="" src="${esc(w.av)}"><span><b>${esc(w.name)}</b><span class="hud">${esc(postTime(p.created_at))}</span></span></button>${w.isMe ? `<button class="mact post-del" data-pdel="${p.id}" aria-label="Delete post" title="Delete post">✕</button>` : ""}</header>
+    ${p.body ? `<p class="post-body${!p.image_path && isJumbo(p.body) ? " jumbo" : ""}">${linkify(esc(p.body))}</p>` : ""}
+    ${p.image_path ? (img ? `<button class="post-img" data-photo="${esc(p.image_path)}" aria-label="Open photo"><img alt="Photo from ${esc(w.name)}" src="${esc(img.u)}" loading="lazy"></button>` : `<div class="post-img missing hud">Photo unavailable</div>`) : ""}
+    ${nl || cs.length ? `<div class="post-stats">${nl ? `<span title="${esc(likers.join(", "))}">${LIKE_SVG(true)} ${nl === 1 ? esc(likers[0]) : liked ? `You and ${nl - 1} other${nl === 2 ? "" : "s"}` : nl}</span>` : "<span></span>"}${cs.length ? `<button class="linkbtn" data-pcom="${p.id}">${cs.length} comment${cs.length === 1 ? "" : "s"}</button>` : ""}</div>` : ""}
+    <div class="post-acts"><button data-plike="${p.id}" aria-pressed="${liked}">${LIKE_SVG(liked)} Like</button><button data-pcom="${p.id}">Comment</button></div>
+    ${cs.length > shown.length ? `<button class="linkbtn morecom" data-pmore="${p.id}">View all ${cs.length} comments</button>` : ""}
+    ${shown.length ? `<div class="comments">${shown.map(c => { const cw = whoOf(c.user_id); return `<div class="comment"><img alt="" src="${esc(cw.av)}"><div class="cbub"><b>${esc(cw.name)}</b><span>${linkify(esc(c.body))}</span></div><span class="cmeta hud">${esc(postTime(c.created_at))}${c.user_id === myId || w.isMe ? ` · <button class="linkbtn" data-cdel="${c.id}">Delete</button>` : ""}</span></div>`; }).join("")}</div>` : ""}
+    ${open ? `<form class="cform" data-cform="${p.id}"><img alt="" src="${esc(myAvatar())}"><input id="pc-${p.id}" maxlength="500" placeholder="Write a comment…" autocomplete="off" aria-label="Write a comment"><button class="gbtn" type="submit" aria-label="Send comment">${SEND}</button></form>` : ""}
+  </article>`;
+}
+function composerHTML(){
+  return `<section class="panel pcompose" id="pcompose">
+    <div class="pc-top"><img alt="" src="${esc(myAvatar())}"><textarea id="posttext" maxlength="2000" rows="2" placeholder="What's new, ${esc(myName().split(" ")[0])}?" aria-label="Write a post"></textarea></div>
+    <div id="pcpreview">${draft.preview ? `<div class="pc-photo"><img alt="Photo to post" src="${esc(draft.preview)}"><button class="mact" id="pcunpick" aria-label="Remove photo">✕</button></div>` : ""}</div>
+    <p class="amsg" id="pcerr"${draft.err ? "" : " hidden"}>${esc(draft.err)}</p>
+    <div class="row"><button class="gbtn pc-btn" id="pccam">${CAM_SVG}Camera</button><button class="gbtn pc-btn" id="pcgal">${PIC_SVG}Photo</button><span class="spacer"></span><button class="gbtn gold" id="pcpost"${draft.busy ? " disabled" : ""}>${draft.busy ? "Posting…" : "Post"}</button></div>
+    <input type="file" accept="image/*" capture="environment" id="pccamin" hidden><input type="file" accept="image/*" id="pcgalin" hidden>
+  </section>`;
+}
+function bindComposer(){
+  const t = $("posttext"); if (!t) return;
+  t.value = draft.text;
+  const grow = () => { t.style.height = "auto"; t.style.height = Math.min(240, t.scrollHeight + 4) + "px"; };
+  t.oninput = () => { draft.text = t.value; grow(); }; if (draft.text) grow();
+  const pick = inp => { const f = inp.files && inp.files[0]; inp.value = ""; if (f) usePhoto(f); };
+  $("pccamin").onchange = e => pick(e.target); $("pcgalin").onchange = e => pick(e.target);
+  $("pcgal").onclick = () => $("pcgalin").click();
+  // Phones open their own camera app; laptops get a live camera sheet.
+  $("pccam").onclick = () => coarse() || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? $("pccamin").click() : openCamSheet();
+  const un = $("pcunpick"); if (un) un.onclick = () => { setDraftPhoto(null); refreshComposer(); };
+  $("pcpost").onclick = submitPost;
+}
+function refreshComposer(){
+  const c = $("pcompose"); if (!c) return;
+  const keep = document.activeElement === $("posttext");
+  c.outerHTML = composerHTML(); bindComposer();
+  if (keep) $("posttext").focus();
+}
+function setDraftPhoto(blob){
+  if (draft.preview) URL.revokeObjectURL(draft.preview);
+  draft.blob = blob; draft.preview = blob ? URL.createObjectURL(blob) : ""; draft.err = "";
+}
+function clearDraft(){ setDraftPhoto(null); draft.text = ""; draft.busy = false; draft.err = ""; }
+// Phone photos are huge; shrink them to PHOTO_MAX px on the long side before uploading.
+async function shrinkPhoto(src){
+  const url = URL.createObjectURL(src);
+  try {
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
+    const s = Math.min(1, PHOTO_MAX / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return await new Promise(ok => c.toBlob(ok, "image/jpeg", 0.85));
+  } finally { URL.revokeObjectURL(url); }
+}
+async function usePhoto(file){
+  let blob = null;
+  try { blob = await shrinkPhoto(file); } catch (e){}
+  if (!blob){ draft.err = "That photo couldn't be opened. Try a JPEG or PNG."; refreshComposer(); return; }
+  setDraftPhoto(blob); refreshComposer();
+}
+async function submitPost(){
+  if (draft.busy) return;
+  const text = draft.text.trim().slice(0, 2000);
+  if (!text && !draft.blob){ $("posttext").focus(); toast("Write something or add a photo"); return; }
+  if (!sb || !myId || mode !== "shared"){ toast("Sign in with study-list access to post"); return; }
+  draft.busy = true; draft.err = ""; refreshComposer();
+  let path = null;
+  try {
+    if (draft.blob){
+      path = `${myId}/${msgId()}.jpg`;
+      const { error } = await sb.storage.from(PHOTO_BUCKET).upload(path, draft.blob, { contentType: "image/jpeg" });
+      if (error) throw error;
+    }
+    const { error } = await sb.from("posts").insert({ body: text, image_path: path });
+    if (error){ if (path) sb.storage.from(PHOTO_BUCKET).remove([path]); throw error; }
+    if (path){ photoUrls[path] = { u: draft.preview, exp: Infinity }; draft.preview = ""; } // show our own copy until the next reload; photoUrls owns it now
+    clearDraft(); refreshComposer(); toast("Posted to your profile"); try { sfx.coin(); } catch (e){}
+    loadFeed();
+  } catch (e){
+    draft.busy = false;
+    draft.err = /bucket|not found/i.test((e && e.message) || "") ? "Photo storage isn't set up yet. Run section 5 of supabase/schema.sql." : "Couldn't post just now. Check your connection and try again.";
+    refreshComposer();
+  }
+}
+
+async function toggleLike(id){
+  const p = feed.posts.find(x => x.id === id); if (!p || !myId) return;
+  const liked = p.post_likes.some(l => l.user_id === myId);
+  p.post_likes = liked ? p.post_likes.filter(l => l.user_id !== myId) : [...p.post_likes, { user_id: myId }];
+  refreshFeed(); if (!liked) try { sfx.click(); } catch (e){}
+  const { error } = liked ? await sb.from("post_likes").delete().eq("post_id", id).eq("user_id", myId) : await sb.from("post_likes").insert({ post_id: id });
+  if (error){ toast("Couldn't save that like"); loadFeed(); }
+}
+async function sendComment(id, input){
+  const body = input.value.trim().slice(0, 500); if (!body) return;
+  input.disabled = true;
+  const { error } = await sb.from("post_comments").insert({ post_id: id, body });
+  input.disabled = false;
+  if (error){ toast("Couldn't post your comment"); return; }
+  input.value = ""; loadFeed();
+}
+async function deletePost(id){
+  const p = feed.posts.find(x => x.id === id); if (!p || !window.confirm("Delete this post? This can't be undone.")) return;
+  const { error } = await sb.from("posts").delete().eq("id", id);
+  if (error){ toast("Couldn't delete the post"); return; }
+  if (p.image_path) sb.storage.from(PHOTO_BUCKET).remove([p.image_path]);
+  feed.posts = feed.posts.filter(x => x.id !== id); refreshFeed(); toast("Post deleted");
+}
+async function deleteComment(id){
+  if (!window.confirm("Delete this comment?")) return;
+  const { error } = await sb.from("post_comments").delete().eq("id", id);
+  if (error){ toast("Couldn't delete the comment"); return; }
+  loadFeed();
+}
+function bindFeed(root){
+  if (!root) return;
+  root.querySelectorAll("[data-profile]").forEach(b => b.onclick = () => openProfile(b.dataset.profile));
+  root.querySelectorAll("[data-plike]").forEach(b => b.onclick = () => toggleLike(b.dataset.plike));
+  root.querySelectorAll("[data-pcom]").forEach(b => b.onclick = () => { openComments.add(b.dataset.pcom); refreshFeed(); const f = $("pc-" + b.dataset.pcom); if (f) f.focus(); });
+  root.querySelectorAll("[data-pmore]").forEach(b => b.onclick = () => { openComments.add(b.dataset.pmore); refreshFeed(); });
+  root.querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => deletePost(b.dataset.pdel));
+  root.querySelectorAll("[data-cdel]").forEach(b => b.onclick = () => deleteComment(b.dataset.cdel));
+  root.querySelectorAll("[data-photo]").forEach(b => b.onclick = () => openPhoto(b.dataset.photo));
+  root.querySelectorAll("[data-cform]").forEach(f => f.onsubmit = e => { e.preventDefault(); sendComment(f.dataset.cform, f.querySelector("input")); });
+}
+// Redraw just the post list so the composer and anything being typed survive live updates.
+function refreshFeed(){
+  const el = $("feedlist"); if (!el) return;
+  const ae = document.activeElement, keep = ae && ae.id && ae.id.startsWith("pc-") ? { id: ae.id, v: ae.value } : null;
+  el.innerHTML = feedListHTML(el.dataset.uid || ""); bindFeed(el);
+  const cnt = $("postcount"); if (cnt) cnt.textContent = feed.posts.filter(p => p.user_id === profileId).length;
+  if (keep){ const f = $(keep.id); if (f){ f.value = keep.v; f.focus(); } }
+}
+function feedSectionHTML(uid){
+  return `${!uid || uid === myId ? composerHTML() : ""}<div class="feed" id="feedlist" data-uid="${esc(uid || "")}">${feedListHTML(uid)}</div>`;
+}
+function bindFeedSection(){ bindComposer(); bindFeed($("feedlist")); if (!feed.loaded) loadFeed(); }
+
+function openProfile(id){ profileId = id; go("profile"); }
+function renderProfile(){
+  const id = profileId || myId, w = whoOf(id), d = id === myId ? mine : players[id] ? normalize(players[id]) : blank();
+  const xp = xpOf(d, id === myId ? (myId || "me") : id), lv = levelOf(xp), st = statusOf(d), h = HERO[d.hero];
+  const title = d.title && TITLES[d.title] && titleOwned(d, d.title) ? TITLES[d.title].n : "";
+  $("view").innerHTML = `<div class="wrap" style="gap:14px">
+    <div class="row"><button class="back" id="profback">← Party</button><span class="spacer"></span><span class="hud">Profile</span></div>
+    <section class="panel profhead ${w.isMe ? "me" : "mate"}">
+      <div class="profcover"></div>
+      <div class="profid"><div class="avatar" style="background-image:url('${esc(w.av)}')"><span class="lvbadge">LV ${lv.i + 1}</span></div>
+        <div style="min-width:0"><h2>${esc(w.name)}</h2><div class="ptitle-tag">${esc(lv.name.toUpperCase())}${title ? ` · ${esc(title.toUpperCase())}` : ""}${h ? ` · ${esc(h.n.toUpperCase())}` : ""}</div></div>
+        <span class="pill ${st.cls}">${esc(st.t)}</span></div>
+      ${d.note ? `<p class="pnote">“${esc(d.note)}”</p>` : ""}
+      ${d.cert ? `<span class="certbadge">★ Certified FDE · ${Math.round(d.cert.sc / d.cert.n * 100)}%</span>` : ""}
+      <div class="pstats"><div><b id="postcount">${feed.posts.filter(p => p.user_id === id).length}</b><span>posts</span></div><div><b>${xp}</b><span>XP</span></div><div><b>${streakOf(d.log)}</b><span>combo</span></div><div><b>${fmtMin(totalMins(d))}</b><span>all time</span></div></div>
+      ${w.isMe ? `<button class="gbtn" id="profedit">Edit name and settings</button>` : ""}
+    </section>
+    ${feedSectionHTML(id)}
+  </div>`;
+  $("profback").onclick = () => go("us");
+  const pe = $("profedit"); if (pe) pe.onclick = () => go("settings");
+  bindFeedSection();
+}
+
+// Full-screen photo viewer
+function openPhoto(path){
+  const ph = photoUrls[path]; if (!ph) return;
+  const v = $("photoview"); v.hidden = false;
+  v.innerHTML = `<button class="back" id="photoclose" aria-label="Close photo">✕ Close</button><img alt="Photo" src="${esc(ph.u)}">`;
+  v.onclick = e => { if (e.target === v || e.target.id === "photoclose") closePhoto(); };
+}
+function closePhoto(){ const v = $("photoview"); if (v){ v.hidden = true; v.innerHTML = ""; } }
+
+// Live camera for laptops and desktops (phones use their camera app through the file input)
+async function openCamSheet(){
+  const s = $("camsheet"); s.hidden = false;
+  s.innerHTML = `<div class="box qsheet camsheet"><div class="row"><h3>Take a photo</h3><span class="spacer"></span><button class="back" id="camclose" aria-label="Close">✕</button></div>
+    <div class="camview"><video id="camvideo" autoplay playsinline muted></video><p class="muted" id="cammsg">Starting the camera…</p></div>
+    <div class="row"><button class="gbtn" id="camflip" hidden>Switch camera</button><span class="spacer"></span><button class="gbtn gold big" id="camsnap" disabled style="width:auto">${CAM_SVG}Snap</button></div></div>`;
+  $("camclose").onclick = closeCamSheet;
+  s.onclick = e => { if (e.target === s) closeCamSheet(); };
+  cam = { stream: null, facing: "user" };
+  const start = async () => {
+    if (cam.stream) cam.stream.getTracks().forEach(t => t.stop());
+    try {
+      cam.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: cam.facing, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+      if (!cam || s.hidden){ cam && cam.stream.getTracks().forEach(t => t.stop()); return; }
+      $("camvideo").srcObject = cam.stream; $("camvideo").classList.toggle("mirror", cam.facing === "user"); $("cammsg").hidden = true; $("camsnap").disabled = false;
+      const devs = await navigator.mediaDevices.enumerateDevices().catch(() => []);
+      $("camflip").hidden = devs.filter(x => x.kind === "videoinput").length < 2;
+    } catch (e){
+      $("cammsg").textContent = e && e.name === "NotAllowedError" ? "Camera access was blocked. Allow it in your browser's site settings, or pick a photo instead." : "No camera found. Pick a photo instead.";
+    }
+  };
+  $("camflip").onclick = () => { cam.facing = cam.facing === "user" ? "environment" : "user"; start(); };
+  $("camsnap").onclick = () => {
+    const v = $("camvideo"), c = document.createElement("canvas"); if (!v.videoWidth) return;
+    const sc = Math.min(1, PHOTO_MAX / Math.max(v.videoWidth, v.videoHeight));
+    c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
+    const g = c.getContext("2d");
+    if (cam.facing === "user"){ g.translate(c.width, 0); g.scale(-1, 1); } // save selfies the way the preview showed them
+    g.drawImage(v, 0, 0, c.width, c.height);
+    c.toBlob(b => { closeCamSheet(); if (b){ setDraftPhoto(b); refreshComposer(); try { sfx.click(); } catch (e){} } }, "image/jpeg", 0.85);
+  };
+  start();
+}
+function closeCamSheet(){
+  if (cam && cam.stream) cam.stream.getTracks().forEach(t => t.stop());
+  cam = null;
+  const s = $("camsheet"); if (s){ s.hidden = true; s.innerHTML = ""; }
 }
 
 function badges(){
@@ -3382,13 +3766,13 @@ async function onSession(session){
   if (!session){
     document.body.classList.remove("authed"); viewer = null; started = false; dataReady = false; players = {}; myId = null; mode = "local";
     if (channel){ sb.removeChannel(channel); channel = null; }
-    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; thread = null; closeMenu(); closeTopicSheet(); freshUnlock();
+    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; thread = null; closeMenu(); closeTopicSheet(); resetFeed(); isAdmin = null; freshUnlock();
     if (authView !== "check" && authView !== "newpass") authView = "signin";
     renderWho(); renderAuth(); return;
   }
   if (authView === "newpass" || started) return;
   const u = session.user;
-  viewer = { id: u.id, email: u.email, name: "", avatarUrl: initialsAvatar(u.email) };
+  viewer = { id: u.id, email: u.email, name: "", avatarUrl: initialsAvatar(u.email), createdAt: u.created_at, confirmed: !!(u.email_confirmed_at || u.confirmed_at) };
   authView = "loading"; renderAuth();
   let inviteError = "";
   const inviteToken = u.user_metadata && u.user_metadata.signup_invite;
@@ -3441,7 +3825,7 @@ function subscribe(){
   channel = sb.channel("progress-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "progress" }, () => { clearTimeout(subscribe.t); subscribe.t = setTimeout(pull, 300); })
     .subscribe();
-  subscribeChat();
+  subscribeChat(); subscribeFeed();
 }
 // Typing dots and "Active now" ride on a realtime channel; nothing here is saved to the database.
 let chatCh = null;
@@ -3455,7 +3839,7 @@ function subscribeChat(){
 }
 document.addEventListener("visibilitychange", () => {
   if (chatCh){ try { document.hidden ? chatCh.untrack() : chatCh.track({ at: Date.now() }); } catch (e){} }
-  if (!document.hidden && started) pull();
+  if (!document.hidden && started){ pull(); if (feed.loaded) loadFeed(); }
 });
 
 // ---- inactivity lock
@@ -3673,17 +4057,32 @@ function memberRows(){
     const isMe = id === myId, d = isMe ? mine : normalize(players[id]), xp = xpOf(d, id), lv = levelOf(xp), st = statusOf(d), on = !isMe && onlineIds.has(id);
     const name = isMe ? myName() : (profCache[id] || mateName(id)), last = d.log.length ? fmtDay(d.log[d.log.length - 1] + "T12:00:00") : "";
     const sub = on ? "Active now" : isMe ? "That's you" : last ? `Last trained ${last.toLowerCase() === "today" || last.toLowerCase() === "yesterday" ? last.toLowerCase() : "on " + last}` : "No training logged yet";
-    return { isMe, xp, html: `<div class="mem${isMe ? " me" : ""}"><div class="cav"><img alt="" src="${esc(isMe ? myAvatar() : initialsAvatar(name || "?"))}">${on ? '<span class="dot" title="Active now"></span>' : ""}</div>
+    return { isMe, xp, html: `<div class="mem${isMe ? " me" : ""}" data-profile="${esc(id)}" role="button" tabindex="0" aria-label="Open ${esc(name || "player")}'s profile"><div class="cav"><img alt="" src="${esc(isMe ? myAvatar() : initialsAvatar(name || "?"))}">${on ? '<span class="dot" title="Active now"></span>' : ""}</div>
       <div class="meminfo"><b>${esc(name || "New player")}${isMe ? "<small>YOU</small>" : ""}</b><span class="hud">LV ${lv.i + 1} · ${esc(lv.name.toUpperCase())} · ${xp} XP · ${streakOf(d.log)} DAY COMBO</span><span class="sub">${esc(sub)}</span></div>
       <span class="pill ${st.cls}">${esc(st.t)}</span></div>` };
   });
   rows.sort((a, b) => (b.isMe - a.isMe) || (b.xp - a.xp));
   return { n: rows.length, html: rows.map(r => r.html).join("") };
 }
+function accountCardHTML(){
+  const xp = xpOf(mine, myId || "me"), lv = levelOf(xp), since = viewer && viewer.createdAt ? new Date(viewer.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "";
+  const posts = feed.loaded ? feed.posts.filter(p => p.user_id === myId).length : null;
+  const row = (label, value) => `<div class="setrow"><span><small>${label}</small><b class="acctval">${value}</b></span></div>`;
+  return `<section class="panel acct"><div class="acct-top"><img alt="" src="${esc(myAvatar())}"><div style="min-width:0"><h3>${esc(myName())}</h3><span class="hud">LV ${lv.i + 1} · ${esc(lv.name.toUpperCase())} · ${xp} XP</span></div>
+      <span class="pill ${isAdmin ? "good" : "warn"}" id="set-role"${isAdmin === null ? " hidden" : ""}>${isAdmin ? "Admin" : "Player"}</span></div>
+    ${row("Email address", esc((viewer && viewer.email) || "Not signed in"))}
+    ${viewer ? row("Email status", viewer.confirmed ? "Verified" : "Not verified yet") : ""}
+    ${row("Study-list access", mode === "shared" ? "Yes, your progress syncs" : mode === "readonly" ? "View only" : "This device only")}
+    ${since ? row("Member since", esc(since)) : ""}
+    ${row("Training", `${fmtMin(totalMins(mine))} all time · ${streakOf(mine.log)} day combo${posts !== null ? ` · ${posts} post${posts === 1 ? "" : "s"}` : ""}`)}
+    ${mode === "shared" ? `<button class="gbtn" id="set-myprofile">View my profile page</button>` : ""}
+  </section>`;
+}
+function bindMembers(){ $("set-members").querySelectorAll("[data-profile]").forEach(r => { r.onclick = () => openProfile(r.dataset.profile); r.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openProfile(r.dataset.profile); } }; }); }
 function renderSettings(){
   const root = $("settings-root"), m = memberRows();
   if (root){ // already on screen: refresh the live parts only, so typing and the admin list aren't reset
-    $("set-members").innerHTML = m.html; $("set-mcount").textContent = `${m.n} player${m.n === 1 ? "" : "s"}`;
+    $("set-members").innerHTML = m.html; bindMembers(); $("set-mcount").textContent = `${m.n} player${m.n === 1 ? "" : "s"}`;
     $("set-notif").innerHTML = NOTIF.html(); NOTIF.bind();
     $("set-sound").setAttribute("aria-checked", String(SFX.on));
     $("view").querySelectorAll("[data-goal]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.goal) === mine.goal)));
@@ -3692,7 +4091,8 @@ function renderSettings(){
   const email = (viewer && viewer.email) || "";
   $("view").innerHTML = `<div class="wrap setwrap" id="settings-root">
     <div class="row"><button class="back" id="setback">← Back</button><span class="spacer"></span><span class="hud">Settings</span></div>
-    <section class="panel"><div class="ptitle"><h3>Your profile</h3><span class="hud">${esc(email)}</span></div>
+    ${accountCardHTML()}
+    <section class="panel"><div class="ptitle"><h3>Display name</h3></div>
       <form class="nameform" id="nameform"><div class="field"><label class="hud" for="setname">Display name</label><input id="setname" maxlength="40" required autocomplete="nickname" value="${esc(myName())}"></div><button class="gbtn gold" type="submit">Save</button></form>
       <p class="muted" id="namemsg" style="font-size:13px">This is the name your party sees in chat, battles and on the board.</p></section>
     <section class="panel"><div class="ptitle"><h3>Preferences</h3></div>
@@ -3704,6 +4104,8 @@ function renderSettings(){
     <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div></section>
   </div>`;
   $("setback").onclick = () => go("us");
+  const mp = $("set-myprofile"); if (mp) mp.onclick = () => openProfile(myId);
+  { const r = $("set-role"); if (r && isAdmin !== null) r.hidden = false; }
   $("nameform").onsubmit = async e => {
     e.preventDefault();
     const f = $("setname"), btn = e.submitter, msg = $("namemsg"), v = f.value.trim().replace(/\s+/g, " ").slice(0, 40);
@@ -3720,7 +4122,7 @@ function renderSettings(){
   $("view").querySelectorAll("[data-goal]").forEach(b => b.onclick = () => change(d => { d.goal = Number(b.dataset.goal); }, { quiet: true }));
   $("set-sound").onclick = () => { soundToggle(); $("set-sound").setAttribute("aria-checked", String(SFX.on)); };
   const so = $("set-signout"); if (so) so.onclick = () => sb.auth.signOut();
-  NOTIF.bind();
+  NOTIF.bind(); bindMembers();
   if (sb && started) loadAdminUsers($("admin-users-panel"));
 }
 if (NATIVE) nativeSetup();
@@ -3731,8 +4133,9 @@ else if ("serviceWorker" in navigator){
 // ---- Android app: back button, notification taps
 function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
+  if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close() })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
@@ -3750,8 +4153,20 @@ function nativeSetup(){
   const P = CAP.PushNotifications;
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
-    // The app is open, so Android shows nothing; only a test asks to be seen anyway.
-    P.addListener("pushNotificationReceived", n => { if (n.data && n.data.always) toast(n.body || n.data.body || "Notification received"); });
+    // One high-importance channel, so pushes pop down as banners with sound (server sends channel_id "fde").
+    const channel = { id: "fde", name: "FDE Quest", description: "Chats, duels, battle turns and reminders", importance: 5, visibility: 1, vibration: true };
+    P.createChannel(channel).catch(() => {});
+    // Android only shows a push itself when the app is in the background. While it's open, post it as a local
+    // notification instead, except chat pings while you're already looking at the chat.
+    const L = CAP.LocalNotifications;
+    P.addListener("pushNotificationReceived", n => {
+      const d = n.data || {}, url = d.url || "/";
+      if (!d.always && view === "chat" && /#chat$/.test(url) && document.visibilityState === "visible") return;
+      const tag = d.tag || "fde", id = [...tag].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7) & 0x7fffffff; // same tag replaces the last one
+      if (L) L.schedule({ notifications: [{ id, title: n.title || d.title || "FDE Quest", body: n.body || d.body || "", channelId: "fde", smallIcon: "ic_stat_notify", iconColor: "#E3A400", extra: { url } }] }).catch(() => toast(n.body || d.body || ""));
+      else toast(n.body || d.body || "");
+    });
+    if (L) L.addListener("localNotificationActionPerformed", a => openFromPush(a.notification.extra && a.notification.extra.url));
     // Firebase can rotate the token; keep the saved device current.
     if (NOTIF.fcmToken()) P.checkPermissions().then(p => p.receive === "granted" && NOTIF.fcmRegister()).then(token => {
       if (!token || token === NOTIF.fcmToken() || !sb || !myId) return;

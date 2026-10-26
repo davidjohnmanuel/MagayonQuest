@@ -152,6 +152,16 @@ The function only answers people who are signed in and on the study list. Your k
 - **Sound:** original 8-bit sound effects, made live in the browser. Mute with the speaker button at the top.
 - **Editing prices:** prices live in the `ITEMS`, `TITLES`, `SKILL_PRICES` and `HERO_PRICE` lists in `index.html`.
 
+## Profiles and photo posts
+
+Every player has a profile, opened from **Party → View profile** or by tapping a name in the feed or the members list. Players can post updates with an optional photo, either taken with the camera or picked from the gallery. Others can like and comment on them. The **Party feed** on the Party screen shows everyone's posts, newest first.
+
+To turn it on, open the Supabase **SQL Editor** and run section 5 of `supabase/schema.sql`, from `-- 5. Player profiles` to the end. It creates the `posts`, `post_likes` and `post_comments` tables and a private `post-photos` storage bucket. Only people on the study list can see posts and photos. Photos are shrunk to 1600px before upload and can be up to 5 MB.
+
+On phones, **Camera** opens the phone's camera app. On a laptop it opens a live camera preview in the app, which asks for camera permission the first time.
+
+For push notifications about new posts, comments and likes, add three more webhooks the same way as the `progress` one in step A.3 below: tables `posts`, `post_comments` and `post_likes`, with the Insert event only.
+
 ## Android app and notifications
 
 ### A. Turn on notifications (about 10 minutes)
@@ -207,7 +217,7 @@ The APK loads your live site, so new features arrive the moment you push to GitH
 
 ## Everyday admin
 
-**Manage users in the app:** Add `ADMIN_EMAILS` to Vercel Environment Variables as a comma-separated list of administrator emails. Each admin must also be in `public.members` to sign in. After redeploying, admins can open **Party → User management** to grant or remove study-list access, or permanently delete a Supabase Auth account. Deleting an account also removes its linked profile, progress, and push subscriptions. The admin endpoint uses `SUPABASE_SERVICE_ROLE_KEY` only on the server.
+**Manage users in the app:** Add `ADMIN_EMAILS` to Vercel Environment Variables as a comma-separated list of administrator emails. Each admin must also be in `public.members` to sign in. After redeploying, admins can open **Party → User management** to grant or remove study-list access, or permanently delete a Supabase Auth account. Before a delete goes through, the admin must type that account's email to confirm, and the server checks it too. Deleting an account also removes its linked profile, progress, and push subscriptions. The admin endpoint uses `SUPABASE_SERVICE_ROLE_KEY` only on the server.
 
 **Add someone to the study list** in SQL Editor:
 
@@ -247,3 +257,44 @@ delete from public.members where email = 'someone@example.com';
 - Only signed-in people whose email is in `members` can read the board.
 - Each person can write only their own progress row.
 - Passwords are handled by Supabase Auth and never stored in your tables.
+
+## Android app
+
+The Android app is a Capacitor build of the same `index.html`. The page is packaged inside the APK, so there's no browser bar and it opens instantly. It still talks to the same Supabase and Vercel API, so the website and the app share one account and one board. The web version doesn't change.
+
+| Path | What it does |
+| --- | --- |
+| `capacitor.config.json` | App id `app.magayonquest.fdequest`, name, splash colors |
+| `android/` | The native Android project (commit it) |
+| `scripts/build-web.mjs` | Copies the site into `www/`, which goes into the APK |
+| `scripts/make-icons.mjs`, `assets/` | Launcher icons and splash screen made from `icon.svg` |
+| `fde-quest-release.jks`, `android/keystore.properties` | Release signing key. **Not in git.** The password is in `fde-quest-SECRETS.txt` |
+
+**Back up the `.jks` file and its password.** Phones only accept updates signed with the same key.
+
+### Build the APK
+
+You need Node 18+, JDK 21 and the Android SDK (or Android Studio). On David's Mac they live in `~/.fdeq-tools`:
+
+```bash
+export PATH=~/.fdeq-tools/node/bin:$PATH JAVA_HOME=~/.fdeq-tools/jdk/Contents/Home ANDROID_HOME=~/.fdeq-tools/android-sdk
+npm install
+npm run android:apk      # → android/app/build/outputs/apk/release/app-release.apk
+```
+
+After any change to `index.html` or `config.js`, run `npm run android:apk` again and bump `versionCode` in `android/app/build.gradle` so phones accept it as an update. To install, send the APK to the phone and open it. Android asks once to allow installs from that app.
+
+If you installed the old web-wrapper APK, uninstall it first. This one has a different app id.
+
+### Push notifications in the app
+
+The app can't use web push, so it uses Firebase Cloud Messaging:
+
+1. In the [Firebase console](https://console.firebase.google.com), create a project and add an **Android app** with package name `app.magayonquest.fdequest`.
+2. Download `google-services.json` into `android/app/`.
+3. In **Project settings → Service accounts**, click **Generate new private key**. In Vercel, add an environment variable `FCM_SERVICE_ACCOUNT` and paste the whole JSON file as its value. Redeploy.
+4. Set `androidPush: true` in `config.js`, rebuild the APK, then turn on notifications in the app's Settings.
+
+### Email links
+
+Sign-up confirmation and password-reset emails open the website (`appUrl` in `config.js`). After confirming, go back to the app and sign in.

@@ -38,11 +38,29 @@ function whatsNew(record, old, others, senderName){
   return notes.slice(0, 4);
 }
 
+// Profile posts: a new post pings everyone else; a comment or like pings the post's author.
+async function feedNews(table, r){
+  const nm = await names(), who = nm[r.user_id] || "Your partner";
+  if (table === "posts"){
+    const others = Object.keys(nm).filter(id => id !== r.user_id);
+    const sent = await pushTo(others, { title: `${who} posted an update`, body: r.body ? trim(String(r.body), 140) : "📷 Shared a photo", tag: "post-" + r.id, url: "/#us" });
+    return { notes: 1, sent };
+  }
+  const [post] = (await db(`posts?select=user_id,body&id=eq.${encodeURIComponent(r.post_id)}`)) || [];
+  if (!post || post.user_id === r.user_id) return { notes: 0, sent: 0 };
+  const what = post.body ? `“${trim(String(post.body), 60)}”` : "your photo";
+  const note = table === "post_comments"
+    ? { title: `${who} commented on your post`, body: trim(String(r.body || ""), 140), tag: "comments-" + r.post_id, url: "/#us" }
+    : { title: `${who} liked your post`, body: what, tag: "likes-" + r.post_id, url: "/#us" };
+  return { notes: 1, sent: await pushTo([post.user_id], note) };
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
   if (!process.env.WEBHOOK_SECRET || req.headers["x-webhook-secret"] !== process.env.WEBHOOK_SECRET) return res.status(401).json({ error: "Bad webhook secret" });
   try {
     const body = readBody(req);
+    if (["posts", "post_comments", "post_likes"].includes(body.table) && body.type === "INSERT" && body.record) return res.status(200).json(await feedNews(body.table, body.record));
     if (body.table !== "progress" || !body.record) return res.status(200).json({ skipped: true });
     const sender = body.record.user_id;
     const [rows, nm] = await Promise.all([db("progress?select=user_id,data"), names()]);

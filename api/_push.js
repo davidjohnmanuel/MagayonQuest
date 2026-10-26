@@ -63,7 +63,7 @@ async function sendFcm(token, payload){
       token,
       notification: { title: data.title, body: data.body },
       data,
-      android: { priority: "high", ttl: "21600s", notification: { tag: data.tag, color: "#E3A400", icon: "ic_stat_notify" } }
+      android: { priority: "high", ttl: "21600s", notification: { tag: data.tag, color: "#E3A400", icon: "ic_stat_notify", channel_id: "fde" } }
     } })
   });
   // 404 UNREGISTERED: the app was uninstalled or the token rotated.

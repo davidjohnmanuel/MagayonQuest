@@ -57,18 +57,20 @@ module.exports = async (req, res) => {
 
     if (req.method === "GET"){
       const users = await authUsers(context);
+      const profilesResponse = await api(context, "/rest/v1/profiles?select=id,display_name");
+      const nameOf = new Map((profilesResponse.ok ? await profilesResponse.json() : []).map(p => [p.id, p.display_name || ""]));
       const byEmail = new Map(users.filter(user => user.email).map(user => [user.email.toLowerCase(), user]));
       const emails = new Set();
       const result = members.map(member => {
         const email = String(member.email).toLowerCase();
         emails.add(email);
         const user = byEmail.get(email);
-        return { email, isMember: true, hasAccount: !!user, confirmed: !!(user && user.email_confirmed_at), createdAt: user && user.created_at };
+        return { email, name: user ? nameOf.get(user.id) || "" : "", isMember: true, hasAccount: !!user, confirmed: !!(user && user.email_confirmed_at), createdAt: user && user.created_at };
       });
       users.forEach(user => {
         const email = String(user.email || "").toLowerCase();
         if (!email || emails.has(email)) return;
-        result.push({ email, isMember: false, hasAccount: true, confirmed: !!user.email_confirmed_at, createdAt: user.created_at });
+        result.push({ email, name: nameOf.get(user.id) || "", isMember: false, hasAccount: true, confirmed: !!user.email_confirmed_at, createdAt: user.created_at });
       });
       return res.status(200).json({ users: result.sort((a, b) => a.email.localeCompare(b.email)) });
     }
@@ -99,6 +101,7 @@ module.exports = async (req, res) => {
     }
 
     if (body.action === "delete"){
+      if (String(body.confirm || "").trim().toLowerCase() !== email) return res.status(400).json({ error: "Type the account's email to confirm the delete" });
       if (target){
         const response = await api(context, `/auth/v1/admin/users/${encodeURIComponent(target.id)}`, { method: "DELETE" });
         if (!response.ok) return res.status(502).json({ error: "Could not delete the Supabase account" });

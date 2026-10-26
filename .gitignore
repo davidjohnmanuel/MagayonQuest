@@ -8,3 +8,4 @@ fde-quest-SECRETS.txt
 /artifacts/www/
 *.jks
 android/keystore.properties
+*.apk
