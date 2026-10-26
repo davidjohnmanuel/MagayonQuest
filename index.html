@@ -517,6 +517,71 @@ details.intel[open] summary::after{content:"-"}
 .si-text b{font-family:var(--f-display);font-size:15px}
 .si-text span{font-size:12.5px;color:var(--muted);line-height:1.35}
 .si-text em{font-style:normal;font-size:9.5px;color:var(--cyan)}
+/* Storefront */
+.store{max-width:1080px}
+.storebar{display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap}
+.storebrand{display:grid;margin-right:auto}
+.storebrand h2{font-size:26px}
+.ssearch{order:5;flex:1 1 100%;display:flex;align-items:center;gap:8px;background:var(--shadow);border:2px solid var(--edge);border-radius:12px;padding:0 12px;min-height:46px;color:var(--dim)}
+.ssearch:focus-within{border-color:var(--cyan)}
+.ssearch svg{width:18px;height:18px;flex:none}
+.ssearch input{flex:1;min-width:0;font:inherit;font-size:15px;background:none;border:0;color:var(--ink);outline:none}
+@media (min-width:760px){.storebrand{margin-right:12px}.ssearch{order:0;flex:1 1 260px}}
+.walletchip{display:flex;align-items:center;background:var(--shadow);border:2px solid rgba(255,200,61,.45);border-radius:12px;padding:0 12px;min-height:46px}
+.cartbtn{position:relative;display:flex;align-items:center;gap:8px}
+.cartbtn svg{width:20px;height:20px}
+.cartbtn .tbadge{top:-9px;left:auto;right:-9px}
+.promo{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:linear-gradient(120deg,#4A3510,#2B2160 60%,#123A46);border:2px solid var(--gold);border-radius:16px;padding:16px 18px;box-shadow:0 4px 0 var(--shadow)}
+.promo h3{font-size:21px;margin-top:2px}
+.promo p{margin:4px 0 0;font-size:13.5px;color:#E8E2FF;line-height:1.4}
+.promo-art{width:132px;border-radius:12px}
+@media (max-width:480px){.promo-art{width:88px}.promo-art .crest{width:56px!important;height:56px!important}}
+.shopctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.shopctl .chips{flex:1 1 auto;min-width:0}
+.tchip small{font-family:var(--f-hud);font-size:9.5px;margin-left:6px;opacity:.75}
+.ssort{font:inherit;font-size:13.5px;font-weight:700;background:var(--shadow);color:var(--ink);border:2px solid var(--edge);border-radius:10px;padding:7px 10px;min-height:40px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+@media (max-width:480px){.pgrid{grid-template-columns:1fr 1fr;gap:10px}}
+.prod{display:grid;grid-template-rows:auto 1fr;background:var(--panel);border:2px solid var(--edge);border-radius:14px;overflow:hidden;box-shadow:0 4px 0 var(--shadow);transition:border-color .15s,transform .15s}
+@media (hover:hover){.prod:hover{border-color:var(--edge-hi);transform:translateY(-2px)}}
+.prod-art{position:relative;display:grid;place-items:center;aspect-ratio:4/3;border:0;padding:0;background:radial-gradient(circle at 50% 45%,var(--glow,#3A3380),#1A163C 72%);color:inherit;width:100%}
+.prod-art .sicon{width:auto;height:auto;background:none;border:0}
+.prod-art .sicon svg{width:64px;height:64px}
+.pbadge{position:absolute;top:8px;left:8px;font-family:var(--f-hud);font-size:9px;letter-spacing:.04em;padding:3px 6px;border-radius:5px;background:var(--gold);color:var(--gold-ink)}
+.pbadge.own{background:var(--green);color:#0B2A14}
+.pbadge.new{background:var(--pink);color:#3A0A1E}
+.prod-body{display:grid;gap:4px;padding:10px 12px 12px;align-content:start}
+.prod-body .hud{font-size:9.5px;color:var(--cyan)}
+.prod-name{font-family:var(--f-display);font-weight:700;font-size:15.5px;line-height:1.2;text-align:left;background:none;border:0;padding:0;color:var(--ink)}
+.prod-body .pdesc{font-size:12.5px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pfoot{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.pfoot .coins{font-size:17px}
+.pfoot .gbtn{margin-left:auto;min-height:38px;padding:6px 12px;font-size:13.5px}
+@media (max-width:480px){.pfoot .gbtn{flex:1 1 100%;margin-left:0}}
+.pshort{font-family:var(--f-hud);font-size:9.5px;color:var(--red)}
+.sempty{text-align:center;justify-items:center;padding:28px 12px;color:var(--muted)}
+.sempty b{color:var(--ink);font-family:var(--f-display);font-size:16px}
+.sempty p{margin:0}
+.pdp{gap:14px}
+.pdp-art{border-radius:14px;aspect-ratio:16/9}
+.pdp-art .sicon svg{width:96px;height:96px}
+.pdp h3{font-size:24px}
+.pdp .pdesc{color:#E8E2FF;font-size:15px;line-height:1.45;margin:6px 0 0}
+.qty{display:inline-flex;align-items:center;border:2px solid var(--edge-hi);border-radius:10px;overflow:hidden;background:var(--shadow)}
+.qty button{width:38px;height:38px;border:0;background:none;color:var(--ink);font-size:18px;font-weight:800}
+.qty button[disabled]{opacity:.35}
+.qty b{min-width:28px;text-align:center;font-family:var(--f-display)}
+.cartlines{display:grid;gap:8px;max-height:46vh;overflow-y:auto}
+.cline{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--shadow);border:2px solid var(--edge);border-radius:12px;padding:8px 10px}
+.linkbtn{justify-self:start;background:none;border:0;padding:2px 0;color:var(--red);font-size:12px;text-decoration:underline}
+.cline-r{display:grid;justify-items:end;gap:6px}
+.csum{display:grid;gap:6px;border-top:2px dashed var(--edge);padding-top:10px;font-size:14px}
+.csum div{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.csum .tot{font-family:var(--f-display);font-size:17px;font-weight:700}
+.orders{display:grid;gap:8px}
+.order{display:grid;grid-template-columns:1fr auto;gap:4px 12px;background:var(--shadow);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.order .hud{font-size:9.5px}
+.earnhelp summary{cursor:pointer;font-family:var(--f-display);font-weight:700;font-size:16px}
 .sicon{width:40px;height:40px;display:grid;place-items:center;background:var(--panel2);border:2px solid var(--edge-hi);border-radius:10px;flex:none}
 .sicon svg{width:26px;height:26px;image-rendering:pixelated}
 .itembar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -967,7 +1032,7 @@ body.locked{overflow:hidden}
     <button class="tab" data-view="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9H3z"/><path d="M10 20v-6h4v6"/></svg>Base</button>
     <button class="tab" data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
     <button class="tab" data-view="arena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M9.5 6.5L13 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>Arena</button>
-    <button class="tab" data-view="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9c0 1.7 1.3 3 3 3s2.5-1.3 2.5-3c0 1.7 1.1 3 2.5 3s2.5-1.3 2.5-3c0 1.7.8 3 2.5 3s3-1.3 3-3z"/><path d="M5 12v8h14v-8M10 20v-5h4v5"/></svg>Shop</button>
+    <button class="tab" data-view="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9c0 1.7 1.3 3 3 3s2.5-1.3 2.5-3c0 1.7 1.1 3 2.5 3s2.5-1.3 2.5-3c0 1.7.8 3 2.5 3s3-1.3 3-3z"/><path d="M5 12v8h14v-8M10 20v-5h4v5"/></svg>Shop<span class="tbadge" id="cartbadge" hidden></span></button>
     <button class="tab" data-view="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>Chat<span class="tbadge" id="chatbadge" hidden></span></button>
     <button class="tab" data-view="us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M3 19c.8-3 3-4.5 5.5-4.5S13.2 16 14 19M14.5 14.6c2.6-.4 5 .9 6 4.4"/></svg>Party</button>
 
@@ -980,6 +1045,8 @@ body.locked{overflow:hidden}
 <div class="sheetwrap" id="topicsheet" hidden role="dialog" aria-modal="true" aria-label="Topics"></div>
 <div class="sheetwrap" id="confirmsheet" hidden role="alertdialog" aria-modal="true" aria-label="Confirm delete"></div>
 <div class="sheetwrap" id="camsheet" hidden role="dialog" aria-modal="true" aria-label="Take a photo"></div>
+<div class="sheetwrap" id="cartsheet" hidden role="dialog" aria-modal="true" aria-label="Your cart"></div>
+<div class="sheetwrap" id="prodsheet" hidden role="dialog" aria-modal="true" aria-label="Product details"></div>
 <div class="sheetwrap" id="updsheet" hidden role="alertdialog" aria-modal="true" aria-label="App update"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
@@ -3456,31 +3523,121 @@ function boughtTier(d, hid){ return d.buys.filter(x => x.i.startsWith("sk:" + hi
 function heroOwned(d, hid){ return d.buys.some(x => x.i === "hero:" + hid); }
 function titleOwned(d, tid){ return d.buys.some(x => x.i === "title:" + tid); }
 function myTitle(){ return mine.title && TITLES[mine.title] && titleOwned(mine, mine.title) ? TITLES[mine.title].n : ""; }
-function buy(key, price, label){
-  if (mode === "readonly"){ toast("View only: ask David to add your email to the study list"); return; }
-  if (coinBalance(mine) < price){ sfx.wrong(); toast(`Not enough coins for ${label}`); return; }
-  change(d => { d.buys.push({ i: key, p: price, t: new Date().toISOString() }); if (key.startsWith("title:")) d.title = key.slice(6); }, { quiet: true });
-  sfx.buy(); toast(`Bought ${label}`);
+// The Shop works like an online store: browse or search the catalog, open a product page, fill a cart and check out in one go.
+const SHOP_CATS = [["all", "All"], ["items", "Battle items"], ["skills", "Skill scrolls"], ["heroes", "Heroes"], ["titles", "Titles"]];
+const SHOP_CAT_NAME = { items: "Battle item", skills: "Skill scroll", heroes: "Hero", titles: "Title" };
+const ITEM_GLOW = { potion: "#FF6B6B55", hourglass: "#4FE3E055", scroll: "#C8A2FF55", flask: "#5BE37D55" };
+const CART_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.2"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>';
+const SEARCH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>';
+const shop = { cat: "all", q: "", sort: "featured", cart: {}, pdp: null, pqty: 1, done: null };
+try { shop.cart = JSON.parse(localStorage.getItem("fde-cart") || "{}") || {}; } catch (e){}
+function saveCart(){ try { localStorage.setItem("fde-cart", JSON.stringify(shop.cart)); } catch (e){} renderCartBadge(); }
+function renderCartBadge(){ const b = $("cartbadge"); if (!b) return; const n = Object.values(shop.cart).reduce((s, x) => s + x, 0); b.hidden = !n; b.textContent = n > 9 ? "9+" : String(n); }
+function shopCatalog(){
+  const h = myHero(), tier = h ? heroTier(mine, h.id) : 0, out = [];
+  Object.entries(ITEMS).forEach(([id, it]) => out.push({ key: "item:" + id, cat: "items", name: it.n, desc: it.d, price: it.p, stack: true, owned: itemCount(mine, id),
+    art: `<span class="sicon">${ITEM_SVG[it.ic]}</span>`, thumb: `<span class="sicon">${ITEM_SVG[it.ic]}</span>`, glow: ITEM_GLOW[id], badge: id === "potion" ? "Best seller" : "" }));
+  if (h && tier < 6) out.push({ key: `sk:${h.id}:${tier + 1}`, cat: "skills", name: `Unlock ${h.sk[tier][1]}`, price: SKILL_PRICES[tier], badge: "New",
+    desc: `${SKILLS[h.sk[tier][0]].d} Skill ${tier + 1} of 6 for ${h.n}, or earn it free at ${HERO_TIERS[tier]} hero XP.`, art: crest(h, 80), thumb: crest(h, 40), glow: h.c + "55" });
+  HEROES.filter(x => !heroOpen(x.id)).forEach(x => out.push({ key: "hero:" + x.id, cat: "heroes", name: x.n, price: HERO_PRICE,
+    desc: `${x.r}. Normally unlocks at level ${x.unlock + 1}.`, art: crest(x, 80), thumb: crest(x, 40), glow: x.c + "55" }));
+  Object.entries(TITLES).forEach(([id, t]) => out.push({ key: "title:" + id, cat: "titles", name: t.n, price: t.p, desc: "A title shown under your name on your player card.",
+    equip: titleOwned(mine, id), art: `<span class="sicon">${COIN_SVG}</span>`, thumb: `<span class="sicon">${COIN_SVG}</span>`, glow: "#FFC83D44" }));
+  return out;
+}
+function shopList(){
+  const q = shop.q.trim().toLowerCase();
+  const list = shopCatalog().filter(p => (shop.cat === "all" || p.cat === shop.cat) && (!q || `${p.name} ${p.desc} ${SHOP_CAT_NAME[p.cat]}`.toLowerCase().includes(q)));
+  if (shop.sort === "low") list.sort((a, b) => a.price - b.price);
+  else if (shop.sort === "high") list.sort((a, b) => b.price - a.price);
+  else if (shop.sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+  return list;
+}
+// Drops anything that left the catalog since it was added (a hero unlocked by levelling, a skill earned, a title bought elsewhere).
+function cartLines(){
+  const cat = Object.fromEntries(shopCatalog().map(p => [p.key, p])); let pruned = false;
+  for (const k in shop.cart) if (!cat[k] || cat[k].equip){ delete shop.cart[k]; pruned = true; }
+  if (pruned) saveCart();
+  return Object.entries(shop.cart).map(([k, n]) => ({ p: cat[k], n: cat[k].stack ? Math.max(1, Math.min(20, n)) : 1 }));
+}
+const linesCount = lines => lines.reduce((s, l) => s + l.n, 0);
+const linesTotal = lines => lines.reduce((s, l) => s + l.p.price * l.n, 0);
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+function addToCart(key, n){
+  const p = shopCatalog().find(x => x.key === key); if (!p || p.equip) return;
+  shop.cart[key] = p.stack ? Math.min(20, (shop.cart[key] || 0) + (n || 1)) : 1;
+  saveCart(); try { sfx.click(); } catch (e){} toast(`Added ${p.name} to your cart`); render();
+}
+// Every line of one checkout shares a timestamp, so Your orders can group them back into one order.
+function checkout(lines, before){
+  if (mode === "readonly"){ toast("View only: ask David to add your email to the study list"); return false; }
+  const total = linesTotal(lines), bal = coinBalance(mine);
+  if (!lines.length) return false;
+  if (bal < total){ sfx.wrong(); toast(`You need ${total - bal} more coins`); return false; }
+  const t = new Date().toISOString(), r = { n: linesCount(lines), total };
+  if (before) before(r);
+  change(d => { lines.forEach(l => { for (let i = 0; i < l.n; i++) d.buys.push({ i: l.p.key, p: l.p.price, t }); if (l.p.key.startsWith("title:")) d.title = l.p.key.slice(6); }); }, { quiet: true });
+  sfx.buy(); return r;
+}
+function equipTitle(id){ change(d => { d.title = d.title === id ? "" : id; }, { quiet: true }); try { sfx.click(); } catch (e){} }
+function buyLabel(key){
+  const [kind, a, b] = key.split(":");
+  if (kind === "item") return ITEMS[a] ? ITEMS[a].n : "Battle item";
+  if (kind === "title") return TITLES[a] ? `Title: ${TITLES[a].n}` : "Title";
+  if (kind === "hero") return HERO[a] ? `Hero: ${HERO[a].n}` : "Hero";
+  if (kind === "sk"){ const h = HERO[a], s = h && h.sk[Number(b) - 1]; return s ? `${h.n}: ${s[1]}` : "Skill scroll"; }
+  return key;
+}
+function ordersHTML(){
+  const by = {}; mine.buys.forEach(x => { (by[x.t || ""] = by[x.t || ""] || []).push(x); });
+  const list = Object.entries(by).sort((a, b) => a[0] < b[0] ? 1 : -1).slice(0, 6);
+  if (!list.length) return `<p class="muted">No orders yet. What you buy shows up here.</p>`;
+  return `<div class="orders">${list.map(([t, xs]) => {
+    const c = {}; xs.forEach(x => { c[x.i] = (c[x.i] || 0) + 1; });
+    const when = t ? new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Earlier";
+    return `<div class="order"><b>${Object.entries(c).map(([k, n]) => esc(buyLabel(k)) + (n > 1 ? ` ×${n}` : "")).join(", ")}</b>${coinTag(xs.reduce((s, x) => s + x.p, 0))}<span class="hud">${esc(when)} · ${plural(xs.length, "item")}</span></div>`;
+  }).join("")}</div>`;
+}
+function prodCard(p, bal){
+  const inCart = shop.cart[p.key] || 0, eq = p.equip && mine.title === p.key.slice(6), held = inCart && !p.stack;
+  const badge = p.equip ? `<span class="pbadge own">${eq ? "Equipped" : "Owned"}</span>` : p.badge ? `<span class="pbadge${p.badge === "New" ? " new" : ""}">${esc(p.badge)}</span>` : p.owned ? `<span class="pbadge own">Owned ${p.owned}</span>` : "";
+  const act = p.equip ? `<button class="gbtn cyan" data-equip="${esc(p.key.slice(6))}">${eq ? "Unequip" : "Equip"}</button>`
+    : `<button class="gbtn ${held ? "" : "gold"}" data-add="${esc(p.key)}" ${held ? "disabled" : ""}>${held ? "In cart" : "Add to cart"}</button>`;
+  const note = p.equip ? "" : p.stack && inCart ? `<span class="hud" style="color:var(--gold)">${inCart} in cart</span>` : bal < p.price ? `<span class="pshort">${p.price - bal} more coins needed</span>` : "";
+  return `<article class="prod"><button class="prod-art" style="--glow:${p.glow}" data-pdp="${esc(p.key)}" aria-label="View ${esc(p.name)}">${p.art}${badge}</button>
+    <div class="prod-body"><span class="hud">${SHOP_CAT_NAME[p.cat]}</span><button class="prod-name" data-pdp="${esc(p.key)}">${esc(p.name)}</button>
+      <span class="pdesc">${esc(p.desc)}</span><div class="pfoot">${p.equip ? "" : coinTag(p.price)}${act}</div>${note}</div></article>`;
+}
+function renderShopGrid(){
+  const g = $("shopgrid"); if (!g) return;
+  const list = shopList(), bal = coinBalance(mine), q = shop.q.trim();
+  const none = q ? `Nothing matches “${esc(q)}”.` : shop.cat === "heroes" ? "Every hero is unlocked." : shop.cat === "skills" ? (myHero() ? "All six skills are unlocked for this hero." : "Choose a hero in the Arena to buy skill scrolls.") : "Nothing here yet.";
+  g.innerHTML = list.length ? `<div class="pgrid">${list.map(p => prodCard(p, bal)).join("")}</div>`
+    : `<div class="panel sempty"><b>${none}</b>${q ? `<p>Try another word or a different category.</p><button class="gbtn" id="shopclear">Clear search</button>` : ""}</div>`;
+  g.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addToCart(b.dataset.add, 1));
+  g.querySelectorAll("[data-pdp]").forEach(b => b.onclick = () => openProduct(b.dataset.pdp));
+  g.querySelectorAll("[data-equip]").forEach(b => b.onclick = () => equipTitle(b.dataset.equip));
+  const c = $("shopclear"); if (c) c.onclick = () => { shop.q = ""; $("shopq").value = ""; renderShopGrid(); };
 }
 function renderShop(){
-  const bal = coinBalance(mine), h = myHero();
-  const tier = h ? heroTier(mine, h.id) : 0;
-  const nextSk = h && tier < 6 ? { k: tier + 1, nm: h.sk[tier][1], sid: h.sk[tier][0], p: SKILL_PRICES[tier] } : null;
-  const card = (key, name, desc, price, icon, extra) => `<div class="shopitem">${icon}<div class="si-text"><b>${esc(name)}</b><span>${esc(desc)}</span>${extra || ""}</div><button class="gbtn ${bal >= price ? "gold" : ""}" data-buy="${esc(key)}" data-price="${price}" data-label="${esc(name)}">${coinTag(price)}</button></div>`;
-  $("view").innerHTML = `<div class="wrap" style="gap:14px">
-    <section class="panel shophead"><div class="row"><div><span class="hud">The Iron Bank</span><h2 style="font-size:26px">Shop</h2></div><span class="spacer"></span><div class="bal">${coinTag(bal)}<span class="hud">your coins</span></div></div>
-      <p class="muted">Earn coins from check-ins, quests, training, loot, quiz duels and battles. Wins pay the most.</p></section>
-    <section class="panel"><div class="ptitle"><h3>Battle items</h3><span class="hud">Use one per turn</span></div>
-      <div class="shoplist">${Object.entries(ITEMS).map(([id, it]) => card("item:" + id, it.n, it.d, it.p, `<span class="sicon">${ITEM_SVG[it.ic]}</span>`, `<em class="hud">Owned: ${itemCount(mine, id)}</em>`)).join("")}</div></section>
-    <section class="panel"><div class="ptitle"><h3>Skill scrolls</h3><span class="hud">${h ? esc(h.n) : "Pick a hero first"}</span></div>
-      ${nextSk ? `<div class="shoplist">${card(`sk:${h.id}:${nextSk.k}`, `Unlock ${nextSk.nm}`, SKILLS[nextSk.sid].d, nextSk.p, crest(h, 44), `<em class="hud">Skill ${nextSk.k} of 6 · or earn ${HERO_TIERS[tier]} hero XP</em>`)}</div>` : `<p class="muted">${h ? "All six skills are unlocked for this hero." : "Choose a hero in the Arena to buy skill scrolls."}</p>`}</section>
-    <section class="panel"><div class="ptitle"><h3>Heroes</h3><span class="hud">Unlock early</span></div>
-      ${(() => { const locked = HEROES.filter(x => !heroOpen(x.id)); return locked.length ? `<div class="shoplist">${locked.map(x => card("hero:" + x.id, x.n, `${x.r} · normally unlocks at level ${x.unlock + 1}`, HERO_PRICE, crest(x, 44))).join("")}</div>` : `<p class="muted">Every hero is unlocked.</p>`; })()}</section>
-    <section class="panel"><div class="ptitle"><h3>Titles</h3><span class="hud">Shown under your name</span></div>
-      <div class="shoplist">${Object.entries(TITLES).map(([id, t]) => titleOwned(mine, id)
-        ? `<div class="shopitem"><span class="sicon">${COIN_SVG}</span><div class="si-text"><b>${esc(t.n)}</b><span>${mine.title === id ? "Equipped" : "Owned"}</span></div><button class="gbtn ${mine.title === id ? "" : "cyan"}" data-equip="${id}">${mine.title === id ? "Unequip" : "Equip"}</button></div>`
-        : card("title:" + id, t.n, "A title for your player card", t.p, `<span class="sicon">${COIN_SVG}</span>`)).join("")}</div></section>
-    <section class="panel"><h3>How to earn coins</h3><div class="rules">
+  const bal = coinBalance(mine), n = linesCount(cartLines()), all = shopCatalog();
+  const feat = all.find(p => p.cat === "skills") || all.find(p => p.cat === "heroes") || all.find(p => !p.equip && p.cat === "titles");
+  const counts = { all: all.length }; all.forEach(p => { counts[p.cat] = (counts[p.cat] || 0) + 1; });
+  const typing = document.activeElement && document.activeElement.id === "shopq";
+  $("view").innerHTML = `<div class="wrap store" style="gap:14px">
+    <div class="storebar">
+      <div class="storebrand"><span class="hud">The Iron Bank</span><h2>Shop</h2></div>
+      <label class="ssearch">${SEARCH_SVG}<input id="shopq" type="search" placeholder="Search potions, heroes, titles…" value="${esc(shop.q)}" aria-label="Search the shop" autocomplete="off" enterkeyhint="search"></label>
+      <span class="walletchip" title="Your coins">${coinTag(bal)}</span>
+      <button class="gbtn cartbtn" id="opencart" aria-label="Cart, ${plural(n, "item")}">${CART_SVG}Cart<span class="tbadge"${n ? "" : " hidden"}>${n > 9 ? "9+" : n}</span></button>
+    </div>
+    ${feat ? `<div class="promo"><div><span class="hud" style="color:var(--gold)">Featured · ${SHOP_CAT_NAME[feat.cat]}</span><h3>${esc(feat.name)}</h3><p>${esc(feat.desc)}</p>
+      <div class="row" style="margin-top:10px">${coinTag(feat.price)}<button class="gbtn gold" data-pdp="${esc(feat.key)}">View</button></div></div><div class="prod-art promo-art" style="--glow:${feat.glow}" aria-hidden="true">${feat.art}</div></div>` : ""}
+    <div class="shopctl"><div class="chips" role="group" aria-label="Categories">${SHOP_CATS.map(([id, nm]) => `<button class="tchip" data-cat="${id}" aria-pressed="${shop.cat === id}">${nm}<small>${counts[id] || 0}</small></button>`).join("")}</div>
+      <select class="ssort" id="shopsort" aria-label="Sort">${[["featured", "Featured"], ["low", "Price: low to high"], ["high", "Price: high to low"], ["name", "Name: A to Z"]].map(([v, t]) => `<option value="${v}"${shop.sort === v ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+    <div id="shopgrid"></div>
+    <section class="panel"><div class="ptitle"><h3>Your orders</h3><span class="hud">${plural(mine.buys.length, "item")} bought</span></div>${ordersHTML()}</section>
+    <section class="panel"><details class="earnhelp"><summary>How to earn coins</summary><div class="rules" style="margin-top:10px">
       <div class="rule"><span>Welcome gift for choosing your hero</span><b>+50</b></div>
       <div class="rule"><span>Check in for the day</span><b>+10</b></div>
       <div class="rule"><span>Clear all daily quests</span><b>+15</b></div>
@@ -3488,11 +3645,81 @@ function renderShop(){
       <div class="rule"><span>Battle card, loot claim / skill unlock</span><b>+2 / +5</b></div>
       <div class="rule"><span>Quiz: each correct answer · finish · beat your partner</span><b>+2 · +5 · +10</b></div>
       <div class="rule"><span>Battle: each correct answer · finish · win</span><b>+2 · +10 · +25</b></div>
-    </div></section>
+    </div></details></section>
   </div>`;
-  $("view").querySelectorAll("[data-buy]").forEach(b => b.onclick = () => buy(b.dataset.buy, Number(b.dataset.price), b.dataset.label));
-  $("view").querySelectorAll("[data-equip]").forEach(b => b.onclick = () => { const id = b.dataset.equip; change(d => { d.title = d.title === id ? "" : id; }, { quiet: true }); sfx.click(); });
+  renderShopGrid(); renderCartBadge();
+  const q = $("shopq");
+  q.oninput = () => { shop.q = q.value; renderShopGrid(); };
+  if (typing){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  $("view").querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { shop.cat = b.dataset.cat; $("view").querySelectorAll("[data-cat]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); renderShopGrid(); });
+  $("shopsort").onchange = e => { shop.sort = e.target.value; renderShopGrid(); };
+  $("opencart").onclick = openCart;
+  const fb = $("view").querySelector(".promo [data-pdp]"); if (fb) fb.onclick = () => openProduct(fb.dataset.pdp);
+  // a sync can re-render the shop while a sheet is open; keep the sheet in step with it
+  if (!$("cartsheet").hidden) renderCartSheet();
+  if (!$("prodsheet").hidden) renderProdSheet();
 }
+function shopKey(e){ if (e.key === "Escape") closeShopSheet(); }
+function showShopSheet(id){
+  ["cartsheet", "prodsheet"].forEach(x => { $(x).hidden = x !== id; if (x !== id) $(x).innerHTML = ""; });
+  document.addEventListener("keydown", shopKey);
+}
+function hideShopSheets(){
+  ["cartsheet", "prodsheet"].forEach(x => { $(x).hidden = true; $(x).innerHTML = ""; });
+  shop.pdp = null; shop.done = null; document.removeEventListener("keydown", shopKey);
+}
+function closeShopSheet(){ hideShopSheets(); if (view === "shop") render(); }
+function bindSheet(s){
+  s.querySelectorAll("[data-close]").forEach(b => b.onclick = closeShopSheet);
+  s.onclick = e => { if (e.target === s) closeShopSheet(); };
+}
+function openProduct(key){ shop.pdp = key; shop.pqty = 1; showShopSheet("prodsheet"); renderProdSheet(); }
+function renderProdSheet(){
+  const s = $("prodsheet"), p = shopCatalog().find(x => x.key === shop.pdp);
+  if (!p){ hideShopSheets(); return; }
+  const bal = coinBalance(mine), inCart = shop.cart[p.key] || 0, q = p.stack ? shop.pqty : 1, cost = p.price * q, eq = p.equip && mine.title === p.key.slice(6);
+  s.innerHTML = `<div class="box qsheet pdp"><div class="row"><span class="hud">${SHOP_CAT_NAME[p.cat]}</span><span class="spacer"></span><button class="back" data-close aria-label="Close">✕</button></div>
+    <div class="prod-art pdp-art" style="--glow:${p.glow}">${p.art}</div>
+    <div><h3>${esc(p.name)}</h3><p class="pdesc">${esc(p.desc)}</p></div>
+    <div class="row">${p.equip ? `<span class="pill good" style="margin-left:0">${eq ? "Equipped" : "Owned"}</span>` : coinTag(p.price)}${p.stack ? `<span class="hud">You own ${p.owned}${inCart ? ` · ${inCart} in cart` : ""}</span>` : ""}</div>
+    ${p.equip ? `<div class="row"><span class="spacer"></span><button class="gbtn cyan" data-equip="${esc(p.key.slice(6))}">${eq ? "Unequip" : "Equip"}</button></div>`
+      : `<div class="row">${p.stack ? `<div class="qty" role="group" aria-label="Quantity"><button data-q="-1" ${q <= 1 ? "disabled" : ""} aria-label="One fewer">−</button><b aria-live="polite">${q}</b><button data-q="1" ${q >= 20 ? "disabled" : ""} aria-label="One more">+</button></div>` : ""}<span class="spacer"></span>
+        <button class="gbtn" id="pdpadd" ${inCart && !p.stack ? "disabled" : ""}>${inCart && !p.stack ? "In cart" : "Add to cart"}</button>
+        <button class="gbtn gold" id="pdpbuy" ${bal < cost ? "disabled" : ""}>Buy now ${coinTag(cost)}</button></div>
+      ${bal < cost ? `<p class="pshort" style="margin:0">You need ${cost - bal} more coins. Your balance is ${bal}.</p>` : ""}`}
+  </div>`;
+  bindSheet(s);
+  s.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { shop.pqty = Math.max(1, Math.min(20, shop.pqty + Number(b.dataset.q))); renderProdSheet(); });
+  const eb = s.querySelector("[data-equip]"); if (eb) eb.onclick = () => equipTitle(eb.dataset.equip);
+  const ab = $("pdpadd"); if (ab) ab.onclick = () => { addToCart(p.key, q); shop.pqty = 1; renderProdSheet(); };
+  const bb = $("pdpbuy"); if (bb) bb.onclick = () => { if (checkout([{ p, n: q }], hideShopSheets)) toast(`Bought ${p.name}${q > 1 ? ` ×${q}` : ""}`); };
+}
+function openCart(){ shop.done = null; showShopSheet("cartsheet"); renderCartSheet(); }
+function renderCartSheet(){
+  const s = $("cartsheet"), bal = coinBalance(mine);
+  if (shop.done){
+    s.innerHTML = `<div class="box qsheet"><div class="row"><h3>Order complete</h3><span class="spacer"></span><button class="back" data-close aria-label="Close">✕</button></div>
+      <p>You bought ${plural(shop.done.n, "item")} for ${coinTag(shop.done.total)}. Battle items are ready in your next battle.</p>
+      <div class="csum"><div class="tot"><span>Coins left</span>${coinTag(bal)}</div></div>
+      <div class="row"><span class="spacer"></span><button class="gbtn gold" data-close>Keep shopping</button></div></div>`;
+    bindSheet(s); return;
+  }
+  const lines = cartLines(), n = linesCount(lines), total = linesTotal(lines);
+  s.innerHTML = `<div class="box qsheet"><div class="row"><h3>Your cart</h3><span class="hud">${plural(n, "item")}</span><span class="spacer"></span><button class="back" data-close aria-label="Close">✕</button></div>
+    ${lines.length ? `<div class="cartlines">${lines.map(l => `<div class="cline">${l.p.thumb}<div class="si-text"><b>${esc(l.p.name)}</b><span>${SHOP_CAT_NAME[l.p.cat]} · ${l.p.price} each</span><button class="linkbtn" data-rm="${esc(l.p.key)}">Remove</button></div>
+        <div class="cline-r">${coinTag(l.p.price * l.n)}${l.p.stack ? `<div class="qty" role="group" aria-label="Quantity of ${esc(l.p.name)}"><button data-cq="-1" data-k="${esc(l.p.key)}" ${l.n <= 1 ? "disabled" : ""} aria-label="One fewer">−</button><b>${l.n}</b><button data-cq="1" data-k="${esc(l.p.key)}" ${l.n >= 20 ? "disabled" : ""} aria-label="One more">+</button></div>` : ""}</div></div>`).join("")}</div>
+      <div class="csum"><div><span>Subtotal (${plural(n, "item")})</span>${coinTag(total)}</div><div><span>Your coins</span>${coinTag(bal)}</div>
+        <div class="tot"><span>After checkout</span>${bal >= total ? coinTag(bal - total) : `<span class="bad">${total - bal} coins short</span>`}</div></div>
+      <div class="row"><button class="gbtn" id="cartclear">Empty cart</button><span class="spacer"></span><button class="gbtn gold" id="checkout" ${bal < total ? "disabled" : ""}>Check out</button></div>`
+    : `<div class="sempty"><b>Your cart is empty</b><p>Add potions, scrolls, heroes or titles from the shop.</p></div><div class="row"><span class="spacer"></span><button class="gbtn gold" data-close>Browse the shop</button></div>`}
+  </div>`;
+  bindSheet(s);
+  s.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { delete shop.cart[b.dataset.rm]; saveCart(); renderCartSheet(); });
+  s.querySelectorAll("[data-cq]").forEach(b => b.onclick = () => { const k = b.dataset.k; shop.cart[k] = Math.max(1, Math.min(20, (shop.cart[k] || 1) + Number(b.dataset.cq))); saveCart(); renderCartSheet(); });
+  const cc = $("cartclear"); if (cc) cc.onclick = () => { shop.cart = {}; saveCart(); renderCartSheet(); };
+  const co = $("checkout"); if (co) co.onclick = () => { if (checkout(lines, r => { shop.cart = {}; saveCart(); shop.done = r; })) { toast(`Order placed: ${plural(n, "item")}`); renderCartSheet(); } };
+}
+renderCartBadge();
 
 // ---- Road to FDE 2027, job tracker, certification
 const ROADMAP = [
@@ -4578,7 +4805,7 @@ function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
@@ -4588,7 +4815,7 @@ function nativeBack(){
 }
 function openFromPush(url){
   const h = String(url || "").split("#")[1] || "";
-  if (["today", "missions", "arena", "us", "chat", "trophies"].includes(h)) go(h);
+  if (["today", "missions", "arena", "us", "chat", "shop", "trophies"].includes(h)) go(h);
   else if (MOD[h]) go("missions", h);
 }
 // ---- Android app updates
