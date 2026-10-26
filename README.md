@@ -77,6 +77,16 @@ Without this, the email confirmation and password-reset links point to the wrong
 
 **Add to home screen:** on iPhone, Safari → Share → Add to Home Screen. On Android, Chrome → ⋮ → Add to Home screen. It then opens full-screen like an app.
 
+## Chat
+
+The **Chat** tab works like a messaging app:
+
+- **React:** double-tap a message to ❤️ it, or long-press (right-click or hover **⋯** on a computer) to pick ❤️ 😂 😮 😢 😡 👍.
+- **Reply, copy, unsend:** in the same long-press menu. Unsend removes your message for both of you.
+- **Seen and typing:** your partner's avatar appears under your last message once they've read it, and you'll see typing dots and "Active now" while they're in the app.
+- **Composer:** the emoji button opens a picker. With an empty box, the send button sends a 👍. Enter sends on a computer; Shift+Enter adds a new line.
+- Tap a message to see its time. Links open in a new tab.
+
 ## Quiz duels
 
 In the **Chat** tab, tap **Quiz duel** and pick:

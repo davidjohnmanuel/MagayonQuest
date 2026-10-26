@@ -16,7 +16,14 @@ function whatsNew(record, old, others, senderName){
     else if (m.k === "q") notes.push({ title: `${senderName} sent you a quiz duel`, body: text, tag: "quiz-" + m.q, url: "/#chat" });
     else notes.push({ title: senderName, body: trim(text, 140), tag: "chat", url: "/#chat" });
   }
-  // 2. Battle moves: tell the opponent it's their turn
+  // 2. A new reaction on someone else's message (only the latest one, so a burst of taps is one ping)
+  const rx = d.rx || {}, orx = od.rx || {};
+  const changed = Object.keys(rx).filter(id => rx[id] !== orx[id]).pop();
+  if (changed){
+    const m = others.flatMap(o => o.data.chat || []).find(x => x && x.id === changed && x.k !== "u");
+    if (m) notes.push({ title: `${senderName} reacted ${rx[changed]} to your message`, body: trim(String(m.x || ""), 140), tag: "react-" + changed, url: "/#chat" });
+  }
+  // 3. Battle moves: tell the opponent it's their turn
   const bt = d.bt || {}, obt = od.bt || {};
   for (const bid of Object.keys(bt)){
     const n = (bt[bid].ans || []).length, before = ((obt[bid] || {}).ans || []).length;
