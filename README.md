@@ -131,6 +131,7 @@ The function only answers people who are signed in and on the study list. Your k
 - **Hero skills:** each hero has six skills that unlock with that hero's XP, at 0, 100, 300, 500, 800 and 1,200. They cover block, dodge, half damage, heal, regen, double damage, pierce, lifesteal, counter, drain, burn, freeze, silence, 50/50, extra time and reveal.
 - **Look and feel:** each hero has an animated 8-bit element emblem, and every attack and skill plays its own pixel animation. Animations turn off when the phone's "reduce motion" setting is on.
 - **Starting a battle:** tap **Battle** in the Arena or Chat tab, then pick missions, 10/15/20 questions and the source. The challenge appears in chat.
+- **Removing a fight card:** tap **Remove** on a card in your Arena and confirm. It disappears from your Arena only; battle history, rewards and your partner's card are kept.
 - **Each turn:** both players answer the same question with a 10-second timer. A correct answer hits for 6–14, and faster hits harder. A wrong answer or timeout costs 5 HP. Each skill can be armed once per battle before answering.
 - **Winning:** every battle lasts at least 10 questions, because nobody drops below 1 HP before then. A knockout from question 10, or the most HP at the end, wins.
 - **Fairness:** both phones compute the same result from the two answer lists. Answer times are measured on each player's own phone.
