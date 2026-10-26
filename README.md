@@ -11,7 +11,7 @@ It is plain HTML with no build step. Supabase handles login and data, and Vercel
 | `index.html` | The whole app |
 | `config.js` | Your Supabase URL and key go here |
 | `supabase/schema.sql` | Creates the tables and privacy rules |
-| `api/quiz.js` | Optional: generates AI quizzes with Claude |
+| `api/quiz.js` | Generates AI quizzes with Google Gemini |
 | `api/signup-code.js` | Checks the private signup code, adds verified emails to the study list, and unlocks the auto-lock screen |
 | `sw.js` | Makes it installable, opens offline, shows notifications |
 | `api/notify.js`, `api/notify-test.js`, `api/remind.js`, `api/_push.js` | Push notifications: chats, invites, battle turns, daily reminder |
@@ -113,17 +113,17 @@ The quiz is sent to your partner as an invite card. You both answer the same que
 
 **Question bank** works out of the box: about 50 hand-written questions across the eight missions.
 
-**AI-generated quizzes (optional)** write fresh questions with Claude from the mission material:
+**AI-generated quizzes** use Google Gemini to write fresh questions from the mission material. Gemini API has a free usage quota for eligible models; limits and availability can change, and it is not unlimited.
 
-1. Get an API key at [console.anthropic.com](https://console.anthropic.com). Usage is billed to that account; a quiz costs a fraction of a cent on the default model.
+1. Create an API key in [Google AI Studio](https://aistudio.google.com/apikey). Check the current [Gemini API pricing and free-tier limits](https://ai.google.dev/gemini-api/docs/pricing).
 2. In Vercel, open **Project → Settings → Environment Variables** and add:
-   - `ANTHROPIC_API_KEY`: your key
+   - `GEMINI_API_KEY`: your key
    - `SUPABASE_URL`: same value as in `config.js`
    - `SUPABASE_ANON_KEY`: same value as in `config.js`
-3. Optionally add `ANTHROPIC_MODEL` to pick another model. It defaults to `claude-haiku-5-5`.
-4. In `config.js`, set `aiQuiz: true`, push, and redeploy.
+3. Optionally add `GEMINI_MODEL` to choose another model available to your API key. It defaults to `gemini-3.5-flash-lite`.
+4. `config.js` already enables the AI option. Push the changes and redeploy so the Vercel function and app use them.
 
-The function only answers people who are signed in and on the study list. Your key stays on Vercel and never reaches the browser.
+The function only answers people who are signed in and on the study list. Your key stays in Vercel and never reaches the browser. The quiz and battle screens both use the same generator. On Android, rebuild and install the app to get the updated option; the API key still belongs in Vercel, not in the APK.
 
 ## Heroes and the battle arena
 
@@ -266,8 +266,9 @@ delete from public.members where email = 'someone@example.com';
 | "You're not on the study list yet" | That email isn't in the `members` table, or it's spelled differently |
 | Confirmation email link opens localhost | Set the Site URL and Redirect URLs in step 5 |
 | Confirmation emails are slow or missing | Supabase's built-in email is rate-limited. Check spam, or connect your own email under Authentication → Emails |
-| "AI-generated" is greyed out | `aiQuiz` is still `false` in `config.js` |
-| AI quiz says it couldn't generate | Check the three environment variables in Vercel, then redeploy |
+| "AI-generated" is greyed out | `aiQuiz` is `false` in `config.js`, or the app has not been rebuilt with the latest config |
+| AI quiz says it isn't set up | Add `GEMINI_API_KEY`, `SUPABASE_URL` and `SUPABASE_ANON_KEY` in Vercel, then redeploy |
+| AI quiz reaches its free-tier limit | Wait for the quota to reset, or use the question bank |
 | Notifications panel says "Not available here" | Install the app (B or C) and open it from the home screen; plain browser tabs on some phones can't receive pushes |
 | "Send a test" says the server isn't set up | One of the Vercel environment variables is missing; add it and redeploy |
 | Tests work but chat pings don't | Check the Supabase webhook URL and the `x-webhook-secret` header |

@@ -5,8 +5,8 @@ window.FDE_CONFIG = {
   supabaseUrl: "https://rhobcuuepctklqqejgsl.supabase.co",
   supabaseAnonKey: "sb_publishable_i_Ksbfwo0NItvQs9MDFDbQ_t_4NA8Jw",
   partnerName: "Bert",
-  // Set to true after adding ANTHROPIC_API_KEY to Vercel (see README, "AI-generated quizzes").
-  aiQuiz: false,
+  // Requires GEMINI_API_KEY on Vercel. Gemini offers a free quota; see README.
+  aiQuiz: true,
   // The website's address. The Android app calls its /api routes and sends email links there.
   appUrl: "https://magayonquest.vercel.app",
   // Set to true after adding android/app/google-services.json (see README, "Android app").
