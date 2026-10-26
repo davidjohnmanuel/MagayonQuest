@@ -1,12 +1,10 @@
 {
-  "build": 4,
-  "version": "1.3",
+  "build": 5,
+  "version": "1.4",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Notification bell for posts, comments, likes and duel invites",
-    "Check for updates in Settings",
-    "Arena is now a colosseum",
-    "Quest lock switch in Settings"
+    "Gemini AI quizzes",
+    "Remove fight cards; announce and disable removed battles in chat"
   ]
 }
