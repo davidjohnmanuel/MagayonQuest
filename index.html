@@ -566,6 +566,43 @@ details.intel[open] summary::after{content:"-"}
 .spot.aura::after{content:"";position:absolute;left:-6%;right:-6%;bottom:-8px;height:70%;border-radius:50% 50% 40% 40%;background:radial-gradient(closest-side,color-mix(in srgb,var(--hc) 55%,transparent),transparent);animation:aura 1.6s ease-in-out infinite;pointer-events:none}
 .spot.aura .cmp svg{filter:drop-shadow(0 0 3px #FFC83D)}
 @keyframes aura{50%{opacity:.45;transform:scale(1.06)}}
+.colosseum{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:end;height:clamp(290px,74vw,360px);padding:48px 12px 0;border-radius:18px;border:3px solid var(--shadow);box-shadow:0 4px 0 var(--shadow),inset 0 0 0 2px #C98A10;overflow:hidden;background:#241B4E}
+.colosseum>:not(.stagebg){position:relative}
+.tiles{display:flex;justify-content:center;overflow:hidden}
+.tiles .tile{flex:none;height:100%;width:auto;aspect-ratio:128/72}
+.colosseum .arenatitle{position:absolute;top:10px;left:50%;transform:translateX(-50%);margin:0;font-size:13px}
+.cside{display:grid;justify-items:center;gap:8px;min-width:0;align-self:stretch;align-content:space-between}
+.cside .spot{--sw:clamp(82px,24vw,132px);margin-bottom:18px}
+.cside.opp .spot{transform:scaleX(-1)}
+.colosseum .cmp{right:auto;left:62%;z-index:1}.colosseum .cmp.fly{left:58%;bottom:70%}
+.nplate{display:grid;justify-items:center;max-width:100%;min-width:0;background:rgba(11,9,32,.85);border:2px solid var(--gold);border-radius:10px;padding:3px 10px;box-shadow:0 3px 0 var(--shadow)}
+.nplate.opp{border-color:var(--pink)}
+.nplate b{font-family:var(--f-display);font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nplate .hud{font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccenter{display:grid;justify-items:center;gap:8px;align-self:center;padding-bottom:24px}
+.ccenter .gbtn{font-size:17px;padding:10px 20px;box-shadow:0 4px 0 #7A5200,0 0 22px rgba(255,200,61,.45)}
+.bigvs{font-family:var(--f-hud);font-size:clamp(30px,8vw,46px);line-height:1;color:var(--gold);text-shadow:0 3px 0 #7A5200,0 0 18px rgba(255,200,61,.6);animation:vsp 1.2s steps(2) infinite}
+@keyframes vsp{50%{transform:scale(1.08)}}
+.record{background:rgba(11,9,32,.85);color:var(--ink);padding:2px 8px;border-radius:6px}
+.apanel{border:3px solid #8E6A3E;box-shadow:0 4px 0 var(--shadow),inset 0 0 0 2px rgba(255,200,61,.22);background:linear-gradient(180deg,rgba(40,33,82,.9),rgba(28,23,60,.95)),repeating-linear-gradient(0deg,transparent 0 22px,#0B0920 22px 24px),repeating-linear-gradient(90deg,#4A3C6E 0 46px,#0B0920 46px 48px)}
+.abanner{justify-self:start;margin-left:-19px;background:var(--gold);color:var(--gold-ink);font-family:var(--f-hud);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:5px 18px 5px 19px;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 50%,100% 100%,0 100%)}
+.rulesd summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px}
+.rulesd summary::-webkit-details-marker{display:none}
+.rulesd summary::after{content:"+";font-family:var(--f-hud);color:var(--gold);margin-left:auto}
+.rulesd[open] summary::after{content:"-"}
+.rulesd[open] summary{margin-bottom:4px}
+.fights{display:grid;gap:10px}
+.fight{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:12px;background:rgba(11,9,32,.6);border:2px solid var(--edge);border-radius:12px;padding:8px 10px}
+.fight.live{border-color:var(--cyan);box-shadow:0 0 14px rgba(79,227,224,.25)}
+.fight.won{border-color:var(--gold)}
+.fight.lost{opacity:.8}
+.fmid{display:grid;gap:2px;min-width:0;text-align:center}
+.fmid b{font-family:var(--f-display);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fres{font-size:10px;color:var(--cyan)} .fight.won .fres{color:var(--gold)} .fight.lost .fres{color:var(--red)}
+.ftile{display:grid;place-items:end center;width:52px;height:62px;padding-bottom:3px;border-radius:10px;border:2px solid var(--hc,var(--edge));background:linear-gradient(180deg,#3A2E5A 0 64%,#8E6A3E 64% 67%,#C9A26A 67%);overflow:hidden;--sw:38px}
+.ftile.flip .spr{transform:scaleX(-1)}
+.ftile .ghost i{font-size:16px;transform:none}
+@media (max-width:520px){.fight{grid-template-columns:auto minmax(0,1fr) auto}.fight .gbtn{grid-column:1/-1;min-height:40px}}
 .den{gap:10px}
 .den.locked .stagebg{filter:grayscale(.7) brightness(.45)}
 .denlock{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:4px;text-align:center;color:var(--ink)}
@@ -581,7 +618,7 @@ details.intel[open] summary::after{content:"-"}
 .say{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);width:max-content;max-width:min(220px,60vw);background:#FFF7E6;color:#15122E;font-family:var(--f-display);font-weight:700;font-size:13px;line-height:1.25;padding:6px 10px;border-radius:10px;border:2px solid var(--shadow);box-shadow:0 3px 0 var(--shadow);text-align:center}
 .say::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#FFF7E6}
 .tw{animation:flick 2.4s steps(2) infinite}
-@media (prefers-reduced-motion:reduce){.spr svg,.cmp svg,.fans,.flame,.tw,.walker,.walker .face,.spot.aura::after,.cmp.two .cf0,.cmp.two .cf1{animation:none!important}.cmp.two .cf1{visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.bigvs,.spr svg,.cmp svg,.fans,.flame,.tw,.walker,.walker .face,.spot.aura::after,.cmp.two .cf0,.cmp.two .cf1{animation:none!important}.cmp.two .cf1{visibility:hidden}}
 
 /* Coins, shop, items, sound */
 .coins{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-display);font-weight:700;color:var(--gold)}
@@ -3157,6 +3194,9 @@ function arenaBackdrop(){
   return ARENA_BG = `<svg class="stagebg" viewBox="0 0 128 72" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
 }
 
+// a wide colosseum: the backdrop repeats side to side instead of cropping the crowd
+function arenaTiles(){ arenaBackdrop(); return `<div class="stagebg tiles">${ARENA_BG.replace('class="stagebg"', 'class="tile"').replace("slice", "meet").repeat(5)}</div>`; }
+
 // ---- hero camp on Base: the hero paces by the campfire; tap them for a pep talk
 const HERO_LINES = {
   jon: ["Winter is coming. So is your interview.", "I know nothing. Yet. Let's study.", "The North remembers your streak."],
@@ -3644,18 +3684,34 @@ function renderArena(){
   const h = myHero();
   if (!h){ go2heroes(); return; }
   const hx = (mine.heroXp && mine.heroXp[h.id]) || 0, tier = heroTier(mine, h.id), next = HERO_TIERS[tier];
-  const list = Object.values(allBattles()).sort((a, b) => a.t < b.t ? 1 : -1);
-  $("view").innerHTML = `<div class="wrap" style="gap:14px">
+  const list = Object.values(allBattles()).sort((a, b) => a.t < b.t ? 1 : -1).map(b => [b, battleView(b)]);
+  const won = list.filter(([, v]) => v.st.winner === 0).length, lost = list.filter(([, v]) => v.st.winner === 1).length;
+  const rid = mate()[0], rd = rid ? normalize(players[rid]) : null, rh = rd && HERO[rd.hero];
+  const ghost = `<span class="ghost">${heroSprite(HEROES[0])}<i>?</i></span>`;
+  const tile = (H, flip) => `<span class="ftile${flip ? " flip" : ""}"${H ? ` style="--hc:${H.c}"` : ""}>${H ? heroSprite(H) : ghost}</span>`;
+  const fight = ([b, v]) => { const st = v.st, live = st.winner === null, myH = v.me ? HERO[v.me.h] : null, opH = v.opp ? HERO[v.opp.d.bt[b.id].h] : null;
+    const res = live ? (v.me ? (v.opp ? `Turn ${st.turns + 1}` : "Waiting for opponent") : "Challenge waiting") : st.winner === "draw" ? "Draw" : st.winner === 0 ? "Victory" : "Defeat";
+    return `<div class="fight ${live ? "live" : st.winner === 0 ? "won" : st.winner === 1 ? "lost" : ""}">${tile(myH)}<div class="fmid"><b>${esc(quizTitle(b))}</b><span class="hud">${b.qs.length} questions · ${st.hp[0]} vs ${st.hp[1]} HP</span><span class="fres hud">${res}</span></div>${tile(opH, true)}
+      <button class="gbtn ${live ? "gold" : ""}" data-openb="${b.id}">${live ? (v.me ? "Continue" : "Join") : "View"}</button></div>`; };
+  $("view").innerHTML = `<div class="wrap arena" style="gap:14px">
+    <section class="colosseum" style="--hc:${h.c}">${arenaTiles()}<span class="arenatitle">The Arena</span>
+      <div class="cside"><span class="nplate"><b>${esc(myName())}</b><span class="hud">${esc(h.n)}</span></span>${heroSpot(h, tier)}</div>
+      <div class="ccenter"><span class="bigvs">VS</span><button class="gbtn gold" id="newbattle">Battle</button><span class="record hud">${won}W · ${lost}L</span></div>
+      <div class="cside opp"><span class="nplate opp"><b>${esc(rid ? mateName(rid) : "Challenger")}</b><span class="hud">${rh ? esc(rh.n) : "No hero yet"}</span></span>${rh ? heroSpot(rh, heroTier(rd, rh.id)) : `<div class="spot">${ghost}</div>`}</div>
+    </section>
     <div class="cols sl"><div class="side">
-    <section class="panel herocard" style="--hc:${h.c}">
-      <div class="stage mini">${arenaBackdrop()}<span class="arenatitle">The Arena</span>${heroSpot(h, tier)}</div>
-      <div class="row">${crest(h, 48)}<div style="min-width:0;flex:1"><span class="hud">Your hero</span><div class="pname">${esc(h.n)}</div><div class="ptitle-tag">${esc(h.r.toUpperCase())}</div></div></div>
+    <section class="panel apanel" style="--hc:${h.c}"><span class="abanner">Your champion</span>
+      <div class="row">${crest(h, 48)}<div style="min-width:0;flex:1"><div class="pname">${esc(h.n)}</div><div class="ptitle-tag">${esc(h.r.toUpperCase())}</div></div></div>
       <div><div class="xpbar"><i style="width:${next ? Math.round(hx / next * 100) : 100}%"></i></div><div class="xptext"><span>${hx} hero XP</span><span>${next ? `${next - hx} to next skill` : "All skills unlocked"}</span></div><span class="hud" style="color:var(--muted)">${esc(companionNote(h, tier))}</span></div>
       <ul class="hskills">${h.sk.map(([sid, nm], k) => `<li class="${k < tier ? "on" : ""}"><b>${esc(nm)}</b><span>${esc(SKILLS[sid].d)}</span><em class="hud">${k < tier ? "Ready" : `${HERO_TIERS[k]} hero XP`}</em></li>`).join("")}</ul>
-      <div class="row"><button class="gbtn" id="switchhero">Change hero</button><button class="gbtn" id="toshop">Shop ${coinTag(coinBalance(mine))}</button><span class="spacer"></span><button class="gbtn gold" id="newbattle">Battle</button></div>
+      <div class="row"><button class="gbtn" id="switchhero">Change hero</button><button class="gbtn" id="toshop">Shop ${coinTag(coinBalance(mine))}</button></div>
     </section>
     </div><div class="main">
-    <section class="panel"><div class="ptitle"><h3>How battles work</h3></div>
+    <section class="panel apanel"><div class="row"><span class="abanner">Fight card</span><span class="spacer"></span><span class="hud">${list.length} battle${list.length === 1 ? "" : "s"}</span></div>
+      ${list.length ? `<div class="fights">${list.map(fight).join("")}</div>`
+        : `<p class="muted">No battles yet. Tap Battle to challenge ${esc(rid ? mateName(rid) : "your partner")}.</p>`}
+    </section>
+    <details class="panel apanel rulesd"${list.length ? "" : " open"}><summary><span class="abanner">Arena rules</span></summary>
       <div class="rules">
         <div class="rule"><span>Both answer the same question. 10 seconds each turn.</span><b>100 HP</b></div>
         <div class="rule"><span>Correct answer hits your opponent; faster hits harder</span><b>6–14 dmg</b></div>
@@ -3663,12 +3719,7 @@ function renderArena(){
         <div class="rule"><span>Six skills per hero, unlocked with hero XP. Each works once per battle; arm it before you answer.</span><b>1×</b></div>
         <div class="rule"><span>Every battle lasts at least 10 questions: nobody drops below 1 HP before then</span><b>10+ Qs</b></div>
         <div class="rule"><span>Knockout from question 10, or most HP after the last question, wins</span><b>+35 XP</b></div>
-      </div></section>
-    <section class="panel"><div class="ptitle"><h3>Battles</h3><span class="hud">${list.length}</span></div>
-      ${list.length ? `<div class="entries">${list.map(b => { const v = battleView(b), st = v.st; const res = st.winner === null ? (v.me ? (v.opp ? `Turn ${st.turns + 1}` : "Waiting for opponent") : "Challenge waiting") : st.winner === "draw" ? "Draw" : st.winner === 0 ? "Won" : "Lost";
-        return `<div class="entry" style="align-items:center"><span><b style="color:var(--ink);font-family:var(--f-body)">${esc(quizTitle(b))}</b><br><span class="hud">${b.qs.length} questions · ${st.hp[0]} vs ${st.hp[1]} HP</span></span><button class="gbtn ${st.winner === null ? "gold" : ""}" data-openb="${b.id}">${st.winner === null ? (v.me ? "Continue" : "Join") : res}</button></div>`; }).join("")}</div>`
-        : `<p class="muted">No battles yet. Tap Battle to challenge ${esc(mate().length ? mateName(mate()[0]) : "your partner")}.</p>`}
-    </section>
+      </div></details>
     </div></div>
   </div>`;
   $("switchhero").onclick = () => go2heroes();
