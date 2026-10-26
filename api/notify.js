@@ -35,7 +35,8 @@ module.exports = async (req, res) => {
     if (body.table !== "progress" || !body.record) return res.status(200).json({ skipped: true });
     const sender = body.record.user_id;
     const [rows, nm] = await Promise.all([db("progress?select=user_id,data"), names()]);
-    const others = (rows || []).filter(r => r.user_id !== sender);
+    const progress = Object.fromEntries((rows || []).map(r => [r.user_id, r.data || {}]));
+    const others = Object.keys(nm).filter(id => id !== sender).map(id => ({ user_id: id, data: progress[id] || {} }));
     const notes = whatsNew(body.record, body.old_record, others, nm[sender] || "Your partner");
     let sent = 0;
     for (const n of notes) sent += await pushTo(others.map(o => o.user_id), n);
