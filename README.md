@@ -12,6 +12,7 @@ It is plain HTML with no build step. Supabase handles login and data, and Vercel
 | `config.js` | Your Supabase URL and key go here |
 | `supabase/schema.sql` | Creates the tables and privacy rules |
 | `api/quiz.js` | Optional: generates AI quizzes with Claude |
+| `api/signup-code.js` | Checks the private signup code and adds verified emails to the study list |
 | `sw.js` | Makes it installable, opens offline, shows notifications |
 | `api/notify.js`, `api/notify-test.js`, `api/remind.js`, `api/_push.js` | Push notifications: chats, invites, battle turns, daily reminder |
 | `package.json`, `vercel.json` | Notification library and the daily 8pm reminder schedule |
@@ -69,9 +70,10 @@ Without this, the email confirmation and password-reset links point to the wrong
 
 ### 6. Sign up
 
-1. Open your Vercel link and tap **Create an account**.
-2. Confirm your email, then sign in.
-3. Send Bert the link so he does the same.
+1. In Vercel **Project → Settings → Environment Variables**, add `SIGNUP_CODE` with your private signup code. Also set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; the service-role key is in **Supabase → Project Settings → API** and must stay in Vercel only.
+2. Redeploy the Vercel project so the environment variables are available to the signup endpoint.
+3. Open your Vercel link, tap **Create an account**, and enter the signup code. A valid code authorizes signup; the email is added to the study list only after Supabase confirms it.
+4. Confirm your email, then sign in. If you already have an account, sign in and enter the access code on the study-list screen. Send Bert the link and code so he can do the same.
 
 **Add to home screen:** on iPhone, Safari → Share → Add to Home Screen. On Android, Chrome → ⋮ → Add to Home screen. It then opens full-screen like an app.
 

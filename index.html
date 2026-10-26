@@ -2896,17 +2896,43 @@ function renderAuth(){
     setup: `<h2>Almost ready</h2><p>Add your Supabase project URL and anon key to <code>config.js</code>, then reload. The README walks through it.</p>`,
     loading: `<h2>Signing you in…</h2>`,
     signin: `<h2>Sign in</h2><p>Your progress syncs live with ${esc(PARTNER)}.</p>${msg}<form id="af" class="aform">${field("a-email","Email","email","email")}${field("a-pass","Password","password","current-password",'minlength="6"')}<button class="gbtn gold big" type="submit">Sign in</button></form><div class="row"><button class="linkbtn" data-av="signup">Create an account</button><span class="spacer"></span><button class="linkbtn" data-av="reset">Forgot password?</button></div>`,
-    signup: `<h2>Create your account</h2><p>Use the email that's on the study list.</p>${msg}<form id="af" class="aform">${field("a-name","Your first name","text","given-name",'maxlength="40"')}${field("a-email","Email","email","email")}${field("a-pass","Password (8+ characters)","password","new-password",'minlength="8"')}<button class="gbtn gold big" type="submit">Create account</button></form><div class="row"><button class="linkbtn" data-av="signin">I already have an account</button></div>`,
+    signup: `<h2>Create your account</h2><p>Enter the access code to join the study list.</p>${msg}<form id="af" class="aform">${field("a-name","Your first name","text","given-name",'maxlength="40"')}${field("a-email","Email","email","email")}${field("a-code","Access code","password","new-password")}${field("a-pass","Password (8+ characters)","password","new-password",'minlength="8"')}<button class="gbtn gold big" type="submit">Create account</button></form><div class="row"><button class="linkbtn" data-av="signin">I already have an account</button></div>`,
     reset: `<h2>Reset your password</h2><p>We'll email you a link to choose a new one.</p>${msg}<form id="af" class="aform">${field("a-email","Email","email","email")}<button class="gbtn gold big" type="submit">Send reset link</button></form><div class="row"><button class="linkbtn" data-av="signin">Back to sign in</button></div>`,
     newpass: `<h2>Choose a new password</h2>${msg}<form id="af" class="aform">${field("a-pass","New password (8+ characters)","password","new-password",'minlength="8"')}<button class="gbtn gold big" type="submit">Save password</button></form>`,
     check: `<h2>Check your email</h2><p>${esc(authMsg)}</p><div class="row"><button class="linkbtn" data-av="signin">Back to sign in</button></div>`,
-    notmember: `<h2>You're not on the study list yet</h2><p>You're signed in as <b>${esc(viewer ? viewer.email : "")}</b>, but this email hasn't been added. Ask David to add it, then reload this page.</p><div class="row"><button class="gbtn" id="a-out">Sign out</button></div>`
+    notmember: `<h2>You're not on the study list yet</h2><p>You're signed in as <b>${esc(viewer ? viewer.email : "")}</b>. Confirm your email, then enter the access code to join.</p>${msg}<form id="member-code-form" class="aform">${field("a-join-code","Access code","password","new-password")}<button class="gbtn gold" type="submit">Join study list</button></form><div class="row"><button class="gbtn" id="a-out">Sign out</button></div>`
   };
   const keep = document.activeElement && document.activeElement.id && g.contains(document.activeElement) ? { id: document.activeElement.id, v: document.activeElement.value } : null;
   g.innerHTML = V[authView] || V.signin;
   if (keep){ const f = $(keep.id); if (f){ f.value = keep.v; f.focus(); } }
   g.querySelectorAll("[data-av]").forEach(b => b.onclick = () => { authView = b.dataset.av; authMsg = ""; renderAuth(); });
   const out = $("a-out"); if (out) out.onclick = () => sb.auth.signOut();
+  const memberCodeForm = $("member-code-form");
+  if (memberCodeForm) memberCodeForm.onsubmit = async e => {
+    e.preventDefault();
+    const btn = memberCodeForm.querySelector("button[type=submit]"); btn.disabled = true;
+    try {
+      const { data: current } = await sb.auth.getSession();
+      if (!current.session) throw new Error("Sign in again to join the study list.");
+      const access = await fetch("/api/signup-code", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "authorize", email: current.session.user.email, code: $("a-join-code").value.trim() })
+      });
+      const accessResult = await access.json().catch(() => ({}));
+      if (!access.ok){ authMsg = accessResult.error || "Couldn't verify the access code."; renderAuth(); return; }
+      const complete = await fetch("/api/signup-code", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${current.session.access_token}` },
+        body: JSON.stringify({ action: "complete", inviteToken: accessResult.inviteToken })
+      });
+      const completeResult = await complete.json().catch(() => ({}));
+      if (!complete.ok){ authMsg = completeResult.error || "Couldn't finish account setup."; renderAuth(); return; }
+      authMsg = "";
+      queueSession(current.session);
+    } catch (err){ authMsg = err.message || "Couldn't reach the server. Try again."; renderAuth(); }
+    finally { if (btn.isConnected) btn.disabled = false; }
+  };
   const f = $("af"); if (!f) return;
   f.onsubmit = async e => {
     e.preventDefault();
@@ -2919,7 +2945,14 @@ function renderAuth(){
         if (error){ authMsg = /invalid login/i.test(error.message) ? "That email and password don't match. Try again, or reset your password." : /not confirmed/i.test(error.message) ? "Confirm your email first: open the link we sent you, then sign in." : error.message; renderAuth(); }
       } else if (authView === "signup"){
         const email = val("a-email");
-        const { data, error } = await sb.auth.signUp({ email, password: $("a-pass").value, options: { data: { display_name: val("a-name") }, emailRedirectTo: back } });
+        const access = await fetch("/api/signup-code", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action: "authorize", email, code: val("a-code") })
+        });
+        const accessResult = await access.json().catch(() => ({}));
+        if (!access.ok){ authMsg = accessResult.error || "Couldn't verify the access code."; renderAuth(); return; }
+        const { data, error } = await sb.auth.signUp({ email, password: $("a-pass").value, options: { data: { display_name: val("a-name"), signup_invite: accessResult.inviteToken }, emailRedirectTo: back } });
         if (error){ authMsg = error.message; renderAuth(); }
         else if (!data.session){ authView = "check"; authMsg = `We sent a confirmation link to ${email}. Open it on this phone, then sign in.`; renderAuth(); }
       } else if (authView === "reset"){
@@ -2947,8 +2980,21 @@ async function onSession(session){
   const u = session.user;
   viewer = { id: u.id, email: u.email, name: "", avatarUrl: initialsAvatar(u.email) };
   authView = "loading"; renderAuth();
+  let inviteError = "";
+  const inviteToken = u.user_metadata && u.user_metadata.signup_invite;
+  if (inviteToken){
+    try {
+      const response = await fetch("/api/signup-code", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ action: "complete", inviteToken })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) inviteError = result.error || "Could not finish account setup. Reload to retry.";
+    } catch (e) { inviteError = "Could not finish account setup. Reload to retry."; }
+  }
   const { data: mem, error: memErr } = await sb.from("members").select("email").limit(1);
-  if (memErr || !mem || !mem.length){ authView = "notmember"; renderAuth(); return; }
+  if (memErr || !mem || !mem.length){ authView = "notmember"; authMsg = inviteError; renderAuth(); return; }
   await loadProfiles();
   let nm = profCache[u.id] || (u.user_metadata && u.user_metadata.display_name) || "";
   if (!profCache[u.id]){ nm = nm || u.email.split("@")[0]; await sb.from("profiles").upsert({ id: u.id, display_name: nm.slice(0, 40) }); profCache[u.id] = nm; }
