@@ -710,6 +710,90 @@ body.locked{overflow:hidden}
 .photoview{position:fixed;inset:0;z-index:45;background:rgba(5,4,16,.94);display:grid;place-items:center;padding:56px 12px calc(12px + env(safe-area-inset-bottom,0px))}
 .photoview img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 .photoview .back{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:16px;color:var(--ink)}
+/* Laptop and desktop: a website layout. The tabs move into a sticky top bar (placeTabs), pages widen into main + side columns, and sheets become centred dialogs. Phones and the Android app keep the app layout, where the column wrappers vanish. */
+.cols,.cols>.main,.cols>.side{display:contents}
+.landing,.sitefoot{display:none}
+@media (min-width:1024px) and (hover:hover) and (pointer:fine){
+  :root{--tabh:0px}
+  html{overflow-x:clip;scrollbar-color:var(--edge) var(--bg)}
+  body{font-size:15.5px;padding:0 32px 96px}
+  .wrap{max-width:1200px;gap:24px}
+  #view>.wrap{gap:20px!important}
+  .panel{padding:20px;border-radius:16px}
+  .ptitle h3{font-size:18px}
+
+  /* Top bar */
+  .mast{position:sticky;top:0;z-index:25;flex-wrap:nowrap;gap:16px;height:72px}
+  .mast::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;background:rgba(21,18,46,.84);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid rgba(112,104,208,.35);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  .logo{font-size:17px}
+  .mast .tabs{display:flex;gap:4px;height:auto;margin-left:auto;background:none;border:0;border-radius:0;box-shadow:none;overflow:visible}
+  .mast .tab{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:11px;color:var(--muted);transition:color .15s,background .15s}
+  .mast .tab svg{width:18px;height:18px}
+  .mast .tab:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+  .mast .tab[aria-current="true"]{color:var(--gold);background:rgba(255,200,61,.1);box-shadow:inset 0 -2px 0 var(--gold)}
+  .mast .tbadge{position:static;margin-left:2px}
+  body:not(.authed) .mast .tabs{display:none}
+  .who{margin-left:4px;max-width:280px}
+
+  /* With the tabs gone from the dock, only the training timer floats, bottom right */
+  .dock{left:auto;right:32px;bottom:24px;width:420px;padding:0}
+  .dock>*{max-width:none}
+
+  /* Two-column pages */
+  .cols{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+  .cols.sl{grid-template-columns:380px minmax(0,1fr)}
+  .cols>.main,.cols>.side{display:grid;gap:20px;min-width:0;grid-row:1}
+  .cols>.main{grid-column:1}
+  .cols>.side{grid-column:2}
+  .cols.sl>.main{grid-column:2}
+  .cols.sl>.side{grid-column:1}
+  .cols>.main:empty{display:none}
+  .cols:has(>.main:empty){grid-template-columns:minmax(0,1fr)}
+  .cols:has(>.main:empty)>.side{grid-column:1}
+  body[data-view="profile"] .cols>.side{position:sticky;top:92px}
+  body[data-view="chat"] #view>.wrap{max-width:920px}
+  body:is([data-view="quiz"],[data-view="battle"],[data-view="exam"],[data-view="cert"],[data-view="settings"]) #view>.wrap{max-width:820px}
+
+  /* Player banner: avatar | name and XP | stats in one row */
+  .player-hud{grid-template-columns:auto minmax(0,1fr) minmax(0,1.15fr);gap:28px;padding:22px 26px}
+  .player-hud .avatar{width:88px;height:88px}
+  .player-hud .pname{font-size:24px}
+  .player-hud .statrow{grid-column:auto;gap:10px}
+  .player-hud .stat{padding:14px 16px}
+  .player-hud .stat b{font-size:22px}
+  .nlabel{max-width:220px}
+  .chatlog{height:calc(100dvh - 340px);min-height:360px}
+
+  /* Sheets open as centred dialogs */
+  .sheetwrap{align-items:center;padding:32px}
+  .qsheet{max-width:560px}
+
+  /* Hover states for a mouse */
+  .gbtn{transition:transform .08s,box-shadow .08s,filter .15s}
+  .gbtn:not([disabled]):not(:active):hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .tchip:hover{border-color:var(--edge-hi);color:var(--ink)}
+  .goalpick button:hover{border-color:var(--edge-hi)}
+  .node:hover .orb{transform:translateY(-3px) scale(1.04)}
+  .back:hover,.linkbtn:hover{text-decoration:underline}
+  .soundbtn:hover{border-color:var(--edge-hi)}
+
+  /* Signed out: pitch on the left, sign-in card on the right */
+  body:not(.authed)>.wrap:not(:has(>#gate[data-av="loading"])){grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:auto 1fr auto;column-gap:72px;align-items:center;min-height:calc(100dvh - 96px)}
+  body:not(.authed)>.wrap:not(:has(>#gate[data-av="loading"]))>.landing{display:grid}
+  body:not(.authed) .mast,.sitefoot{grid-column:1/-1}
+  .landing{gap:18px;align-content:center;max-width:600px}
+  .landing .hud{color:var(--cyan)}
+  .landing h1{font-size:clamp(36px,3.6vw,52px);line-height:1.05}
+  .landing>p{font-size:18px;color:var(--muted);max-width:52ch}
+  .lfeat{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .lfeat li{background:var(--panel);border:2px solid var(--edge);border-radius:14px;padding:14px;display:grid;gap:4px;box-shadow:0 4px 0 var(--shadow)}
+  .lfeat b{font-family:var(--f-display);color:var(--gold)}
+  .lfeat span{font-size:13.5px;color:var(--muted)}
+  .gate{padding:28px;border-radius:18px}
+
+  .sitefoot{display:flex;align-items:center;gap:14px;justify-content:center;padding-top:28px;margin-top:8px;border-top:1px solid rgba(112,104,208,.25);font-size:13px;color:var(--dim)}
+  .sitefoot .logo{font-size:12px}
+}
 </style>
 
 </head>
@@ -722,9 +806,20 @@ body.locked{overflow:hidden}
     <button class="soundbtn setbtn" id="setbtn" aria-label="Settings and members"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
     <span class="who" id="who"></span>
   </header>
+  <section class="landing">
+    <span class="hud">Co-op interview prep</span>
+    <h1>Train for the Forward Deployed Engineer interview, together.</h1>
+    <p>Clear missions on the world map, battle your party in timed quiz duels, and keep a shared streak alive until you both land the role.</p>
+    <ul class="lfeat">
+      <li><b>World map</b><span>Missions with loot, battle cards and skill unlocks.</span></li>
+      <li><b>Arena</b><span>Pick a hero and fight 10-question battles.</span></li>
+      <li><b>Party</b><span>Chat, a shared feed and co-op streaks.</span></li>
+    </ul>
+  </section>
   <section class="gate" id="gate" hidden></section>
   <main id="view"></main>
   <p class="note" id="save-note"></p>
+  <footer class="sitefoot"><span class="logo">FDE<b>//</b>QUEST</span><span>Co-op prep for Forward Deployed Engineer interviews</span></footer>
 </div>
 
 <div class="dock">
@@ -1616,6 +1711,7 @@ function render(){
   const ae=document.activeElement, keep=ae&&ae.id&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA")&&ae.type!=="checkbox"?{id:ae.id,v:ae.value}:null;
   checkIncoming();
   if(dataReady&&!mine.hero&&view!=="heroes"&&mode!=="readonly"){view="heroes";}
+  document.body.dataset.view=view;
   if(view==="today")renderToday(); else if(view==="missions")renderMissions(); else if(view==="us")renderUs(); else if(view==="chat")renderChat(); else if(view==="quiz")renderQuiz(); else if(view==="arena")renderArena(); else if(view==="battle")renderBattle(); else if(view==="heroes")renderHeroes(); else if(view==="shop")renderShop(); else if(view==="exam")renderExam(); else if(view==="cert")renderCert(); else if(view==="settings")renderSettings(); else if(view==="profile")renderProfile(); else renderTrophies();
   renderSoundBtn();
   {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
@@ -1685,6 +1781,7 @@ function renderToday(){
   $("view").innerHTML=`<div class="wrap" style="gap:16px">
    ${playerHUD()}
    ${coopHTML()}
+   <div class="cols"><div class="main">
    <section class="panel">
      <div class="ptitle"><h3>Daily quests</h3><div class="goalpick"><span class="hud">Goal</span>${GOALS.map(g=>`<button data-goal="${g}" aria-pressed="${g===goal}">${g}m</button>`).join("")}</div></div>
      <div>${quests.map(q=>`<div class="quest${q.p>=1?" done":""}"><span class="qbox">${q.p>=1?IC.check:""}</span><div style="min-width:0"><div class="qname">${esc(q.n)}</div><div class="hud" style="font-size:10px">${esc(q.sub)}</div><div class="qbar"><i style="width:${Math.round(q.p*100)}%"></i></div></div><span class="reward">${esc(q.r)}</span></div>`).join("")}</div>
@@ -1698,6 +1795,7 @@ function renderToday(){
      <span class="hud">Or log time you already spent</span>
      <div class="quick">${[15,30,45,60].map(n=>`<button class="gbtn" data-add="${n}">+${n}m</button>`).join("")}</div>
    </section>
+   </div><div class="side">
 
    <section class="panel next">
      <span class="hud">Recommended quest</span>
@@ -1712,6 +1810,7 @@ function renderToday(){
    </section>
 
    ${m0?`<section class="panel" style="border-color:var(--pink)"><div class="ptitle"><h3>${esc(mateName(ids[0]))}</h3><span class="pill ${statusOf(m0).cls}">${esc(statusOf(m0).t)}</span></div><p class="muted">${minsOn(m0,t)?`Trained <b style="color:var(--ink)">${fmtMin(minsOn(m0,t))}</b> today.`:"Hasn't checked in yet today."}</p>${m0.note?`<p class="pnote">“${esc(m0.note)}”</p>`:""}</section>`:""}
+   </div></div>
   </div>`;
   const V=$("view");
   V.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>change(d=>{d.goal=Number(b.dataset.goal);}));
@@ -1732,7 +1831,7 @@ function renderMap(){
   const pathD=pts.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" ");
   $("view").innerHTML=`<div class="wrap" style="gap:14px">
     ${playerHUD()}
-    ${roadmapHTML()}
+    <div class="cols"><div class="side">${roadmapHTML()}</div><div class="main">
     <section class="panel"><div class="ptitle"><h3>World map</h3><span class="hud">${MODULES.reduce((s,m)=>s+starsOf(modPct(mine,m)),0)} / ${MODULES.length*3} stars</span></div>
     <div class="map" style="--n:${MODULES.length}">
       <svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${pathD}" fill="none" stroke="#463F8E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${pathD}" fill="none" stroke="#7068D0" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
@@ -1743,6 +1842,7 @@ function renderMap(){
           <span class="nlabel ${xs[i]>50?"l":"r"}"><span class="hud">${boss?"Final boss":m.code}</span>${esc(m.title)}<span class="hud" style="color:var(--cyan)">${p}%</span></span>
         </button>`;}).join("")}
     </div></section>
+    </div></div>
     ${certPanelHTML()}
   </div>`;
   bindHudShop();
@@ -1776,11 +1876,13 @@ function renderMissions(){
       <div class="mprog"><span class="stars">${[0,1,2].map(k=>IC.star(k<starsOf(p))).join("")}</span><div class="xpbar"><i style="width:${p}%"></i></div><span class="hud" style="color:var(--cyan)">${p}%</span></div>
       ${timer&&timer.topic===m.id?`<span class="hud" style="color:var(--cyan)">Training timer running</span>`:`<button class="gbtn gold" data-studynow="${m.id}">Start training</button>`}
     </section>
+    <div class="cols"><div class="side">
     ${m.watch.length+m.read.length?`<section class="panel"><div class="ptitle"><h3>Loot</h3><span class="hud">${m.watch.concat(m.read).filter(r=>mine.res[r.id]).length} / ${m.watch.length+m.read.length} claimed</span></div>
       ${m.watch.length?`<span class="hud">Watch</span>${lootList(m.watch,"watch")}`:""}
       ${m.read.length?`<span class="hud">Read</span>${lootList(m.read,"read")}`:""}</section>`:""}
     ${m.id==="jobhunt"?trackerHTML():""}
     <details class="panel intel"><summary>Intel briefing</summary><ul>${m.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>
+    </div><div class="main">
     <section class="panel"><div class="ptitle"><h3>Battle cards</h3><span class="hud">${got} / ${m.cards.length} defeated</span></div>
       <div class="bcard${open?" revealed":""}">
         <div class="row"><span class="hud">Card ${i+1} / ${m.cards.length}</span><span class="spacer"></span><span class="state ${st}">${st==="got"?"Defeated":st==="again"?"Rematch":"New"}</span></div>
@@ -1798,6 +1900,7 @@ function renderMissions(){
       <div class="skills">${m.checks.map(k=>`<label class="skill${mine.checks[k.id]?" done":""}"><input type="checkbox" id="chk-${k.id}" data-id="${k.id}" ${mine.checks[k.id]?"checked":""}><span class="t">${esc(k.t)}</span><span class="reward">+10</span></label>`).join("")}</div>
       <p class="hud" style="color:var(--dim)">Only unlock a skill you can do without notes</p>
     </section>
+    </div></div>
   </div>`;
   const V=$("view");
   if(m.id==="jobhunt")bindTracker();
@@ -1908,13 +2011,14 @@ function renderUs(){
     <button class="gbtn" id="totrophies" style="justify-self:stretch">Trophy room · ${badges().filter(x=>x.on).length} / ${badges().length} unlocked</button>
     ${coopHTML()||`<section class="coop"><span class="lbl">Co-op mode unlocks when you both check in on the same day.</span><span class="hearts">${IC.heart(false)}</span></section>`}
     <div class="party">${card(myId||"me",mine,true)}${ids.slice(0,3).map(id=>card(id,normalize(players[id]),false)).join("")||`<div class="empty-mate"><b>Player 2: ${esc(PARTNER)}</b>${mode==="local"?"Progress saves on this device only in this view.":"Waiting to join. Their card appears after their first training session."}</div>`}</div>
-    ${mode==="shared"?`<div class="ptitle feedtitle"><h3>Party feed</h3><span class="hud">Updates from everyone</span></div>${feedSectionHTML("")}`:""}
+    <div class="cols"><div class="main">${mode==="shared"?`<div class="ptitle feedtitle"><h3>Party feed</h3><span class="hud">Updates from everyone</span></div>${feedSectionHTML("")}`:""}</div><div class="side">
     <section class="panel"><div class="ptitle"><h3>Last 14 days</h3><span class="hud">Brighter = more minutes</span></div>
       <div class="heat">${heatRow(myName(),mine,"")}${ids[0]?heatRow(mateName(ids[0]),normalize(players[ids[0]]),"mate"):""}</div></section>
     <section class="panel"><div class="ptitle"><h3>Training this week</h3><div class="legend"><span>${esc(myName())}</span>${ids[0]?`<span class="mate">${esc(mateName(ids[0]))}</span>`:""}</div></div>
       <div class="bars">${MODULES.map(m=>`<div class="bar"><div class="top"><span>${esc(m.title)}</span><span>${fmtMin(wMe[m.id]||0)}${ids[0]?` · ${fmtMin(wMate[m.id]||0)}`:""}</span></div><div class="track"><i class="me" style="width:${(wMe[m.id]||0)/maxW*100}%"></i>${ids[0]?`<i class="mate" style="width:${(wMate[m.id]||0)/maxW*100}%"></i>`:""}</div></div>`).join("")}</div></section>
     <button class="gbtn" id="tosettings" style="justify-self:stretch">Settings, notifications and members</button>
     <section class="panel pact"><span class="hud">House rule</span><h3>The coffee pact</h3><p class="muted">Whoever goes AFK for more than 3 days buys the next coffee. Study date included.</p></section>
+    </div></div>
   </div>`;
   const nf=$("mynote"); if(nf){const save=()=>{const v=nf.value.trim().slice(0,140);if(v!==mine.note)change(d=>{d.note=v;});};nf.onchange=save;nf.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();nf.blur();}};}
   $("totrophies").onclick=()=>go("trophies");
@@ -2134,6 +2238,7 @@ function renderProfile(){
   const title = d.title && TITLES[d.title] && titleOwned(d, d.title) ? TITLES[d.title].n : "";
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
     <div class="row"><button class="back" id="profback">← Party</button><span class="spacer"></span><span class="hud">Profile</span></div>
+    <div class="cols sl"><div class="side">
     <section class="panel profhead ${w.isMe ? "me" : "mate"}">
       <div class="profcover"></div>
       <div class="profid"><div class="avatar" style="background-image:url('${esc(w.av)}')"><span class="lvbadge">LV ${lv.i + 1}</span></div>
@@ -2144,7 +2249,7 @@ function renderProfile(){
       <div class="pstats"><div><b id="postcount">${feed.posts.filter(p => p.user_id === id).length}</b><span>posts</span></div><div><b>${xp}</b><span>XP</span></div><div><b>${streakOf(d.log)}</b><span>combo</span></div><div><b>${fmtMin(totalMins(d))}</b><span>all time</span></div></div>
       ${w.isMe ? `<button class="gbtn" id="profedit">Edit name and settings</button>` : ""}
     </section>
-    ${feedSectionHTML(id)}
+    </div><div class="main">${feedSectionHTML(id)}</div></div>
   </div>`;
   $("profback").onclick = () => go("us");
   const pe = $("profedit"); if (pe) pe.onclick = () => go("settings");
@@ -2927,12 +3032,14 @@ function renderArena(){
   const hx = (mine.heroXp && mine.heroXp[h.id]) || 0, tier = heroTier(mine, h.id), next = HERO_TIERS[tier];
   const list = Object.values(allBattles()).sort((a, b) => a.t < b.t ? 1 : -1);
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
+    <div class="cols sl"><div class="side">
     <section class="panel herocard" style="--hc:${h.c}">
       <div class="row">${crest(h, 64)}<div style="min-width:0;flex:1"><span class="hud">Your hero</span><div class="pname">${esc(h.n)}</div><div class="ptitle-tag">${esc(h.r.toUpperCase())}</div></div></div>
       <div><div class="xpbar"><i style="width:${next ? Math.round(hx / next * 100) : 100}%"></i></div><div class="xptext"><span>${hx} hero XP</span><span>${next ? `${next - hx} to next skill` : "All skills unlocked"}</span></div></div>
       <ul class="hskills">${h.sk.map(([sid, nm], k) => `<li class="${k < tier ? "on" : ""}"><b>${esc(nm)}</b><span>${esc(SKILLS[sid].d)}</span><em class="hud">${k < tier ? "Ready" : `${HERO_TIERS[k]} hero XP`}</em></li>`).join("")}</ul>
       <div class="row"><button class="gbtn" id="switchhero">Change hero</button><button class="gbtn" id="toshop">Shop ${coinTag(coinBalance(mine))}</button><span class="spacer"></span><button class="gbtn gold" id="newbattle">Battle</button></div>
     </section>
+    </div><div class="main">
     <section class="panel"><div class="ptitle"><h3>How battles work</h3></div>
       <div class="rules">
         <div class="rule"><span>Both answer the same question. 10 seconds each turn.</span><b>100 HP</b></div>
@@ -2947,6 +3054,7 @@ function renderArena(){
         return `<div class="entry" style="align-items:center"><span><b style="color:var(--ink);font-family:var(--f-body)">${esc(quizTitle(b))}</b><br><span class="hud">${b.qs.length} questions · ${st.hp[0]} vs ${st.hp[1]} HP</span></span><button class="gbtn ${st.winner === null ? "gold" : ""}" data-openb="${b.id}">${st.winner === null ? (v.me ? "Continue" : "Join") : res}</button></div>`; }).join("")}</div>`
         : `<p class="muted">No battles yet. Tap Battle to challenge ${esc(mate().length ? mateName(mate()[0]) : "your partner")}.</p>`}
     </section>
+    </div></div>
   </div>`;
   $("switchhero").onclick = () => go2heroes();
   $("toshop").onclick = () => go("shop");
@@ -3642,6 +3750,10 @@ setInterval(tick,1000);
 function setHash(h){try{history.replaceState(null,"","#"+h);}catch(e){}}
 function go(v,mission){view=v;current=mission||null;setHash(v==="missions"&&current?current:v);render();window.scrollTo({top:0,behavior:"auto"});}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{try{sfx.click();}catch(e){}go(b.dataset.view);});
+// On a laptop the screen tabs sit in the top bar like a website's nav; on phones they stay in the bottom dock.
+const WIDE=matchMedia("(min-width:1024px) and (hover:hover) and (pointer:fine)");
+function placeTabs(){const nav=document.querySelector(".tabs");if(WIDE.matches)$("today-label").after(nav);else document.querySelector(".dock").append(nav);}
+placeTabs(); WIDE.addEventListener("change",placeTabs);
 $("soundbtn").onclick=soundToggle;
 $("setbtn").onclick=()=>go(view==="settings"?"today":"settings");
 
@@ -3695,7 +3807,7 @@ function renderAuth(){
     notmember: `<h2>You're not on the study list yet</h2><p>You're signed in as <b>${esc(viewer ? viewer.email : "")}</b>. Confirm your email, then enter the access code to join.</p>${msg}<form id="member-code-form" class="aform">${field("a-join-code","Access code","password","new-password")}<button class="gbtn gold" type="submit">Join study list</button></form><div class="row"><button class="gbtn" id="a-out">Sign out</button></div>`
   };
   const keep = document.activeElement && document.activeElement.id && g.contains(document.activeElement) ? { id: document.activeElement.id, v: document.activeElement.value } : null;
-  g.innerHTML = V[authView] || V.signin;
+  g.innerHTML = V[authView] || V.signin; g.dataset.av = authView;
   if (keep){ const f = $(keep.id); if (f){ f.value = keep.v; f.focus(); } }
   g.querySelectorAll("[data-av]").forEach(b => b.onclick = () => { authView = b.dataset.av; authMsg = ""; renderAuth(); });
   const out = $("a-out"); if (out) out.onclick = () => sb.auth.signOut();
