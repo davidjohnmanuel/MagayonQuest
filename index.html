@@ -526,6 +526,7 @@ details.intel[open] summary::after{content:"-"}
 .spot::before{content:"";position:absolute;left:12%;right:12%;bottom:-5px;height:10px;border-radius:50%;background:rgba(58,36,20,.5)}
 .spot>*{position:relative}
 .fighter.opp .spot{transform:scaleX(-1)}
+.stage .cmp{right:auto;left:62%;z-index:1}.stage .cmp.fly{left:58%;bottom:70%}
 .stage .vsx{align-self:start;margin-top:26px;font-size:16px;color:var(--gold);text-shadow:0 2px 0 #7A5200,0 0 10px rgba(255,200,61,.5)}
 .stage .fighter.flash::after{content:none}
 .stage .fighter.flash .spot{animation:sprflash .45s}
@@ -567,9 +568,9 @@ details.intel[open] summary::after{content:"-"}
 @keyframes aura{50%{opacity:.45;transform:scale(1.06)}}
 .den{gap:10px}
 .denscene{position:relative;height:clamp(190px,48vw,230px);margin:-4px -4px 0;border-radius:12px;border:3px solid var(--shadow);overflow:hidden;background:#1C1840}
-.walker{position:absolute;bottom:10px;left:30%;--sw:clamp(70px,20vw,92px);cursor:pointer;animation:pace 18s linear infinite;-webkit-tap-highlight-color:transparent}
+.walker{position:absolute;bottom:10px;left:34%;--sw:clamp(70px,20vw,92px);cursor:pointer;animation:pace 18s linear infinite;-webkit-tap-highlight-color:transparent}
 .walker .face{animation:face 18s steps(1) infinite}
-@keyframes pace{0%,10%{left:30%}45%,55%{left:62%}90%,100%{left:30%}}
+@keyframes pace{0%,10%{left:34%}45%,55%{left:56%}90%,100%{left:34%}}
 @keyframes face{0%{transform:none}50%{transform:scaleX(-1)}}
 .walker .spot{margin-bottom:0}
 .spr.jump svg{animation:hop .3s steps(2) 2}
@@ -3166,10 +3167,10 @@ function denBackdrop(){
   [6, 34, 48, 70, 92, 120].forEach((x, k) => { const hgt = 12 + (k % 3) * 2; for (let r = 0; r < hgt; r++){ const w = 1 + Math.floor(r / 2) * 2; s += R(x - (w >> 1), 40 - hgt + r, w, 1, r % 4 === 3 ? "#16362B" : "#1F4A3A"); } s += R(x, 40, 1, 2, "#5A3E2C"); });
   s += R(0, 40, 128, 16, "#3E7A4A") + R(0, 40, 128, 1, "#5BA060");
   for (let k = 0; k < 60; k++) s += R(rand() * 128 | 0, 42 + rand() * 14 | 0, 1, 1, rand() < .5 ? "#2F6040" : "#5BA060");
-  for (let r = 0; r < 12; r++) s += R(16 - r, 30 + r, 2 * r + 2, 1, r % 3 ? "#C8584A" : "#A8443A");
-  s += R(14, 36, 6, 6, "#2A1420") + R(16, 29, 2, 2, "#FFC83D");
-  s += R(102, 46, 10, 2, "#5A3E2C") + R(104, 45, 6, 1, "#7A5A44");
-  s += `<g class="flame">${R(103, 41, 8, 4, "#FF8A3C") + R(105, 38, 4, 3, "#FF8A3C") + R(106, 40, 2, 5, "#FFE27A") + R(106, 36, 2, 2, "#FFC83D")}</g>`;
+  for (let r = 0; r < 12; r++) s += R(28 - r, 30 + r, 2 * r + 2, 1, r % 3 ? "#C8584A" : "#A8443A");
+  s += R(26, 36, 6, 6, "#2A1420") + R(28, 29, 2, 2, "#FFC83D");
+  s += R(92, 46, 10, 2, "#5A3E2C") + R(94, 45, 6, 1, "#7A5A44");
+  s += `<g class="flame">${R(93, 41, 8, 4, "#FF8A3C") + R(95, 38, 4, 3, "#FF8A3C") + R(96, 40, 2, 5, "#FFE27A") + R(96, 36, 2, 2, "#FFC83D")}</g>`;
   return DEN_BG = `<svg class="stagebg" viewBox="0 0 128 56" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
 }
 function heroDenHTML(){
