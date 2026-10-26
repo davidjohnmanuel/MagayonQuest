@@ -1,0 +1,9 @@
+{
+  "name": "fde-quest",
+  "private": true,
+  "description": "FDE Quest: co-op FDE interview prep game. Static site + Vercel functions.",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "web-push": "3.6.7"
+  }
+}
