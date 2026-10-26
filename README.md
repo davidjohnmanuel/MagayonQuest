@@ -303,7 +303,23 @@ npm install
 npm run android:apk      # → android/app/build/outputs/apk/release/app-release.apk
 ```
 
-After any change to `index.html` or `config.js`, run `npm run android:apk` again and bump `versionCode` in `android/app/build.gradle` so phones accept it as an update. To install, send the APK to the phone and open it. Android asks once to allow installs from that app.
+The first time, send the APK to the phone and open it. Android asks once to allow installs from that app. After that, use the update flow below.
+
+### Updating the app
+
+The app has its own copy of `index.html`, so a website change only reaches phones in a new APK. Each release is one command, then a push:
+
+```bash
+npm run android:release -- "New Shop tab" "Study commitments"   # each argument is one line of release notes
+git add android/app/build.gradle downloads/FDE-Quest.apk version.json && git commit -m "Release Android 1.1" && git push
+```
+
+The script bumps `versionCode` and `versionName`, builds the signed APK, copies it to `downloads/FDE-Quest.apk` and writes `version.json`. Once Vercel deploys, every installed app checks `version.json` when it opens or comes back to the foreground, at most once an hour. If there's a newer build, it shows **Update available** with your notes. **Download update** opens the APK in the phone's browser; open it when it finishes and tap **Update**. Progress lives in Supabase, so nothing is lost.
+
+- **Later** hides the prompt for 12 hours.
+- Add `--required` to make older builds update before they can be used. The prompt then has no **Later** button.
+- An APK built before this feature can't check for updates, so install the first release that has it by hand.
+- Each release adds about 5 MB to the git repo, because the APK is committed so Vercel can serve it.
 
 If you installed the old web-wrapper APK, uninstall it first. This one has a different app id.
 

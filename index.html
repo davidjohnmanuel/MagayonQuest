@@ -761,6 +761,8 @@ body.locked{overflow:hidden}
 .avcam svg{width:15px;height:15px}
 .avrow{display:flex!important;align-items:center;gap:12px}
 .avrow img{width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;flex:none}
+.updbox{gap:12px}
+.updnotes{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14.5px}
 /* Laptop and desktop: a website layout. The tabs move into a sticky top bar (placeTabs), pages widen into main + side columns, and sheets become centred dialogs. Phones and the Android app keep the app layout, where the column wrappers vanish. */
 .cols,.cols>.main,.cols>.side{display:contents}
 .landing,.sitefoot{display:none}
@@ -978,6 +980,7 @@ body.locked{overflow:hidden}
 <div class="sheetwrap" id="topicsheet" hidden role="dialog" aria-modal="true" aria-label="Topics"></div>
 <div class="sheetwrap" id="confirmsheet" hidden role="alertdialog" aria-modal="true" aria-label="Confirm delete"></div>
 <div class="sheetwrap" id="camsheet" hidden role="dialog" aria-modal="true" aria-label="Take a photo"></div>
+<div class="sheetwrap" id="updsheet" hidden role="alertdialog" aria-modal="true" aria-label="App update"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
 <div class="lock warn" id="idlewarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="warn-t"></div>
@@ -4575,7 +4578,7 @@ function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close() })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
@@ -4588,8 +4591,42 @@ function openFromPush(url){
   if (["today", "missions", "arena", "us", "chat", "trophies"].includes(h)) go(h);
   else if (MOD[h]) go("missions", h);
 }
+// ---- Android app updates
+// The website's version.json names the newest APK (scripts/release-android.mjs writes it). When its build is
+// higher than this app's versionCode, offer the download. Below "min" the update is required and can't be skipped.
+const LS_UPD = "fde-upd-later", UPD_SNOOZE = 12 * 3600e3;
+let updChecked = 0, updMust = false;
+async function checkAppUpdate(){
+  if (!CAP.App || !SITE || Date.now() - updChecked < 3600e3 || !$("updsheet").hidden) return;
+  updChecked = Date.now();
+  try {
+    const [info, res] = await Promise.all([CAP.App.getInfo(), fetch(SITE + "/version.json", { cache: "no-store" })]);
+    if (!res.ok) return;
+    const v = await res.json(), have = Number(info.build) || 0, latest = Number(v.build) || 0;
+    if (latest <= have) return;
+    const must = have < (Number(v.min) || 0);
+    let later = {}; try { later = JSON.parse(localStorage.getItem(LS_UPD)) || {}; } catch (e){}
+    if (!must && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
+    showUpdate(v, info, must);
+  } catch (e){ updChecked = 0; } // offline: try again on the next resume
+}
+function showUpdate(v, info, must){
+  const s = $("updsheet"), notes = Array.isArray(v.notes) ? v.notes.filter(n => typeof n === "string").slice(0, 6) : [];
+  updMust = must; s.hidden = false;
+  s.innerHTML = `<div class="box qsheet updbox"><span class="hud">${must ? "Update required" : "Update available"}</span><h3>FDE Quest ${esc(String(v.version || ""))}</h3>
+    ${notes.length ? `<ul class="updnotes">${notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : ""}
+    <p class="muted">You have version ${esc(info.version || "")}.${must ? " This version is too old to keep working with your party." : ""} Tap <b>Download update</b>, open the file when it finishes, then tap <b>Update</b>. Your progress is saved to your account, so nothing is lost.</p>
+    <div class="row">${must ? "" : `<button class="gbtn" id="updlater">Later</button>`}<span class="spacer"></span><button class="gbtn gold" id="updgo">Download update</button></div></div>`;
+  // Leaving the app's own address hands the link to the phone's browser, which downloads the APK.
+  $("updgo").onclick = () => { location.href = new URL(v.apk || "/downloads/FDE-Quest.apk", SITE + "/").href; };
+  const l = $("updlater"); if (l) l.onclick = () => { try { localStorage.setItem(LS_UPD, JSON.stringify({ b: Number(v.build), at: Date.now() })); } catch (e){} closeUpdate(); };
+}
+function closeUpdate(){
+  if (updMust){ CAP.App.minimizeApp(); return; }
+  const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
+}
 function nativeSetup(){
-  if (CAP.App) CAP.App.addListener("backButton", nativeBack);
+  if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", checkAppUpdate); checkAppUpdate(); }
   const P = CAP.PushNotifications;
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));

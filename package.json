@@ -10,7 +10,8 @@
     "android:sync": "node scripts/build-web.mjs && cap sync android",
     "android:apk": "npm run android:sync && cd android && ./gradlew assembleRelease",
     "android:debug": "npm run android:sync && cd android && ./gradlew assembleDebug",
-    "android:open": "cap open android"
+    "android:open": "cap open android",
+    "android:release": "node scripts/release-android.mjs"
   },
   "dependencies": {
     "web-push": "3.6.7"

@@ -9,3 +9,4 @@ fde-quest-SECRETS.txt
 *.jks
 android/keystore.properties
 *.apk
+!/downloads/FDE-Quest.apk
