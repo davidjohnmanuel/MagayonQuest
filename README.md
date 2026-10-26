@@ -99,6 +99,7 @@ The **Chat** tab works like a messaging app:
 - **Reply, copy, unsend:** in the same long-press menu. Unsend removes your message for both of you.
 - **Topics:** tap **📌 Topic** to post a discussion topic to the chat, or pick **Start a topic from this** in a message's long-press menu. The topic shows up as a card with its reply count and latest reply. Tap **Open discussion** to go into its thread, where messages stay out of the main chat, and tap **←** to go back. The Topic sheet also lists recent topics so you can reopen them.
 - **Seen and typing:** your partner's avatar appears under your last message once they've read it, and you'll see typing dots and "Active now" while they're in the app.
+- **Mentions:** type `@` in a chat message to pick a party member. Their name is highlighted in chat, and they get a notification when you tag them. Both players can mention each other.
 - **Composer:** the emoji button opens a picker. With an empty box, the send button sends a 👍. Enter sends on a computer; Shift+Enter adds a new line. On mobile, the composer stays above the on-screen keyboard while typing. The Android app uses the native keyboard resize support; the website uses the browser's visual viewport.
 - Tap a message to see its time. Links open in a new tab.
 

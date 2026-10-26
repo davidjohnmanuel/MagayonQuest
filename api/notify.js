@@ -4,7 +4,7 @@ const { db, names, pushTo, readBody } = require("./_push");
 
 const trim = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 
-function whatsNew(record, old, others, senderName){
+function whatsNew(record, old, others, senderName, activeUsers = others.map(o => o.user_id)){
   const d = (record && record.data) || {}, od = (old && old.data) || {};
   const notes = [];
   // 1. New chat messages, quiz invites and battle challenges
@@ -18,8 +18,18 @@ function whatsNew(record, old, others, senderName){
     if (m.k === "b") notes.push({ title: `⚔ ${senderName} challenges you to battle`, body: text, tag: "battle-" + m.q, url: "/#chat" });
     else if (m.k === "q") notes.push({ title: `${senderName} sent you a quiz duel`, body: text, tag: "quiz-" + m.q, url: "/#chat" });
     else if (m.k === "t") notes.push({ title: `📌 ${senderName} started a topic`, body: trim(text, 140), tag: "topic-" + m.id, url: "/#chat" });
-    else if (topic) notes.push({ title: `${senderName} in “${trim(String(topic.x || ""), 40)}”`, body: trim(text, 140), tag: "topic-" + topic.id, url: "/#chat" });
-    else notes.push({ title: senderName, body: trim(text, 140), tag: "chat", url: "/#chat" });
+    else {
+      const recipients = others.map(o => o.user_id);
+      const mentioned = m.k === "m" && Array.isArray(m.mentions)
+        ? [...new Set(m.mentions.filter(id => typeof id === "string" && recipients.includes(id) && activeUsers.includes(id)))]
+        : [];
+      if (mentioned.length) notes.push({ title: `${senderName} mentioned you`, body: trim(text, 140), tag: "mention-" + m.id, url: "/#chat", recipients: mentioned });
+      const unmentioned = recipients.filter(id => !mentioned.includes(id));
+      if (unmentioned.length) notes.push({
+        title: topic ? `${senderName} in “${trim(String(topic.x || ""), 40)}”` : senderName,
+        body: trim(text, 140), tag: topic ? "topic-" + topic.id : "chat", url: "/#chat", recipients: unmentioned
+      });
+    }
   }
   // 2. A new reaction on someone else's message (only the latest one, so a burst of taps is one ping)
   const rx = d.rx || {}, orx = od.rx || {};
@@ -67,9 +77,12 @@ module.exports = async (req, res) => {
     const [rows, nm] = await Promise.all([db("progress?select=user_id,data"), names()]);
     const progress = Object.fromEntries((rows || []).map(r => [r.user_id, r.data || {}]));
     const others = Object.keys(nm).filter(id => id !== sender).map(id => ({ user_id: id, data: progress[id] || {} }));
-    const notes = whatsNew(body.record, body.old_record, others, nm[sender] || "Your partner");
+    const notes = whatsNew(body.record, body.old_record, others, nm[sender] || "Your partner", Object.keys(progress));
     let sent = 0;
-    for (const n of notes) sent += await pushTo(others.map(o => o.user_id), n);
+    for (const n of notes){
+      const { recipients, ...payload } = n;
+      sent += await pushTo(recipients || others.map(o => o.user_id), payload);
+    }
     return res.status(200).json({ notes: notes.length, sent });
   } catch (e){
     return res.status(e.status || 500).json({ error: e.message });

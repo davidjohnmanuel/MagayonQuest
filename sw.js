@@ -1,6 +1,6 @@
 // FDE Quest service worker: offline app shell + push notifications.
 const CACHE = "fde-quest-v1";
-const SHELL = ["/", "/index.html", "/config.js", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+const SHELL = ["/", "/index.html", "/config.js", "/supabase.js", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));

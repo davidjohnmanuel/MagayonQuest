@@ -334,6 +334,12 @@ details.intel[open] summary::after{content:"-"}
 .emotes::-webkit-scrollbar{display:none}
 .emotes button{flex:none;border:2px solid var(--edge-hi);background:var(--panel2);border-radius:10px;padding:6px 10px;font-family:var(--f-hud);font-size:11px;color:var(--ink);min-height:38px;box-shadow:0 3px 0 var(--shadow)}
 .emotes button.love{border-color:var(--pink);color:var(--pink)}
+.mention-picker{display:grid;gap:4px;padding:8px;background:var(--panel);border:2px solid var(--edge-hi);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.mention-picker button{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:6px 10px;border:0;border-radius:8px;background:transparent;text-align:left;color:var(--ink)}
+.mention-picker button:hover,.mention-picker button:focus-visible{background:var(--panel2)}
+.mention-picker small{color:var(--muted);font-size:12px}
+.mention-highlight{font-weight:800;text-decoration:underline;text-decoration-color:var(--cyan);text-underline-offset:2px}
+.msg.me .mention-highlight{color:#714900;text-decoration-color:#714900}
 .replybar{display:flex;align-items:center;gap:8px;background:var(--panel);border:2px solid var(--edge);border-left:4px solid var(--cyan);border-radius:12px;padding:6px 6px 6px 10px}
 .replybar div{min-width:0;flex:1;display:grid}
 .replybar .hud{font-size:9.5px;color:var(--cyan)}
@@ -4433,15 +4439,56 @@ function checkIncoming(){
 function renderBadge(){const b=$("chatbadge");const n=view==="chat"?0:unreadCount();b.hidden=!n;b.textContent=n>9?"9+":String(n);}
 const msgId=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,8)).slice(0,20);
 function pushMsg(m){change(d=>{d.chat.push(m);if(d.chat.length>120)d.chat=d.chat.slice(-120);},{now:true,quiet:true});}
-function sendMsg(text,kind,r,p){
+function taggableMembers(){
+  return Object.keys(players).filter(id=>id!==myId).map(id=>({id,name:(profCache[id]||mateName(id)||"").trim()})).filter(p=>p.name);
+}
+function chatMentionIds(text){
+  return taggableMembers().filter(({name})=>{
+    const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    return new RegExp(`(^|[^\\p{L}\\p{N}_])@${escaped}(?=$|[^\\p{L}\\p{N}_])`,"iu").test(text);
+  }).map(p=>p.id);
+}
+function sendMsg(text,kind,r,p,mentions=[]){
   text=String(text||"").trim().slice(0,500); if(!text)return false;
   if(mode==="readonly"){toast("View only: ask David to add your email to the study list");return false;}
   const m={id:msgId(),t:new Date().toISOString(),x:text,k:kind==="e"?"e":"m"};
+  if(kind!=="e"&&mentions.length)m.mentions=[...new Set(mentions.filter(id=>taggableMembers().some(member=>member.id===id)))];
   if(r&&findMsg(r))m.r=r;
   if(p&&liveTopic(p))m.p=p;
   pushMsg(m);
   return true;
 }
+function chatTextHTML(text){
+  let html=linkify(esc(text));
+  const names=taggableMembers().map(p=>p.name).sort((a,b)=>b.length-a.length);
+  if(names.length){
+    const alternatives=names.map(name=>esc(name).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|");
+    const re=new RegExp(`(^|[^\\p{L}\\p{N}_])(@(?:${alternatives}))(?=$|[^\\p{L}\\p{N}_])`,"giu");
+    html=html.split(/(<a\b[^>]*>[\s\S]*?<\/a>)/gi).map(part=>part.startsWith("<a ")||part.startsWith("<a>")?part:part.replace(re,'$1<span class="mention-highlight">$2</span>')).join("");
+  }
+  return html;
+}
+function updateMentionPicker(input){
+  const picker=$("mention-picker");if(!picker)return;
+  const prefix=input.value.slice(0,input.selectionStart||0),match=/(?:^|\s)@([^\s@]*)$/u.exec(prefix);
+  if(!match){picker.hidden=true;picker.innerHTML="";input.dataset.mentionAt="";return;}
+  const query=match[1].toLocaleLowerCase(),at=prefix.lastIndexOf("@");
+  input.dataset.mentionAt=String(at);
+  const options=taggableMembers().filter(p=>p.name.toLocaleLowerCase().includes(query)).slice(0,6);
+  if(!options.length){picker.hidden=true;picker.innerHTML="";return;}
+  picker.hidden=false;
+  picker.innerHTML=options.map((p,i)=>`<button type="button" role="option" aria-selected="${i===0}" data-mention-id="${esc(p.id)}"><b>@${esc(p.name)}</b><small>${i===0?"Tap to mention":"Party member"}</small></button>`).join("");
+  picker.querySelectorAll("[data-mention-id]").forEach(button=>{
+    button.onpointerdown=e=>e.preventDefault();
+    button.onclick=()=>{
+      const start=Number(input.dataset.mentionAt),end=input.selectionStart||start;
+      input.value=input.value.slice(0,start)+`@${pName(button.dataset.mentionId)} `+input.value.slice(end);
+      const caret=start+`@${pName(button.dataset.mentionId)} `.length;
+      input.focus();input.setSelectionRange(caret,caret);picker.hidden=true;input.dispatchEvent(new Event("input",{bubbles:true}));
+    };
+  });
+}
+function pName(id){return profCache[id]||mateName(id)||"Player";}
 // Photos in chat: an "m" message whose i is a path in the post-photos bucket (<sender id>/ch<id>.jpg), with its
 // size in w/h so the bubble keeps its shape while the signed link loads. x holds the caption, or PIC_TEXT if none.
 const PIC_TEXT="📷 Photo";
@@ -4485,6 +4532,7 @@ async function sendPic(caption,r,p){
   if(error){pic.err=/bucket|not found/i.test(error.message||"")?"Photo storage isn't set up yet. Run section 5 of supabase/schema.sql.":"Couldn't send the photo. Check your connection and try again.";renderPicBar();return false;}
   photoUrls[path]={u:pic.preview,exp:Infinity};pic.sent=true;
   const m={id,t:new Date().toISOString(),x:String(caption||"").trim().slice(0,500)||PIC_TEXT,k:"m",i:path,w:pic.w,h:pic.h};
+  m.mentions=chatMentionIds(m.x);
   if(r&&findMsg(r))m.r=r;
   if(p&&liveTopic(p))m.p=p;
   chatPic=null;renderPicBar();pushMsg(m);
@@ -4506,7 +4554,7 @@ async function signChatPics(){
 function picHTML(m){
   const p=picPath(m),ph=p&&photoUrls[p],ar=m.w&&m.h?` style="aspect-ratio:${m.w}/${m.h}"`:"";
   const img=ph?`<span class="mimg" data-cpic="${esc(p)}" role="button" tabindex="0" aria-label="Open photo"${ar}><img alt="Photo from ${m.me?"you":esc(mateName(m.who))}" src="${esc(ph.u)}"></span>`:`<span class="mimg wait"${ar||' style="aspect-ratio:4/3"'}>${PIC_SVG}</span>`;
-  return `<span class="mpic">${img}${m.x!==PIC_TEXT?`<span class="bub">${linkify(esc(m.x))}</span>`:""}</span>`;
+  return `<span class="mpic">${img}${m.x!==PIC_TEXT?`<span class="bub">${chatTextHTML(m.x)}</span>`:""}</span>`;
 }
 function startTopic(title,src){
   title=String(title||"").trim().replace(/\s+/g," ").slice(0,120); if(!title)return null;
@@ -4571,7 +4619,7 @@ function chatLogHTML(){
     const cls=["msg",m.me?"me":"them",first&&"first",last&&"last",m.k==="e"&&"emote",m.k==="m"&&!m.i&&isJumbo(m.x)&&"jumbo",m.k==="u"&&"unsent",rs.length&&"rx",openMid===m.id&&"open"].filter(Boolean).join(" ");
     const q=m.r&&byId[m.r];
     const quote=m.r?`<button class="rquote" data-jump="${esc(m.r)}"><span class="hud">${esc(replyLabel(m,q))}</span><span>${esc(q?msgPreview(q):"Message no longer available")}</span></button>`:"";
-    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):m.k==="m"&&m.i?picHTML(m):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
+    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):m.k==="m"&&m.i?picHTML(m):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):chatTextHTML(m.x)}</span>`;
     const chip=rs.length?`<span class="rxs" data-rxlist="${esc(m.id)}" role="button" tabindex="0" aria-label="See reactions">${[...new Set(rs.map(r=>r.e))].join("")}${rs.length>1?`<b>${rs.length}</b>`:""}</span>`:"";
     const more=m.k!=="u"&&m.k!=="br"?`<button class="mact" data-more="${esc(m.id)}" aria-label="Message options">⋯</button>`:"";
     html+=`<div class="${cls}" data-mid="${esc(m.id)}">${m.me?"":`<img class="mav${last?"":" blank"}" alt="" src="${esc(mateAvatar(m.who))}">`}<div class="mcol">${quote}<div class="mrow">${body}${more}${chip}</div><span class="meta">${m.me?"You":esc(mateName(m.who))} · ${esc(fmtDay(m.t))} ${esc(fmtTime(m.t))}</span></div></div>`;
@@ -4717,6 +4765,7 @@ function renderChat(){
     <div class="replybar" id="replybar" hidden></div>
     <div class="picbar" id="picbar" hidden></div>
     <div class="emojipanel" id="emojipanel" role="group" aria-label="Emoji" hidden>${EMOJI.map(e=>`<button type="button" data-emoji="${e}" aria-label="${e}">${e}</button>`).join("")}</div>
+    <div class="mention-picker" id="mention-picker" role="listbox" aria-label="Mention a party member" hidden></div>
     <form class="composer" id="composer"><button type="button" class="cbtn" id="picbtn" aria-label="Send a photo">${PIC_SVG}</button><button type="button" class="cbtn" id="emojibtn" aria-label="Emoji" aria-expanded="false">${SMILE}</button><textarea id="chatin" rows="1" maxlength="500" placeholder="${thread?"Reply in this topic":"Aa"}" autocomplete="off" enterkeyhint="send" aria-label="Message"></textarea><button class="cbtn send like" type="submit" id="sendbtn" aria-label="Send a like">👍</button></form>
   </div>`;
   const log2=$("chatlog"), f=$("chatin"), sendb=$("sendbtn"), panel=$("emojipanel");
@@ -4725,13 +4774,20 @@ function renderChat(){
   const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim()||!!chatPic;sendb.disabled=!!(chatPic&&chatPic.busy);sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
   f.onfocus=()=>{if(coarse()||NATIVE){chatKeyboardOpen=true;syncChatViewport();if(!NATIVE)setTimeout(()=>{if(document.activeElement===f)f.scrollIntoView({block:"nearest",behavior:"smooth"});},250);}};
   f.onblur=()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();};
-  f.oninput=()=>{sync();if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
-  f.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}};
-  const sent=()=>{f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();};
+  f.oninput=()=>{sync();updateMentionPicker(f);if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
+  f.onkeyup=()=>updateMentionPicker(f);
+  f.onkeydown=e=>{
+    const picker=$("mention-picker"),option=picker&&!picker.hidden&&picker.querySelector("[data-mention-id]");
+    if(option&&e.key==="Enter"){e.preventDefault();option.click();return;}
+    if(option&&e.key==="Escape"){e.preventDefault();picker.hidden=true;return;}
+    if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}
+  };
+  const sent=()=>{f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("mention-picker").hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();};
   $("composer").onsubmit=async e=>{
     e.preventDefault();
     if(chatPic){if(chatPic.busy)return;const p=sendPic(f.value,replyTo,thread);sync();if(await p&&$("chatin")===f)sent();else sync();return;}
-    if(sendMsg(f.value.trim()||"👍","m",replyTo,thread))sent();
+    const text=f.value.trim()||"👍";
+    if(sendMsg(text,"m",replyTo,thread,chatMentionIds(text)))sent();
   };
   $("picbtn").onclick=$("picchip").onclick=pickChatPic;
   // Pasting a screenshot attaches it, like Messenger on desktop.

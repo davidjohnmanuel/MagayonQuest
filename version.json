@@ -1,9 +1,9 @@
 {
-  "build": 9,
-  "version": "1.8",
+  "build": 10,
+  "version": "1.9",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Fix startup crash and bundle Supabase locally"
+    "Add chat mentions with notifications"
   ]
 }
