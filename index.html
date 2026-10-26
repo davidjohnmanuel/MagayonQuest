@@ -953,6 +953,32 @@ html{overscroll-behavior-y:contain}
 .ptr.ready i{border-color:var(--gold);border-top-color:transparent}
 .ptr.spin i{animation:ptrspin .7s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
+/* App updates panel in Settings */
+.updcard{display:grid;gap:8px;background:linear-gradient(120deg,rgba(255,200,61,.12),rgba(79,227,224,.08));border:2px solid var(--gold);border-radius:12px;padding:12px 14px;margin-top:6px}
+.updcard b{font-size:17px}
+.updcard small{color:var(--dim);font-size:12.5px}
+.updcard .gbtn{justify-self:start}
+.updok{color:var(--green);font-size:13.5px}
+/* Notification bell */
+.bellbtn{margin-left:0;position:relative}
+body:not(.authed) .bellbtn{display:none}
+.bellbtn .tbadge{top:-8px;left:auto;right:-8px}
+.bellbox{gap:6px;max-height:min(80dvh,640px);overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.blist{overflow-y:auto;overscroll-behavior:contain;display:grid;align-content:start;gap:2px;margin:0 -8px;padding:0 4px}
+.bitem{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;background:none;border:0;border-radius:12px;padding:8px;color:var(--ink);width:100%}
+.bitem:active,.bitem:hover{background:var(--panel2)}
+.bitem.new{background:rgba(255,119,174,.08)}
+.bitem img,.bitem .bic{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--edge-hi)}
+.bitem .bic{display:grid;place-items:center;background:var(--gold);color:var(--gold-ink);border-color:#A87A00}
+.bitem .bic svg{width:22px;height:22px}
+.btext{display:grid;gap:2px;min-width:0}
+.btext span{font-size:14.5px;line-height:1.3}
+.btext small{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btext .hud{font-size:9.5px}
+.bitem.new .btext .hud{color:var(--pink)}
+.bdot{width:10px;height:10px;border-radius:50%;background:var(--pink)}
+.bempty{text-align:center;padding:24px 8px}
+.post.hl{outline:3px solid var(--gold);outline-offset:2px;transition:outline-color 1.5s}
 /* Laptop and desktop: a website layout. The tabs move into a sticky top bar (placeTabs), pages widen into main + side columns, and sheets become centred dialogs. Phones and the Android app keep the app layout, where the column wrappers vanish. */
 .cols,.cols>.main,.cols>.side{display:contents}
 .landing,.sitefoot{display:none}
@@ -1132,6 +1158,7 @@ html{overscroll-behavior-y:contain}
     <span class="logo">FDE<b>//</b>QUEST</span>
     <span class="hud" id="today-label"></span>
     <button class="soundbtn" id="soundbtn" aria-pressed="true" aria-label="Mute sound"></button>
+    <button class="soundbtn bellbtn" id="bellbtn" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20.5a2.2 2.2 0 004 0"/></svg><span class="tbadge" id="bellbadge" hidden></span></button>
     <button class="soundbtn setbtn" id="setbtn" aria-label="Settings and members"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
     <span class="who" id="who"></span>
   </header>
@@ -1174,6 +1201,7 @@ html{overscroll-behavior-y:contain}
 <div class="sheetwrap" id="cartsheet" hidden role="dialog" aria-modal="true" aria-label="Your cart"></div>
 <div class="sheetwrap" id="prodsheet" hidden role="dialog" aria-modal="true" aria-label="Product details"></div>
 <div class="sheetwrap" id="updsheet" hidden role="alertdialog" aria-modal="true" aria-label="App update"></div>
+<div class="sheetwrap" id="bellsheet" hidden role="dialog" aria-modal="true" aria-label="Notifications"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
 <div class="lock warn" id="idlewarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="warn-t"></div>
@@ -2065,7 +2093,7 @@ function render(){
   {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
   renderBadge();
   if(keep){const f=$(keep.id);if(f){f.value=keep.v;f.focus();}}
-  renderTimer(); renderNote(); syncLoader();
+  renderTimer(); renderNote(); syncLoader(); renderBell();
 }
 let viewer=null;
 function renderNote(){
@@ -2479,7 +2507,7 @@ function postTime(iso){
 
 async function loadFeed(){
   if (!sb || !started) return;
-  const { data, error } = await sb.from("posts").select("id,user_id,body,image_path,created_at,post_likes(user_id),post_comments(id,user_id,body,created_at)").order("created_at", { ascending: false }).limit(80);
+  const { data, error } = await sb.from("posts").select("id,user_id,body,image_path,created_at,post_likes(user_id,created_at),post_comments(id,user_id,body,created_at)").order("created_at", { ascending: false }).limit(80);
   if (!started) return;
   feed.loaded = true;
   if (error){
@@ -2495,7 +2523,7 @@ async function loadFeed(){
     (signed || []).forEach(x => { if (x.signedUrl) photoUrls[x.path] = { u: x.signedUrl, exp: now + PHOTO_TTL * 1000 }; });
   }
   feed.posts = data || [];
-  refreshFeed();
+  refreshFeed(); renderBell();
 }
 function subscribeFeed(){
   if (feedCh) sb.removeChannel(feedCh);
@@ -4888,7 +4916,7 @@ function subscribe(){
   channel = sb.channel("progress-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "progress" }, () => { clearTimeout(subscribe.t); subscribe.t = setTimeout(pull, 300); })
     .subscribe();
-  subscribeChat(); subscribeFeed();
+  subscribeChat(); subscribeFeed(); loadFeed();
 }
 // Typing dots and "Active now" ride on a realtime channel; nothing here is saved to the database.
 let chatCh = null;
@@ -4904,6 +4932,61 @@ document.addEventListener("visibilitychange", () => {
   if (chatCh){ try { document.hidden ? chatCh.untrack() : chatCh.track({ at: Date.now() }); } catch (e){} }
   if (!document.hidden && started){ pull(); if (feed.loaded) loadFeed(); }
 });
+
+// ---- notification bell: posts, comments and likes on your posts, duel and battle invites, app updates.
+// Built from data the app already loads; what you've seen is remembered per device.
+const DL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
+const LS_BELL = () => "fde-bell:" + (myId || "me");
+const bellSeen = () => { try { return localStorage.getItem(LS_BELL()) || ""; } catch (e){ return ""; } };
+function bellItems(){
+  const out = [], seen = bellSeen(), snip = b => { const q = b && splitQ(b); return q ? `Answered: ${q.q}` : clip(String(b || "").replace(/\s+/g, " "), 90); };
+  if (updAvail) out.push({ t: updAt, icon: DL_SVG, text: `<b>FDE Quest ${esc(String(updAvail.version || ""))}</b> is ready to install`, sub: "Tap to see what's new", go: () => go("settings") });
+  for (const p of feed.posts){
+    const mineP = p.user_id === myId;
+    if (!mineP) out.push({ t: p.created_at, who: p.user_id, text: `<b>${esc(whoOf(p.user_id).name)}</b> ${p.image_path && !p.body ? "posted a photo" : "posted"}`, sub: snip(p.body), go: () => openPost(p.id) });
+    p.post_comments.filter(c => c.user_id !== myId && (mineP || p.post_comments.some(x => x.user_id === myId && x.created_at < c.created_at)))
+      .forEach(c => out.push({ t: c.created_at, who: c.user_id, text: `<b>${esc(whoOf(c.user_id).name)}</b> commented on ${mineP ? "your post" : "a post you commented on"}`, sub: clip(c.body, 90), go: () => openPost(p.id, true) }));
+    if (mineP) p.post_likes.filter(l => l.user_id !== myId && l.created_at).forEach(l => out.push({ t: l.created_at, who: l.user_id, text: `<b>${esc(whoOf(l.user_id).name)}</b> liked your post`, sub: snip(p.body) || "Photo", go: () => openPost(p.id) }));
+  }
+  allMsgs().filter(m => !m.me && (m.k === "q" || m.k === "b" || m.k === "t")).forEach(m => out.push({ t: m.t, who: m.who,
+    text: `<b>${esc(mateName(m.who))}</b> ${m.k === "q" ? "sent you a quiz duel" : m.k === "b" ? "challenged you to a battle" : "started a topic"}`, sub: clip(m.x, 90), go: () => go("chat") }));
+  out.sort((a, b) => b.t.localeCompare(a.t));
+  return out.slice(0, 40).map(x => ({ ...x, isNew: x.t > seen }));
+}
+function renderBell(){
+  const b = $("bellbadge"); if (!b) return;
+  const n = started ? bellItems().filter(x => x.isNew).length : 0;
+  b.hidden = !n; b.textContent = n > 9 ? "9+" : String(n);
+  $("bellbtn").setAttribute("aria-label", n ? `Notifications, ${n} new` : "Notifications");
+  if (!$("bellsheet").hidden) drawBell();
+}
+let bellShown = [];
+function drawBell(){
+  const s = $("bellsheet"), list = s.querySelector(".blist"); if (!list) return;
+  const keepNew = new Set(bellShown.filter(x => x.isNew).map(x => x.t + x.text)); // stay highlighted while the list is open
+  bellShown = bellItems().map(x => ({ ...x, isNew: x.isNew || keepNew.has(x.t + x.text) }));
+  list.innerHTML = bellShown.length ? bellShown.map((x, i) => `<button class="bitem${x.isNew ? " new" : ""}" data-bi="${i}">${x.who ? `<img alt="" src="${esc(x.who === myId ? myAvatar() : mateAvatar(x.who))}">` : `<span class="bic">${x.icon}</span>`}<span class="btext"><span>${x.text}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}<span class="hud">${esc(postTime(x.t))}</span></span>${x.isNew ? '<span class="bdot" aria-label="New"></span>' : "<span></span>"}</button>`).join("")
+    : `<p class="muted bempty">Nothing yet. New posts, comments, likes and duel invites show up here.</p>`;
+  list.querySelectorAll("[data-bi]").forEach(b => b.onclick = () => { const x = bellShown[Number(b.dataset.bi)]; closeBell(); if (x) x.go(); });
+}
+function openBell(){
+  const s = $("bellsheet"); s.hidden = false; bellShown = [];
+  s.innerHTML = `<div class="box qsheet bellbox"><div class="row"><h3>Notifications</h3><span class="spacer"></span><button class="back" id="bellclose" aria-label="Close">✕</button></div><div class="blist"></div></div>`;
+  $("bellclose").onclick = closeBell; s.onclick = e => { if (e.target === s) closeBell(); };
+  drawBell();
+  try { localStorage.setItem(LS_BELL(), new Date().toISOString()); } catch (e){} // opening the list marks everything read
+  renderBell(); try { sfx.click(); } catch (e){}
+}
+function closeBell(){ const s = $("bellsheet"); s.hidden = true; s.innerHTML = ""; bellShown = []; }
+// Jump to a post in the Base feed and highlight it
+function openPost(id, comments){
+  const i = feed.posts.findIndex(p => p.id === id); if (i < 0){ go("today"); return; }
+  if (comments) openComments.add(id);
+  go("today"); feedMax = Math.max(10, i + 1); refreshFeed();
+  const el = document.querySelector(`[data-post="${id}"]`);
+  if (el){ el.scrollIntoView({ block: "center", behavior: "smooth" }); el.classList.add("hl"); setTimeout(() => el.classList.remove("hl"), 1800); }
+}
+$("bellbtn").onclick = () => $("bellsheet").hidden ? openBell() : closeBell();
 
 // ---- pull to refresh: drag down from the top of the page to re-sync everything and check for an app update
 const PTR_GO = 70, PTR_MAX = 110;
@@ -5218,7 +5301,7 @@ function renderSettings(){
     $("set-notif").innerHTML = NOTIF.html(); NOTIF.bind();
     $("set-sound").setAttribute("aria-checked", String(SFX.on));
     if (avImg) avImg.src = myAvatar();
-    $("set-ver").textContent = verText();
+    refreshAppPanel();
     $("view").querySelectorAll("[data-goal]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.goal) === mine.goal)));
     return;
   }
@@ -5235,11 +5318,11 @@ function renderSettings(){
       <div class="setrow"><span><b>Daily goal</b><small>Minutes of training that complete your day</small></span><div class="goalpick">${GOALS.map(g => `<button data-goal="${g}" aria-pressed="${g === mine.goal}">${g}m</button>`).join("")}</div></div>
       <div class="setrow"><span><b>Sound effects</b><small>Chiptune sounds for XP, chat and battles</small></span><button class="switch" id="set-sound" role="switch" aria-checked="${SFX.on}" aria-label="Sound effects"></button></div>
       <div class="setrow"><span><b>Quest lock</b><small>Lock the app after ${(LOCK_MS + CONFIRM_MS) / 1000} seconds without activity</small></span><button class="switch" id="set-lock" role="switch" aria-checked="${lockOn}" aria-label="Quest lock"></button></div></section>
+    <section class="panel" id="set-app">${appPanelHTML()}</section>
     <div id="set-notif">${NOTIF.html()}</div>
     <section class="panel"><div class="ptitle"><h3>Members</h3><span class="hud" id="set-mcount">${m.n} player${m.n === 1 ? "" : "s"}</span></div><div class="mems" id="set-members">${m.html}</div></section>
     <section class="panel" id="admin-users-panel" hidden><div class="ptitle"><h3>User management</h3><span class="hud" data-admin-status></span></div><p class="muted" style="font-size:13px">Only admins see this. Control who can sign in and save progress.</p><form class="row" data-admin-add><input name="admin-email" type="email" required maxlength="254" placeholder="Email address" aria-label="Email address"><button class="gbtn" type="submit">Grant access</button></form><div class="admin-users" data-admin-list></div></section>
-    <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div>
-      <div class="setrow"><span><b>App version</b><small id="set-ver">${esc(verText())}</small></span>${NATIVE ? `<button class="gbtn" id="set-upd">Check for updates</button>` : ""}</div></section>
+    <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div></section>
   </div>`;
   $("setback").onclick = () => go("us");
   const mp = $("set-myprofile"); if (mp) mp.onclick = () => openProfile(myId);
@@ -5263,12 +5346,8 @@ function renderSettings(){
   $("set-sound").onclick = () => { soundToggle(); $("set-sound").setAttribute("aria-checked", String(SFX.on)); };
   $("set-lock").onclick = () => { lockToggle(); $("set-lock").setAttribute("aria-checked", String(lockOn)); };
   const so = $("set-signout"); if (so) so.onclick = () => sb.auth.signOut();
-  const up = $("set-upd"); if (up) up.onclick = async () => {
-    up.disabled = true; up.textContent = "Checking…";
-    const latest = await checkAppUpdate(true);
-    if (up.isConnected){ up.disabled = false; up.textContent = "Check for updates"; }
-    if (latest) toast("You're on the latest version"); else if ($("updsheet").hidden) toast("Couldn't check for updates. Check your connection.");
-  };
+  bindAppPanel();
+  if (NATIVE && updState !== "checking"){ updState = "checking"; refreshAppPanel(); checkAppUpdate(true, true).then(ok => { if (!ok && !updAvail && updState === "checking") updState = ""; refreshAppPanel(); }); }
   NOTIF.bind(); bindMembers();
   if (sb && started) loadAdminUsers($("admin-users-panel"));
 }
@@ -5283,7 +5362,7 @@ function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, bellsheet: closeBell, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
@@ -5302,18 +5381,24 @@ function openFromPush(url){
 // higher than this app's versionCode, offer the download. Below "min" the update is required and can't be skipped.
 const LS_UPD = "fde-upd-later", UPD_SNOOZE = 12 * 3600e3;
 let updChecked = 0, updMust = false, appInfo = null; // appInfo: this app's {version, build}, for Settings
+let updAvail = null, updAt = "", updState = ""; // the newer release (version.json), when it was first seen; Settings' last check result
 const verText = () => !NATIVE ? "Website · always the latest version" : appInfo ? `${appInfo.version} (build ${appInfo.build})` : "Checking…";
 // force (tapping the release notification) skips the hourly limit and a "Later" snooze.
+// inline (Settings) shows the result in the App updates panel instead of the dialog, unless the update is required.
 // Resolves true when the site confirms this is the newest build.
-async function checkAppUpdate(force){
+async function checkAppUpdate(force, inline){
   if (!CAP.App || !SITE || (!force && Date.now() - updChecked < 3600e3) || !$("updsheet").hidden) return;
   updChecked = Date.now();
   try {
     const [info, res] = await Promise.all([CAP.App.getInfo(), fetch(SITE + "/version.json", { cache: "no-store" })]);
     if (!res.ok) return;
     const v = await res.json(), have = Number(info.build) || 0, latest = Number(v.build) || 0;
-    if (latest <= have) return true;
+    appInfo = info;
+    if (latest <= have){ updAvail = null; updState = "latest"; refreshAppPanel(); renderBell(); return true; }
+    if (!updAvail || Number(updAvail.build) !== latest) updAt = new Date().toISOString();
+    updAvail = v; updState = ""; refreshAppPanel(); renderBell();
     const must = have < (Number(v.min) || 0);
+    if (inline && !must) return false;
     let later = {}; try { later = JSON.parse(localStorage.getItem(LS_UPD)) || {}; } catch (e){}
     if (!must && !force && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
     showUpdate(v, info, must);
@@ -5326,17 +5411,40 @@ function showUpdate(v, info, must){
     ${notes.length ? `<ul class="updnotes">${notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : ""}
     <p class="muted">You have version ${esc(info.version || "")}.${must ? " This version is too old to keep working with your party." : ""} Tap <b>Download update</b>, open the file when it finishes, then tap <b>Update</b>. Your progress is saved to your account, so nothing is lost.</p>
     <div class="row">${must ? "" : `<button class="gbtn" id="updlater">Later</button>`}<span class="spacer"></span><button class="gbtn gold" id="updgo">Download update</button></div></div>`;
-  // Leaving the app's own address hands the link to the phone's browser, which downloads the APK.
-  $("updgo").onclick = () => { location.href = new URL(v.apk || "/downloads/FDE-Quest.apk", SITE + "/").href; };
+  $("updgo").onclick = () => downloadUpdate(v);
   const l = $("updlater"); if (l) l.onclick = () => { try { localStorage.setItem(LS_UPD, JSON.stringify({ b: Number(v.build), at: Date.now() })); } catch (e){} closeUpdate(); };
 }
+// Leaving the app's own address hands the link to the phone's browser, which downloads the APK.
+function downloadUpdate(v){ location.href = new URL(v.apk || "/downloads/FDE-Quest.apk", SITE + "/").href; }
+function updNotesHTML(v){ const n = Array.isArray(v.notes) ? v.notes.filter(x => typeof x === "string").slice(0, 6) : []; return n.length ? `<ul class="updnotes">${n.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""; }
+// Settings → App updates
+function appPanelHTML(){
+  if (!NATIVE) return `<div class="ptitle"><h3>App</h3></div>
+    <div class="setrow"><span><b>Version</b><small>${esc(verText())}</small></span></div>
+    <div class="setrow"><span><b>Android app</b><small>Install FDE Quest on an Android phone</small></span><a class="gbtn" href="/downloads/FDE-Quest.apk" download>Download</a></div>`;
+  const busy = updState === "checking", v = updAvail;
+  return `<div class="ptitle"><h3>App updates</h3>${v ? `<span class="pill good">Update ready</span>` : ""}</div>
+    <div class="setrow"><span><b>Installed version</b><small>${esc(verText())}</small></span><button class="gbtn" id="set-upd"${busy ? " disabled" : ""}>${busy ? "Checking…" : "Check for updates"}</button></div>
+    ${v ? `<div class="updcard"><span class="hud">New version</span><b>FDE Quest ${esc(String(v.version || ""))}</b>${updNotesHTML(v)}<button class="gbtn gold" id="set-updgo">Download update</button><small>Open the file when it finishes, then tap Update. Your progress is saved to your account.</small></div>`
+      : updState === "latest" ? `<p class="updok">✓ You're on the latest version.</p>` : updState === "offline" ? `<p class="amsg">Couldn't check for updates. Check your connection.</p>` : ""}`;
+}
+function bindAppPanel(){
+  const up = $("set-upd"); if (up) up.onclick = async () => {
+    updState = "checking"; refreshAppPanel();
+    const ok = await checkAppUpdate(true, true);
+    if (!ok && !updAvail && updState === "checking") updState = "offline";
+    refreshAppPanel();
+  };
+  const dl = $("set-updgo"); if (dl) dl.onclick = () => downloadUpdate(updAvail);
+}
+function refreshAppPanel(){ const el = $("set-app"); if (el){ el.innerHTML = appPanelHTML(); bindAppPanel(); } }
 function closeUpdate(){
   if (updMust){ CAP.App.minimizeApp(); return; }
   const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
 }
 function nativeSetup(){
   if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", () => checkAppUpdate()); checkAppUpdate();
-    CAP.App.getInfo().then(i => { appInfo = i; const sv = $("set-ver"); if (sv) sv.textContent = verText(); }).catch(() => {}); }
+    CAP.App.getInfo().then(i => { appInfo = i; refreshAppPanel(); }).catch(() => {}); }
   const P = CAP.PushNotifications;
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
