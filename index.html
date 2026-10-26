@@ -595,6 +595,7 @@ details.intel[open] summary::after{content:"-"}
 .fight{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto;align-items:center;gap:12px;background:rgba(11,9,32,.6);border:2px solid var(--edge);border-radius:12px;padding:8px 10px}
 .fight-remove{min-height:36px;padding:4px 8px;border:1px solid var(--edge);border-radius:8px;background:rgba(11,9,32,.7);color:var(--muted);font-size:12px;font-weight:800}
 .fight-remove:hover{border-color:var(--red);color:var(--red)}
+.qinvite .gbtn:disabled{opacity:.6;cursor:not-allowed}
 .fight.live{border-color:var(--cyan);box-shadow:0 0 14px rgba(79,227,224,.25)}
 .fight.won{border-color:var(--gold)}
 .fight.lost{opacity:.8}
@@ -1982,7 +1983,7 @@ function normalize(raw){
   if(raw.heroXp&&typeof raw.heroXp==="object")for(const k in raw.heroXp){const v=Math.round(Number(raw.heroXp[k]));if(HERO[k]&&v>=0&&v<1e7)d.heroXp[k]=v;}
   if(Array.isArray(raw.battles))d.battles=raw.battles.filter(z=>z&&typeof z.id==="string"&&/^b[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs,20)})).filter(z=>z.m.length&&z.qs.length>=3).slice(-6);
   if(Array.isArray(raw.hiddenBattles))d.hiddenBattles=[...new Set(raw.hiddenBattles.filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
-  if(Array.isArray(raw.removedBattles))d.removedBattles=[...new Set(raw.removedBattles.filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
+  d.removedBattles=[...new Set([...(Array.isArray(raw.removedBattles)?raw.removedBattles:[]),...(Array.isArray(raw.hiddenBattles)?raw.hiddenBattles:[])].filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
   if(raw.bt&&typeof raw.bt==="object"){const keys=Object.keys(raw.bt).filter(k=>/^b[a-z0-9]{4,20}$/.test(k)).slice(-20);for(const k of keys){const r=raw.bt[k];if(!r||!HERO[r.h]||!Array.isArray(r.ans))continue;d.bt[k]={h:r.h,tl:Math.min(6,Math.max(1,Math.round(Number(r.tl))||1)),ans:r.ans.filter(a=>a&&Number.isInteger(a.k)&&a.k>=-1&&a.k<4).slice(0,20).map(a=>({k:a.k,ms:Math.min(60000,Math.max(0,Math.round(Number(a.ms))||0)),s:typeof a.s==="string"&&SKILLS[a.s]?a.s:"",it:typeof a.it==="string"&&ITEMS[a.it]?a.it:""}))};}}
   if(Array.isArray(raw.buys))d.buys=raw.buys.filter(x=>x&&typeof x.i==="string"&&/^(item:(potion|hourglass|scroll|flask)|sk:[a-z]{2,12}:[1-6]|hero:[a-z]{2,12}|title:[a-z]{2,12})$/.test(x.i)&&Number.isInteger(x.p)&&x.p>=0&&x.p<=5000).map(x=>({i:x.i,p:x.p,t:typeof x.t==="string"?x.t.slice(0,40):""})).slice(-400);
   if(typeof raw.title==="string"&&/^[a-z]{2,12}$/.test(raw.title))d.title=raw.title;
@@ -4962,6 +4963,7 @@ async function pull(){
     if (next[myId]){
       const remote = normalize(next[myId]);
       if (firstSnap && mine.updated && (!remote.updated || mine.updated > remote.updated)){ dirty = true; flush(); }
+      else if (remote.removedBattles.some(id => !(Array.isArray(next[myId].removedBattles) && next[myId].removedBattles.includes(id)))){ mine = remote; dirty = true; flush(); }
       else { mine = remote; try { localStorage.setItem(LS, JSON.stringify(mine)); } catch (e){} }
     } else if (firstSnap && mine.updated){ dirty = true; flush(); }
   }
