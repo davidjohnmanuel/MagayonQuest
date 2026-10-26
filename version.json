@@ -1,10 +1,9 @@
 {
-  "build": 5,
-  "version": "1.4",
+  "build": 6,
+  "version": "1.5",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Gemini AI quizzes",
-    "Remove fight cards; announce and disable removed battles in chat"
+    "Keep chat composer above mobile keyboard"
   ]
 }

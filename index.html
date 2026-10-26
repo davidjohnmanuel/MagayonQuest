@@ -341,6 +341,11 @@ details.intel[open] summary::after{content:"-"}
 .replybar button{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:var(--panel2);color:var(--muted);font-size:16px}
 .composer{display:flex;align-items:flex-end;gap:6px}
 .composer textarea{flex:1;min-width:0;resize:none;font:inherit;font-size:16px;line-height:1.35;background:var(--shadow);color:var(--ink);border:2px solid var(--edge-hi);border-radius:22px;padding:10px 14px;min-height:46px;max-height:140px;overflow-y:auto}
+body.keyboard-open .dock{display:none}
+body.keyboard-open{padding-bottom:12px}
+body.keyboard-open .chatwrap{padding-bottom:64px}
+body.keyboard-open .chatwrap>.composer{position:fixed;z-index:25;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:var(--chat-keyboard-gap,0px);width:auto;max-width:720px;margin:0 auto;padding:6px 8px;border:1px solid var(--edge);border-radius:16px;background:var(--panel);box-shadow:0 4px 16px rgba(0,0,0,.45)}
+body.keyboard-open .chatlog{height:max(120px,calc(var(--chat-viewport-height,100dvh) - 290px));min-height:120px}
 .cbtn{flex:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--edge-hi);background:var(--panel2);color:var(--gold);display:grid;place-items:center;font-size:22px;line-height:1}
 .cbtn svg{width:22px;height:22px}
 .cbtn.send{background:var(--gold);border-color:var(--gold);color:var(--gold-ink);box-shadow:0 3px 0 #A87A00}
@@ -4364,6 +4369,19 @@ const seenMsgs=new Set(); let seenReady=false;
 // Messenger-style extras: replies, reactions, typing and presence (presence/typing come from the realtime channel)
 let replyTo=null, openMid=null, lastTap={id:"",t:0}, typingAt={}, onlineIds=new Set(), chatRT=null, typingSent=0, lastLogId="", thread=null;
 const coarse=()=>window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+let chatViewportBase=window.innerHeight, chatKeyboardOpen=false, chatKeyboardResized=false;
+function syncChatViewport(){
+  const vv=window.visualViewport, height=vv?vv.height:window.innerHeight;
+  if(!chatKeyboardOpen)chatViewportBase=window.innerHeight;
+  const gap=Math.max(0,window.innerHeight-(height+(vv?vv.offsetTop:0)));
+  if(chatKeyboardOpen&&height<chatViewportBase-100)chatKeyboardResized=true;
+  else if(chatKeyboardOpen&&chatKeyboardResized&&height>chatViewportBase-80){chatKeyboardOpen=false;chatKeyboardResized=false;}
+  document.documentElement.style.setProperty("--chat-viewport-height",`${height}px`);
+  document.documentElement.style.setProperty("--chat-keyboard-gap",`${gap}px`);
+  document.body.classList.toggle("keyboard-open",chatKeyboardOpen&&(coarse()||NATIVE));
+}
+window.addEventListener("resize",syncChatViewport);
+if(window.visualViewport)window.visualViewport.addEventListener("resize",syncChatViewport);
 function allMsgs(){
   const out=mine.chat.map(m=>({...m,who:myId||"me",me:true}));
   mate().forEach(id=>normalize(players[id]).chat.forEach(m=>out.push({...m,who:id,me:false})));
@@ -4692,6 +4710,8 @@ function renderChat(){
   const msgs=inView(allMsgs()); lastLogId=msgs.length?msgs[msgs.length-1].id:"";
   log2.scrollTop=log2.scrollHeight; bindLog(log2); renderReplyBar(); renderPicBar(); signChatPics();
   const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim()||!!chatPic;sendb.disabled=!!(chatPic&&chatPic.busy);sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
+  f.onfocus=()=>{if(coarse()||NATIVE){chatKeyboardOpen=true;syncChatViewport();setTimeout(()=>{if(document.activeElement===f)f.scrollIntoView({block:"nearest",behavior:"smooth"});},250);}};
+  f.onblur=()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();};
   f.oninput=()=>{sync();if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
   f.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}};
   const sent=()=>{f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();};
