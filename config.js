@@ -2,8 +2,8 @@
 // The anon key is meant to be public: the database rules in supabase/schema.sql
 // decide who can read and write, so it is safe to commit this file.
 window.FDE_CONFIG = {
-  supabaseUrl: "https://YOUR-PROJECT.supabase.co",
-  supabaseAnonKey: "YOUR-ANON-KEY",
+  supabaseUrl: "https://rhobcuuepctklqqejgsl.supabase.co",
+  supabaseAnonKey: "sb_publishable_i_Ksbfwo0NItvQs9MDFDbQ_t_4NA8Jw",
   partnerName: "Bert",
   // Set to true after adding ANTHROPIC_API_KEY to Vercel (see README, "AI-generated quizzes").
   aiQuiz: false,
