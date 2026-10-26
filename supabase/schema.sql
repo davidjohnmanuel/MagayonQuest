@@ -163,7 +163,12 @@ create policy "posts: insert own" on public.posts
   for insert to authenticated with check (user_id = auth.uid() and public.is_member());
 drop policy if exists "posts: delete own" on public.posts;
 create policy "posts: delete own" on public.posts
-  for delete to authenticated using (user_id = auth.uid());
+  for delete to authenticated using (
+    user_id = auth.uid()
+    and public.is_member()
+    and created_at > now() - interval '15 minutes'
+    and created_at <= now()
+  );
 
 drop policy if exists "likes: members read" on public.post_likes;
 create policy "likes: members read" on public.post_likes

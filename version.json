@@ -1,9 +1,10 @@
 {
-  "build": 10,
-  "version": "1.9",
+  "build": 11,
+  "version": "1.10",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Add chat mentions with notifications"
+    "Feed hashtag search",
+    "Delete posts within 15 minutes"
   ]
 }

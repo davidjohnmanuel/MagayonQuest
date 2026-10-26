@@ -842,6 +842,11 @@ body.locked{overflow:hidden}
 .profbtn{justify-self:start;padding:0;min-height:30px;font-size:13px}
 .mem[data-profile]{cursor:pointer}
 .feedtitle{margin-bottom:-4px}
+.feed-search{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 12px;border:2px solid var(--edge);border-radius:12px;background:var(--shadow);color:var(--dim)}
+.feed-search:focus-within{border-color:var(--cyan)}
+.feed-search svg{width:18px;height:18px;flex:none}
+.feed-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:inherit}
+.feed-search button{border:0;background:none;color:var(--cyan);font-weight:700}
 .feed{display:grid;gap:12px}
 .feedmsg{text-align:center;padding:12px 0}
 .feedempty{border-color:var(--edge-hi);color:var(--muted)}
@@ -866,6 +871,9 @@ body.locked{overflow:hidden}
 .post-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px;line-height:1.45}
 .post-body.jumbo{font-size:44px;line-height:1.1}
 .post-body a,.cbub a{color:var(--cyan)}
+.post-hashtag{padding:0;border:0;background:none;color:var(--cyan);font:inherit;font-weight:800;cursor:pointer}
+.post-hashtag:hover{text-decoration:underline}
+.post-del{font-size:12px;font-weight:800;padding:0 9px;width:auto;min-width:52px}
 .post-img{display:block;padding:0;border:0;background:var(--shadow);border-radius:12px;overflow:hidden;margin:0 -2px}
 .post-img img{display:block;width:100%;max-height:520px;object-fit:cover}
 .post-img.missing{padding:28px;text-align:center}
@@ -2447,7 +2455,7 @@ const PHOTO_BUCKET = "post-photos", PHOTO_MAX = 1600, PHOTO_TTL = 6 * 3600;
 const CAM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 const PIC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/></svg>';
 const LIKE_SVG = on => `<svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.6 4 4.5 7.2 4.5c2 0 3.6 1.1 4.8 2.8 1.2-1.7 2.8-2.8 4.8-2.8 3.2 0 5.6 3.1 4.4 6.7-1.7 4.7-9.2 9.3-9.2 9.3z" fill="${on ? "#FF77AE" : "none"}" stroke="${on ? "#FF77AE" : "currentColor"}" stroke-width="2"/></svg>`;
-let feed = { posts: [], loaded: false, err: "" }, feedCh = null, profileId = null;
+let feed = { posts: [], loaded: false, err: "" }, feedCh = null, profileId = null, feedQuery = "", postDeleteExpiryTimer = null;
 let draft = { text: "", blob: null, preview: "", busy: false, err: "", q: "", qi: -1 };
 const photoUrls = {}, openComments = new Set();
 let cam = null; // desktop camera sheet: {stream}
@@ -2502,9 +2510,15 @@ const postSnip = b => { const q = b && splitQ(b); return q ? `Answered: ${q.q}` 
 function renderFeed(){
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
     <div class="ptitle feedtitle"><h3>Party feed</h3><span class="hud">Updates from everyone</span></div>
+    ${mode === "shared" ? `<label class="feed-search">${SEARCH_SVG}<input id="feedsearch" type="search" placeholder="Search posts or #hashtags…" value="${esc(feedQuery)}" aria-label="Search party feed" autocomplete="off"><button type="button" id="feedclear"${feedQuery ? "" : " hidden"}>Clear</button></label>` : ""}
     ${mode === "shared" ? `${peopleHTML()}${feedSectionHTML("")}` : `<section class="panel"><p class="muted">Sign in with study-list access to post updates and see your party's.</p></section>`}
   </div>`;
-  if (mode === "shared"){ bindPeople($("view")); bindFeedSection(); }
+  if (mode === "shared"){
+    bindPeople($("view")); bindFeedSection();
+    const search=$("feedsearch");
+    if(search)search.oninput=()=>{feedQuery=search.value;const clear=$("feedclear");if(clear)clear.hidden=!feedQuery;refreshFeed();};
+    const clear=$("feedclear");if(clear)clear.onclick=()=>{feedQuery="";renderFeed();};
+  }
 }
 // Base: the two newest posts, linking to the Feed tab
 function latestHTML(){
@@ -2552,6 +2566,31 @@ function postTime(iso){
   if (m < 10080) return `${Math.round(m / 1440)}d`;
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: new Date(iso).getFullYear() === new Date().getFullYear() ? undefined : "numeric" });
 }
+const POST_DELETE_MS=15*60*1000;
+const canDeletePost=(p,now=Date.now())=>{
+  const created=Date.parse(p.created_at),age=now-created;
+  return p.user_id===myId&&Number.isFinite(created)&&age>=0&&age<POST_DELETE_MS;
+};
+function hashtags(text){
+  return [...new Set([...String(text||"").matchAll(/(^|[^\p{L}\p{N}_])#([\p{L}\p{N}_]+)/gu)].map(match=>match[2]))];
+}
+function postBodyHTML(text){
+  let html=linkify(esc(text));
+  html=html.split(/(<a\b[^>]*>[\s\S]*?<\/a>)/gi).map(part=>{
+    if(part.startsWith("<a ")||part.startsWith("<a>"))return part;
+    return part.replace(/(^|[^\p{L}\p{N}_])#([\p{L}\p{N}_]+)/gu,(_,prefix,tag)=>`${prefix}<button type="button" class="post-hashtag" data-hashtag="${esc(tag)}">#${esc(tag)}</button>`);
+  }).join("");
+  return html;
+}
+function searchPosts(posts,query){
+  const q=String(query||"").trim().toLocaleLowerCase();
+  if(!q)return posts;
+  const term=q.replace(/^#/,"");
+  return posts.filter(p=>{
+    const content=[p.body,...(p.post_comments||[]).map(c=>c.body)].join("\n").toLocaleLowerCase();
+    return content.includes(q)||hashtags(content).some(tag=>tag.toLocaleLowerCase()===term);
+  });
+}
 
 async function loadFeed(){
   if (!sb || !started) return;
@@ -2582,13 +2621,15 @@ function subscribeFeed(){
 }
 function resetFeed(){
   if (feedCh){ sb.removeChannel(feedCh); feedCh = null; }
-  feed = { posts: [], loaded: false, err: "" }; feedMax = 10; profileId = null; openComments.clear(); clearDraft(); closeCamSheet(); closePhoto();
+  clearTimeout(postDeleteExpiryTimer); postDeleteExpiryTimer=null;
+  feed = { posts: [], loaded: false, err: "" }; feedMax = 10; feedQuery = ""; profileId = null; openComments.clear(); clearDraft(); closeCamSheet(); closePhoto();
 }
 
 function feedListHTML(uid){
   if (!feed.loaded) return `<p class="muted feedmsg">Loading posts…</p>`;
   if (feed.err) return `<p class="amsg">${esc(feed.err)}</p>`;
-  const list = uid ? feed.posts.filter(p => p.user_id === uid) : feed.posts;
+  const query=uid?"":feedQuery,list = searchPosts(uid ? feed.posts.filter(p => p.user_id === uid) : feed.posts,query);
+  if(!list.length&&query)return `<div class="empty-mate feedempty"><b>No posts match “${esc(query)}”</b><span>Try another word or hashtag.</span><button class="linkbtn" data-clearsearch>Clear search</button></div>`;
   if (!list.length) return `<div class="empty-mate feedempty"><b>${uid && uid !== myId ? `${esc(whoOf(uid).name)} hasn't posted yet` : "No posts yet"}</b>${uid && uid !== myId ? "Their updates will show up here." : "Share a win, a photo of your study setup, or what you're tackling next."}</div>`;
   return list.slice(0, feedMax).map(postHTML).join("") + (list.length > feedMax ? `<button class="gbtn morefeed" data-feedmore>See more posts</button>` : "");
 }
@@ -2598,14 +2639,14 @@ function postHTML(p){
   const likers = p.post_likes.map(l => l.user_id === myId ? "You" : whoOf(l.user_id).name);
   const shown = open ? cs : cs.slice(-2), qa = p.body && splitQ(p.body), body = qa ? qa.a : p.body;
   return `<article class="panel post" data-post="${p.id}">
-    <header class="post-h"><button class="post-who" data-profile="${esc(p.user_id)}"><img alt="" src="${esc(w.av)}"><span><b>${esc(w.name)}</b><span class="hud">${esc(postTime(p.created_at))}</span></span></button>${w.isMe ? `<button class="mact post-del" data-pdel="${p.id}" aria-label="Delete post" title="Delete post">✕</button>` : ""}</header>
+    <header class="post-h"><button class="post-who" data-profile="${esc(p.user_id)}"><img alt="" src="${esc(w.av)}"><span><b>${esc(w.name)}</b><span class="hud">${esc(postTime(p.created_at))}</span></span></button>${canDeletePost(p) ? `<button class="mact post-del" data-pdel="${p.id}" aria-label="Delete post (available for 15 minutes)" title="Delete post · available for 15 minutes">Delete</button>` : ""}</header>
     ${qa ? `<div class="post-q"><span class="hud">Question</span><b>${esc(qa.q)}</b>${w.isMe ? "" : `<button class="linkbtn" data-pask="${esc(qa.q)}">Answer this too</button>`}</div>` : ""}
-    ${body ? `<p class="post-body${!p.image_path && !qa && isJumbo(body) ? " jumbo" : ""}">${linkify(esc(body))}</p>` : ""}
+    ${body ? `<p class="post-body${!p.image_path && !qa && isJumbo(body) ? " jumbo" : ""}">${postBodyHTML(body)}</p>` : ""}
     ${p.image_path ? (img ? `<button class="post-img" data-photo="${esc(p.image_path)}" aria-label="Open photo"><img alt="Photo from ${esc(w.name)}" src="${esc(img.u)}" loading="lazy"></button>` : `<div class="post-img missing hud">Photo unavailable</div>`) : ""}
     ${nl || cs.length ? `<div class="post-stats">${nl ? `<span title="${esc(likers.join(", "))}">${LIKE_SVG(true)} ${nl === 1 ? esc(likers[0]) : liked ? `You and ${nl - 1} other${nl === 2 ? "" : "s"}` : nl}</span>` : "<span></span>"}${cs.length ? `<button class="linkbtn" data-pcom="${p.id}">${cs.length} comment${cs.length === 1 ? "" : "s"}</button>` : ""}</div>` : ""}
     <div class="post-acts"><button data-plike="${p.id}" aria-pressed="${liked}">${LIKE_SVG(liked)} Like</button><button data-pcom="${p.id}">Comment</button></div>
     ${cs.length > shown.length ? `<button class="linkbtn morecom" data-pmore="${p.id}">View all ${cs.length} comments</button>` : ""}
-    ${shown.length ? `<div class="comments">${shown.map(c => { const cw = whoOf(c.user_id); return `<div class="comment"><img alt="" src="${esc(cw.av)}"><div class="cbub"><b>${esc(cw.name)}</b><span>${linkify(esc(c.body))}</span></div><span class="cmeta hud">${esc(postTime(c.created_at))}${c.user_id === myId || w.isMe ? ` · <button class="linkbtn" data-cdel="${c.id}">Delete</button>` : ""}</span></div>`; }).join("")}</div>` : ""}
+    ${shown.length ? `<div class="comments">${shown.map(c => { const cw = whoOf(c.user_id); return `<div class="comment"><img alt="" src="${esc(cw.av)}"><div class="cbub"><b>${esc(cw.name)}</b><span>${postBodyHTML(c.body)}</span></div><span class="cmeta hud">${esc(postTime(c.created_at))}${c.user_id === myId || w.isMe ? ` · <button class="linkbtn" data-cdel="${c.id}">Delete</button>` : ""}</span></div>`; }).join("")}</div>` : ""}
     ${open ? `<form class="cform" data-cform="${p.id}"><img alt="" src="${esc(myAvatar())}"><input id="pc-${p.id}" maxlength="500" placeholder="Write a comment…" autocomplete="off" aria-label="Write a comment"><button class="gbtn" type="submit" aria-label="Send comment">${SEND}</button></form>` : ""}
   </article>`;
 }
@@ -2713,9 +2754,13 @@ async function sendComment(id, input){
   input.value = ""; loadFeed();
 }
 async function deletePost(id){
-  const p = feed.posts.find(x => x.id === id); if (!p || !window.confirm("Delete this post? This can't be undone.")) return;
-  const { error } = await sb.from("posts").delete().eq("id", id);
-  if (error){ toast("Couldn't delete the post"); return; }
+  const p = feed.posts.find(x => x.id === id); if (!p) return;
+  if(!canDeletePost(p)){toast("Posts can only be deleted within 15 minutes of posting");refreshFeed();return;}
+  if (!window.confirm("Are you sure you want to permanently delete this post? You can only delete your post within 15 minutes of posting. This can't be undone.")) return;
+  const cutoff=new Date(Date.now()-POST_DELETE_MS).toISOString();
+  const { data, error } = await sb.from("posts").delete().eq("id", id).gte("created_at",cutoff).lte("created_at",new Date().toISOString()).select("id");
+  if (error){ toast(`Couldn't delete the post: ${error.message}`); return; }
+  if(!data || !data.length){toast("Posts can only be deleted within 15 minutes of posting");loadFeed();return;}
   if (p.image_path) sb.storage.from(PHOTO_BUCKET).remove([p.image_path]);
   feed.posts = feed.posts.filter(x => x.id !== id); refreshFeed(); toast("Post deleted");
 }
@@ -2735,8 +2780,13 @@ function bindFeed(root){
   root.querySelectorAll("[data-cdel]").forEach(b => b.onclick = () => deleteComment(b.dataset.cdel));
   root.querySelectorAll("[data-photo]").forEach(b => b.onclick = () => openPhoto(b.dataset.photo));
   root.querySelectorAll("[data-pask]").forEach(b => b.onclick = () => askQuestion(b.dataset.pask));
+  root.querySelectorAll("[data-hashtag]").forEach(b => b.onclick = () => {feedQuery=`#${b.dataset.hashtag}`;go("feed");});
+  root.querySelectorAll("[data-clearsearch]").forEach(b => b.onclick = () => {feedQuery="";renderFeed();});
   root.querySelectorAll("[data-feedmore]").forEach(b => b.onclick = () => { feedMax += 10; refreshFeed(); });
   root.querySelectorAll("[data-cform]").forEach(f => f.onsubmit = e => { e.preventDefault(); sendComment(f.dataset.cform, f.querySelector("input")); });
+  clearTimeout(postDeleteExpiryTimer); postDeleteExpiryTimer=null;
+  const expiry=Math.min(...[...root.querySelectorAll("[data-pdel]")].map(b=>Date.parse(feed.posts.find(p=>p.id===b.dataset.pdel)?.created_at||"")+POST_DELETE_MS-Date.now()));
+  if(Number.isFinite(expiry))postDeleteExpiryTimer=setTimeout(refreshFeed,Math.max(1,expiry+1));
 }
 // Redraw just the post list so the composer and anything being typed survive live updates.
 function refreshFeed(){

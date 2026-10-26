@@ -175,12 +175,15 @@ To change the rewards, edit `sessDelta` in `index.html`.
 **Base** works like a Facebook home page. Your daily quests and the training timer are in one column, and the party feed is in the other. On a phone, the feed comes after the quests and timer.
 
 - **Your party:** a row of everyone's avatars at the top of the feed. Tap one to open that profile.
-- **Posting:** anything you post on Base also shows on your profile. Posts can have an optional photo, taken with the camera or picked from the gallery. Others can like and comment.
+- **Posting:** anything you post on Base also shows on your profile. Posts can have an optional photo, taken with the camera or picked from the gallery. Others can like and comment. You can delete your own post for 15 minutes after posting.
+- **Search:** search the loaded feed by words or hashtags, or tap a hashtag in a post or comment to find matching posts.
 - **Question of the day:** a get-to-know-you question sits above the post box. Tap **Answer** to post your answer under it, or **Another** for a different question. When someone else answers one, an **Answer this too** button on their post lets you answer the same question. The questions live in the `PROMPTS` list in `index.html`.
 - **Profile photo:** change it in **Settings → Profile photo**, or tap your avatar on your profile page. It's cropped to a square and stored in the same private `post-photos` bucket under your user id. It shows everywhere your initials used to.
 - **Profiles:** open one from **Party → View profile**, or by tapping a name in the feed, the people row or the members list. The **Party feed** on the Party screen shows the same posts.
 
 To turn it on, open the Supabase **SQL Editor** and run section 5 of `supabase/schema.sql`, from `-- 5. Player profiles` to the end. It creates the `posts`, `post_likes` and `post_comments` tables and a private `post-photos` storage bucket. Only people on the study list can see posts and photos. Photos are shrunk to 1600px before upload and can be up to 5 MB.
+
+If feed tables were already set up, run the updated section 5 again in Supabase so its delete policy enforces the 15-minute limit on the database as well as in the app.
 
 On phones, **Camera** opens the phone's camera app. On a laptop it opens a live camera preview in the app, which asks for camera permission the first time.
 
