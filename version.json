@@ -1,7 +1,13 @@
 {
-  "build": 1,
-  "version": "1.0",
+  "build": 2,
+  "version": "1.1",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
-  "notes": []
+  "notes": [
+    "New online Shop",
+    "Study commitments: pick a time, keep it for bonus coins",
+    "Facebook-style feed on Base with get-to-know-you questions",
+    "Change your profile photo",
+    "Automatic update prompts"
+  ]
 }
