@@ -345,6 +345,19 @@ details.intel[open] summary::after{content:"-"}
 .cbtn svg{width:22px;height:22px}
 .cbtn.send{background:var(--gold);border-color:var(--gold);color:var(--gold-ink);box-shadow:0 3px 0 #A87A00}
 .cbtn.send.like{background:var(--panel2);border-color:var(--edge-hi);box-shadow:none}
+.cbtn:disabled{opacity:.55}
+.mpic{display:grid;gap:3px;justify-items:inherit;max-width:100%}
+.mimg{display:block;border:0;padding:0;background:var(--panel2);border-radius:16px;overflow:hidden;width:min(240px,60vw);max-height:320px;cursor:zoom-in}
+.mimg img{display:block;width:100%;height:100%;max-height:320px;object-fit:cover}
+.mimg.wait{display:grid;place-items:center;color:var(--dim);cursor:default}
+.mimg.wait svg{width:28px;height:28px}
+.msg.me .mimg{border:2px solid var(--gold)}
+.msg.them .mimg{border:2px solid var(--pink)}
+.picbar{display:flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--edge);border-left:4px solid var(--gold);border-radius:12px;padding:6px 6px 6px 8px}
+.picbar img{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none}
+.picbar span{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.picbar span.err{color:var(--pink)}
+.picbar button{flex:none;border:0;background:var(--panel2);color:var(--muted);width:32px;height:32px;border-radius:50%}
 .emojipanel{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;background:var(--panel);border:2px solid var(--edge-hi);border-radius:14px;padding:8px;max-height:180px;overflow-y:auto}
 .emojipanel button{border:0;background:none;font-size:24px;min-height:40px;border-radius:8px}
 .emojipanel button:hover{background:var(--panel2)}
@@ -411,6 +424,7 @@ details.intel[open] summary::after{content:"-"}
 .qinvite .gbtn{margin-top:4px;min-height:40px;font-size:14px}
 .emotes button.duel{border-color:var(--gold);background:var(--gold);color:var(--gold-ink);box-shadow:0 3px 0 #A87A00}
 .emotes button.topicb{border-color:var(--cyan);color:var(--cyan)}
+.emotes button.picb{border-color:var(--green);color:var(--green)}
 .qinvite.tcard,.msg.them .qinvite.tcard{border-color:var(--cyan)!important}
 .tcard b{overflow-wrap:anywhere}
 .tcard > span:not(.hud):not(.qscores){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
@@ -443,11 +457,6 @@ details.intel[open] summary::after{content:"-"}
 .hskills li.on em{color:var(--green)}
 .lockmsg{text-align:center;padding:8px;border:2px dashed var(--edge);border-radius:10px}
 .herocard{border-color:var(--hc);background:linear-gradient(150deg,color-mix(in srgb,var(--hc) 18%,#2E2766),#221D4E)}
-.battle .fighter{display:flex;gap:12px;align-items:center;background:var(--panel);border:2px solid var(--edge);border-radius:14px;padding:10px 12px;box-shadow:0 4px 0 var(--shadow)}
-.fighter.opp{border-color:var(--pink)} .fighter.me{border-color:var(--gold)}
-.fmeta{flex:1;min-width:0;display:grid;gap:4px}
-.fmeta b{font-family:var(--f-display);font-size:16px}
-.fmeta .hud{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .hpnum{font-family:var(--f-hud);font-size:14px;color:var(--ink)}
 .hpbar{height:14px;border-radius:7px;background:var(--shadow);border:2px solid var(--edge);overflow:hidden}
 .hpbar i{display:block;height:100%;background:linear-gradient(180deg,#9BF5AE,var(--green));transition:width .7s cubic-bezier(.2,.8,.2,1)}
@@ -476,10 +485,6 @@ details.intel[open] summary::after{content:"-"}
 .crest .pix{width:64%;height:64%;display:block;animation:bob 1.6s steps(2) infinite;image-rendering:pixelated}
 .crest .pix svg{width:100%;height:100%;display:block}
 @keyframes bob{50%{transform:translateY(-2px)}}
-.crest.lunge{animation:lunge .35s ease-out}
-.fighter.opp .crest.lunge{animation:lunge-down .35s ease-out}
-@keyframes lunge{40%{transform:translateY(-14px) scale(1.12)}}
-@keyframes lunge-down{40%{transform:translateY(14px) scale(1.12)}}
 .fighter{position:relative}
 .fighter.shake{animation:shk .35s}
 .fighter.shake-hard{animation:shk2 .45s}
@@ -502,6 +507,76 @@ details.intel[open] summary::after{content:"-"}
 .skillbar{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 @media (max-width:420px){.skillbar{grid-template-columns:1fr 1fr}.skillbtn span{font-size:10.5px}}
 @media (prefers-reduced-motion:reduce){.crest .pix{animation:none}}
+
+/* Arena stage + full-body pixel heroes */
+.spr{display:block;width:var(--sw,clamp(76px,22vw,112px));aspect-ratio:16/20;transform-origin:50% 92%}
+.spr svg{width:100%;height:100%;display:block;animation:bob 1.2s steps(2) infinite}
+.spr.lunge{animation:lunge .35s ease-out}
+@keyframes lunge{40%{transform:translateX(34%) scale(1.08)}}
+.stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px;height:clamp(250px,66vw,310px);padding:8px 8px 0;border-radius:16px;border:3px solid var(--shadow);box-shadow:0 4px 0 var(--shadow),inset 0 0 0 2px var(--edge);overflow:hidden;background:#241B4E}
+.stagebg{position:absolute;inset:0;width:100%;height:100%}
+.stage>:not(.stagebg){position:relative}
+.stage .fighter{display:flex;flex-direction:column;justify-content:space-between;align-items:center;min-width:0}
+.plate{display:grid;gap:3px;align-self:stretch;background:rgba(11,9,32,.84);border:2px solid var(--gold);border-radius:10px;padding:6px 8px;box-shadow:0 3px 0 var(--shadow)}
+.fighter.opp .plate{border-color:var(--pink)}
+.plate b{font-family:var(--f-display);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.plate>.hud{font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plate .hpbar{height:12px}
+.spot{position:relative;margin-bottom:12px}
+.spot::before{content:"";position:absolute;left:12%;right:12%;bottom:-5px;height:10px;border-radius:50%;background:rgba(58,36,20,.5)}
+.spot>*{position:relative}
+.fighter.opp .spot{transform:scaleX(-1)}
+.stage .vsx{align-self:start;margin-top:26px;font-size:16px;color:var(--gold);text-shadow:0 2px 0 #7A5200,0 0 10px rgba(255,200,61,.5)}
+.stage .fighter.flash::after{content:none}
+.stage .fighter.flash .spot{animation:sprflash .45s}
+@keyframes sprflash{30%{filter:brightness(2.2) drop-shadow(0 0 6px var(--flash))}}
+.fighter.down .spr{animation:ko .5s 1.4s forwards}
+.fighter.down .spr svg{animation:none}
+@keyframes ko{to{transform:rotate(-90deg) translateX(-12%);filter:grayscale(.6) brightness(.75)}}
+.fighter.win .spr svg{animation:hop .5s steps(2) 1.4s infinite}
+@keyframes hop{50%{transform:translateY(-10%)}}
+.ghost{display:block;position:relative}
+.ghost .spr{filter:brightness(0) opacity(.45)}
+.ghost .spr svg{animation:none}
+.ghost i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-family:var(--f-hud);font-size:26px;color:var(--muted);transform:scaleX(-1)}
+.fans{animation:cheer .9s steps(2) infinite}
+.fans.b{animation-delay:.45s}
+@keyframes cheer{50%{transform:translateY(-1px)}}
+.flame{animation:flick .5s steps(2) infinite}
+@keyframes flick{50%{opacity:.55}}
+.stage.mini{grid-template-columns:minmax(0,1fr);justify-items:center;align-items:end;height:190px;margin:-4px -4px 0;border-color:var(--hc)}
+.stage.mini .spot{--sw:92px}
+.arenatitle{align-self:start;justify-self:center;margin-top:4px;font-family:var(--f-hud);font-size:11px;letter-spacing:.08em;color:var(--gold);background:rgba(11,9,32,.8);border:2px solid var(--gold);border-radius:8px;padding:2px 10px;text-transform:uppercase}
+.stage.mini .spot{margin-bottom:14px}
+.hspr{flex:none;display:grid;place-items:end center;width:64px;height:76px;padding-bottom:4px;border-radius:12px;border:2px solid var(--hc);background:linear-gradient(180deg,#3A2E5A 0 66%,#8E6A3E 66% 68%,#C9A26A 68%);overflow:hidden}
+.hspr .spr{--sw:50px}
+.hero.locked .hspr .spr{filter:grayscale(.8) brightness(.7)}
+.cmp{position:absolute;bottom:0;right:72%;width:calc(var(--sw,clamp(76px,22vw,112px)) * .72);aspect-ratio:16/12;pointer-events:none}
+.cmp.young{width:calc(var(--sw,clamp(76px,22vw,112px)) * .5)}
+.cmp svg{width:100%;height:100%;display:block;animation:bob 1s steps(2) infinite}
+.cmp.fly{bottom:58%;right:66%}
+.cmp.fly svg{animation:hover 1.6s ease-in-out infinite}
+@keyframes hover{50%{transform:translateY(-14%)}}
+.cmp.two .cf1{visibility:hidden}
+.cmp.two .cf0{animation:frA .5s steps(1) infinite}
+.cmp.two .cf1{animation:frB .5s steps(1) infinite}
+@keyframes frA{50%{visibility:hidden}}
+@keyframes frB{0%{visibility:hidden}50%{visibility:visible}}
+.spot.aura::after{content:"";position:absolute;left:-6%;right:-6%;bottom:-8px;height:70%;border-radius:50% 50% 40% 40%;background:radial-gradient(closest-side,color-mix(in srgb,var(--hc) 55%,transparent),transparent);animation:aura 1.6s ease-in-out infinite;pointer-events:none}
+.spot.aura .cmp svg{filter:drop-shadow(0 0 3px #FFC83D)}
+@keyframes aura{50%{opacity:.45;transform:scale(1.06)}}
+.den{gap:10px}
+.denscene{position:relative;height:clamp(190px,48vw,230px);margin:-4px -4px 0;border-radius:12px;border:3px solid var(--shadow);overflow:hidden;background:#1C1840}
+.walker{position:absolute;bottom:10px;left:30%;--sw:clamp(70px,20vw,92px);cursor:pointer;animation:pace 18s linear infinite;-webkit-tap-highlight-color:transparent}
+.walker .face{animation:face 18s steps(1) infinite}
+@keyframes pace{0%,10%{left:30%}45%,55%{left:62%}90%,100%{left:30%}}
+@keyframes face{0%{transform:none}50%{transform:scaleX(-1)}}
+.walker .spot{margin-bottom:0}
+.spr.jump svg{animation:hop .3s steps(2) 2}
+.say{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);width:max-content;max-width:min(220px,60vw);background:#FFF7E6;color:#15122E;font-family:var(--f-display);font-weight:700;font-size:13px;line-height:1.25;padding:6px 10px;border-radius:10px;border:2px solid var(--shadow);box-shadow:0 3px 0 var(--shadow);text-align:center}
+.say::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:#FFF7E6}
+.tw{animation:flick 2.4s steps(2) infinite}
+@media (prefers-reduced-motion:reduce){.spr svg,.cmp svg,.fans,.flame,.tw,.walker,.walker .face,.spot.aura::after,.cmp.two .cf0,.cmp.two .cf1{animation:none!important}.cmp.two .cf1{visibility:hidden}}
 
 /* Coins, shop, items, sound */
 .coins{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-display);font-weight:700;color:var(--gold)}
@@ -1808,7 +1883,7 @@ function normalize(raw){
     const days=Object.keys(raw.time).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-120);
     for(const day of days){const t=raw.time[day];if(!t||typeof t!=="object")continue;const o={};for(const k in t){const v=Math.round(Number(t[k]));if(MOD[k]&&v>0&&v<=1440)o[k]=v;}if(Object.keys(o).length)d.time[day]=o;}
   }
-  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":"m"};if(o.k==="q"||o.k==="b")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;return o;}).slice(-120);
+  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":"m"};if(o.k==="q"||o.k==="b")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;if(o.k==="m"&&typeof m.i==="string"&&CHAT_IMG_RE.test(m.i)){o.i=m.i;if(m.w>0&&m.h>0&&m.w<=4000&&m.h<=4000){o.w=Math.round(m.w);o.h=Math.round(m.h);}}return o;}).slice(-120);
   if(raw.rx&&typeof raw.rx==="object")Object.keys(raw.rx).filter(k=>/^[a-z0-9]{4,24}$/.test(k)&&REACTS.includes(raw.rx[k])).slice(-200).forEach(k=>{d.rx[k]=raw.rx[k];});
   if(typeof raw.seen==="string"&&!isNaN(Date.parse(raw.seen)))d.seen=raw.seen.slice(0,40);
   if(Array.isArray(raw.quizzes))d.quizzes=raw.quizzes.filter(z=>z&&typeof z.id==="string"&&/^q[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs)})).filter(z=>z.m.length&&z.qs.length).slice(-8);
@@ -1831,6 +1906,7 @@ function normalize(raw){
 }
 // Study commitments: pick a time before training. Keeping it pays coins and XP (more for overtime); stopping early costs coins.
 const AV_RE=/^[0-9a-f-]{36}\/av[a-z0-9]{4,24}\.jpg$/;
+const CHAT_IMG_RE=/^[0-9a-f-]{36}\/ch[a-z0-9]{4,24}\.jpg$/;
 const GRACE_MS=120000; // a session can be thrown away for free only in its first 2 minutes
 const sessKept=x=>x.s>=x.c;
 const sessDelta=x=>sessKept(x)?10+Math.min(20,Math.floor((x.s-x.c)/5)):-2*Math.ceil((x.c-x.s)/5);
@@ -2004,6 +2080,7 @@ function renderToday(){
   const allDone=quests.every(q=>q.p>=1);
   $("view").innerHTML=`<div class="wrap" style="gap:16px">
    ${playerHUD()}
+   ${heroDenHTML()}
    ${coopHTML()}
    <div class="cols sl home"><div class="side">
    <section class="panel">
@@ -2051,7 +2128,7 @@ function renderToday(){
   V.querySelectorAll("[data-studynow]").forEach(b=>b.onclick=()=>{pickTopic=b.dataset.studynow;startTimer(pickTopic);});
   V.querySelectorAll("[data-sshare]").forEach(b=>b.onclick=()=>shareSession(Number(b.dataset.sshare),b));
   const cur=V.querySelector('.tchip[aria-pressed="true"]'); if(cur)cur.scrollIntoView({block:"nearest",inline:"center"});
-  bindHudShop();
+  bindHudShop();bindDen();
   if(mode==="shared"){bindPeople(V);bindFeedSection();}
   tick();
 }
@@ -2923,6 +3000,200 @@ function crest(h, size){
   const ini = h.n.split(" ").map(w => w[0]).slice(0, 2).join("");
   return `<span class="crest" data-hero="${h.id}" style="--hc:${h.c};width:${size}px;height:${size}px"><span class="pix">${pixelArt(h.el, h.c)}</span><span class="ini">${esc(ini)}</span></span>`;
 }
+// ---- full-body 8-bit hero sprites, 16×20, facing right (k outline, s/S skin, h/H hair, a/A outfit, t trim)
+const SPR_BASE = { k: "#15122E", s: "#F5C9A0", S: "#D49A72", w: "#FFF7E6", m: "#D8E0EE", M: "#8A94AE", g: "#FFC83D", G: "#C98A10", b: "#5A3E2C", o: "#FF8A3C", y: "#FFE27A", r: "#D84040", c: "#4FE3E0" };
+const SPRITES = {
+  jon: { p: { h: "#3A2A2A", H: "#22181C", a: "#3A3550", A: "#26223A", t: "#D8CFC0" }, r: [
+    "..............w.","....kkkkkkk...wm","...khhhhhhhk..wm","..khhhhhhhhhk.wm",
+    "..khhhhhhhssk.wm","..khhsssssksk.wm","..khhsssssssk.wm","...khHssssHk..wm",
+    "....kkHHHkk...wm","...kttttttttk.wm","..kaaaaaaaaaakwm","..kAaaaaaaaaAggg",
+    "..kSAaaaaaaAssb.","...kAbbbbbbAk.g.","...kAaaaaaaAk...","...kAAaaaaAAk...",
+    "....kAAkkAAk....","....kbbkkbbk....","...kbbbkkbbbk...","...kkkk..kkkk..."
+  ] },
+  dany: { p: { h: "#F4F0E8", H: "#B9B2C8", a: "#5A8BD8", A: "#3B63A8", t: "#FFC83D" }, r: [
+    "................","....kkkkkkk.....","...khhhhhhhk....","..khhhhhhhhhk...",
+    ".khhhhhhhsssk...",".khHhsssssksk...",".khHhsssssssk.y.",".khHhSssssSk.yo.",
+    ".khHhkkSSSkk.oy.",".khHttaaaattkro.",".khaaaaaaaaaak..",".khAaaaaaaaaAs..",
+    ".khkSAaaaaaAk...","..kHkAttttAk....","...kaaaaaaaak...","..kAaaaaaaaaAk..",
+    "..kAaaaaaaaaAk..",".kAAaaaaaaaaAAk.",".kAAAAAAAAAAAAk.","..kkkkkkkkkkkk.."
+  ] },
+  tyrion: { p: { h: "#E8C05A", H: "#B8892E", a: "#B83A3A", A: "#7E2228", t: "#FFC83D" }, r: [
+    "................","................","................","................",
+    "....kkkkkkk.....","...khhhhhhhk....","..khhhhhhhhhk...","..khhhhhhsssk...",
+    "..khhsssssksk...","..khhsssssssk...","...khHHsssHk....","....kHHHHHk.kgk.",
+    "...kttaaaattkgk.","..kaaaaaaaaaskk.","..kAaattaaaAk...","...kAAttAAAk....",
+    "....kbbkkbbk....","...kbbbkkbbbk...","...kkkk..kkkk...","................"
+  ] },
+  arya: { p: { h: "#5A3A26", H: "#3A2418", a: "#8A8FA0", A: "#5E6274", t: "#6A4A30" }, r: [
+    "................","....kkkkkkk.....","...khhhhhhhk..w.","..khhhhhhhhhk.m.",
+    ".khhhhhhhsssk.m.","kHkhhsssssksk.m.","kHkhhsssssssk.m.",".k.khSssssSk..m.",
+    "....kkSSSkk...m.","...kttaaaattk.m.","..kaaaaaaaaaakm.","..kAaatttaaAsgg.",
+    "..kSAaaaaaaAk.b.","...kAttttttAk...","...kAaaaaaaAk...","...kAAaaaaAAk...",
+    "....kAAkkAAk....","....kbbkkbbk....","...kbbbkkbbbk...","...kkkk..kkkk..."
+  ] },
+  brienne: { p: { h: "#F0D27A", H: "#C4A24A", a: "#6E9CE8", A: "#4467B0", t: "#D8E0EE" }, r: [
+    "....kkkkkkk.....","...khhhhhhhk..w.","..khhhhhhhhhk.wm","..khhhhhhsssk.wm",
+    "..khhsssssksk.wm","..khhsssssssk.wm","...khSssssSk..wm","....kkSSSkk...wm",
+    "..kttttttttttkwm","..ktaaaaaaaatkwm","..kAaaaaaaaaAggg","..kAaattaaaAssb.",
+    "..kSAaaaaaaAk.g.","...kAttttttAk...","...kmaaaaaamk...","...kAMaaaaMAk...",
+    "....kmmkkmmk....","....kMMkkMMk....","...kmmmkkmmmk...","...kkkk..kkkk..."
+  ] },
+  sam: { p: { h: "#3A2A22", H: "#22181C", a: "#34304A", A: "#211E30", t: "#5A5470" }, r: [
+    "................","....kkkkkkk.....","...khhhhhhhk....","..khhhhhhhhhk...",
+    "..khhhhhhsssk...","..khhsssssksk...","..khhsssssssk...","..kSsssssssSk...",
+    "...kkSSSSSkk....","..kttaaaaaattk..",".kaaaaaaaaakkkkk",".kAaaaaaaaakbwwk",
+    ".kAaaaaaaaskbwwk",".kSAaaaaaaakkkkk",".kAAbbbbbbAAk...","..kAaaaaaaaAk...",
+    "...kAAkkkAAk....","...kbbbk.kbbk...","..kbbbbk.kbbbk..","..kkkkk...kkkk.."
+  ] },
+  cersei: { p: { h: "#F2D488", H: "#C9A24E", a: "#B02848", A: "#761A34", t: "#FFC83D" }, r: [
+    "....g.g.g.......","....kgggggk.....","...khhhhhhhk....","..khhhhhhhhhk...",
+    ".khhhhhhhsssk...",".khHhsssssksk...",".khHhsssssssk...",".khHhSssrsSk....",
+    ".khHhkkSSSkk....",".khHttaaaattk...",".khaaaaaaaaaakgk",".khAaaaaaaaaAkgk",
+    "..kHSAaaaaaAsgg.","...kAttttttAk...","...kaaaaaaaak...","..kAaaaaaaaaAk..",
+    "..kAaaaaaaaaAk..",".kAAaaaaaaaaAAk.",".kAAAAAAAAAAAAk.","..kkkkkkkkkkkk.."
+  ] },
+  bran: { p: { h: "#6A4630", H: "#46301F", a: "#4E7A5A", A: "#33553D", t: "#8E6A44" }, r: [
+    "..............b.","....kkkkkkk..bcb","...khhhhhhhk..b.","..khhhhhhhhhk.b.",
+    "..khhhhhhsssk.b.","..khhssssscsk.b.","..khhsssssssk.b.","...khSssssSk..b.",
+    "....kkSSSkk...b.","..kAttttttttAkb.","..kaaaaaaaaaasb.","..kAaaaaaaaaAsb.",
+    "..kAaaaaaaaaAkb.","..kAaaaaaaaaAkb.","..kAaaaaaaaaAkb.","..kAAaaaaaaAAkb.",
+    "..kAAAaaaaAAAkb.","..kAAAAAAAAAAkb.","...kbbbkkbbbk.b.","...kkkk..kkkk..."
+  ] }
+};
+function pixRects(rows, pal){
+  let rects = "";
+  rows.forEach((row, y) => { for (let x = 0; x < row.length;){ const ch = row[x]; let n = 1; while (row[x + n] === ch) n++; if (pal[ch]) rects += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${pal[ch]}"/>`; x += n; } });
+  return rects;
+}
+const SPR_CACHE = {};
+function heroSprite(h, w){
+  if (!SPR_CACHE[h.id]){ const sp = SPRITES[h.id]; SPR_CACHE[h.id] = `<svg viewBox="0 0 16 20" shape-rendering="crispEdges" aria-hidden="true">${pixRects(sp.r, Object.assign({}, SPR_BASE, sp.p))}</svg>`; }
+  return `<span class="spr" data-hero="${h.id}"${w ? ` style="--sw:${w}px"` : ""}>${SPR_CACHE[h.id]}</span>`;
+}
+// ---- hero companions: join at skill tier 3, fully grown at tier 5, legendary aura at tier 6 (16×12, one or two frames)
+const COMP_SHAPES = {
+  wolf: [
+    ["..........kk.kk.",".........kaakaak",".........kaaaaak","kk.......kaaeaak","kak..kkkkkaaaaak",".kakkaaaaaaaaAk.","..kaaaaaaaaaaAk.","..kAaaaaaaaaaAk.","..kAAaaaaaaaAAk.","..kAAk....kAAk..","..kAAk....kAAk..","..kkkk....kkkk.."]
+  ],
+  lion: [
+    [".........mmmmm..","........mmaaaamm","mm......maaaaaak","mm......maaeaaak",".k..kkkkmaaaaaak","..kkaaaammaaaAk.","..kaaaaaaaaaaAk.","..kAaaaaaaaaaAk.","..kAAaaaaaaaAAk.","..kAAk....kAAk..","..kAAk....kAAk..","..kkkk....kkkk.."]
+  ],
+  dragon: [
+    ["...kkk..........","..kwwwk.........","..kwwwwk....kkk.","...kwwwak..kaaak","....kwwaak.kaeak",".....kaaaaaaaaak","k...kaayyyyaak..","kk.kaaayyyyaak..",".kkaaaaaaaaak...","..kkkakkkkak....",".....k....k.....","................"],
+    ["................","................","............kkk.","...........kaaak","..kkkkkkk..kaeak",".kwwwwwwaaaaaaak","kkwwwwwyyyyaak..","k.kwwwayyyyaak..","...kwwkaaaaak...","....kk.kkkkak...",".....k....k.....","................"]
+  ],
+  raven: [
+    ["...kk...........","..kaak..........","..kaaak.........","...kaaak..kkk...","....kaaakkaeakyy","....kaaaaaaaak..",".kkkaaaaaaaak...","kaaaaaaaaakk....",".kkkkkakak......","......k.k.......","................","................"],
+    ["................","................","................","..........kkk...",".........kaeakyy","....kkkkkaaaak..",".kkkaaaaaaaak...","kaaaakaaaakk....",".kkkkaaaak......","....kaaak.......",".....kkk.k......","................"]
+  ],
+  sword: [
+    ["................","................","...g............","..gGg...........","kbbgwwwwwwwwwwk.","rbbgmmmmmmmmmMMk","..gGg...........","...g............","................","................","................","................"]
+  ],
+  wisp: [
+    ["......k.........",".....kak........",".....kaak.......","....kaaak..k....","....kawaakkak...","...kaawwaaaak...","...kawwwwaak....","..kaawwwwwaak...","..kaawwwwwaak...","..kAaawwwaaAk...","...kAAaaaAAk....","....kkkkkkk....."],
+    [".........k......","........kak.....",".......kaak.....","...k...kaaak....","..kak.kaawak....","...kaaaawwaak...","...kaawwwwaak...","..kaawwwwwaak...","..kaawwwwwaak...","..kAaawwwaaAk...","...kAAaaaAAk....","....kkkkkkk....."]
+  ]
+};
+const COMPANIONS = {
+  jon: { n: "Ghost", t: "the direwolf", s: "wolf", fly: false, p: { a: "#F4F4FA", A: "#BDBDD6", e: "#E04848" } },
+  dany: { n: "Drogon", t: "the dragon", s: "dragon", fly: true, p: { a: "#2E2236", A: "#1E1626", w: "#9A2232", y: "#E88A3C", e: "#FFE27A" } },
+  tyrion: { n: "Lion cub", t: "of Casterly Rock", s: "lion", fly: false, p: { a: "#E8B850", A: "#B8862E", m: "#A0522D", e: "#15122E" } },
+  arya: { n: "Nymeria", t: "the direwolf", s: "wolf", fly: false, p: { a: "#9A9AAE", A: "#6A6A80", e: "#FFC83D" } },
+  brienne: { n: "Oathkeeper", t: "the sword", s: "sword", fly: true, p: { g: "#FFC83D", G: "#C98A10", w: "#E6F0FF", m: "#9CB8E6", M: "#6E8CC6", b: "#5A3E2C", r: "#D84040" } },
+  sam: { n: "White raven", t: "of the Citadel", s: "raven", fly: true, p: { a: "#F4F4FA", A: "#BDBDD6", e: "#15122E", y: "#FFC83D" } },
+  cersei: { n: "Wildfire", t: "the green flame", s: "wisp", fly: true, p: { a: "#5BE37D", A: "#2FBF62", w: "#E2FFE8" } },
+  bran: { n: "Three-eyed raven", t: "", s: "raven", fly: true, p: { a: "#2A2440", A: "#15122E", e: "#E04848", y: "#C9A26A" } }
+};
+const COMP_CACHE = {};
+const compStage = tier => tier >= 5 ? 2 : tier >= 3 ? 1 : 0; // 0 not yet, 1 young, 2 grown
+function companion(h, tier){
+  const c = COMPANIONS[h.id], g = compStage(tier); if (!c || !g) return "";
+  const frames = COMP_SHAPES[c.s];
+  if (!COMP_CACHE[h.id]){ const pal = Object.assign({ k: SPR_BASE.k }, c.p); COMP_CACHE[h.id] = frames.map((fr, f) => `<g class="cf${f}">${pixRects(fr, pal)}</g>`).join(""); }
+  return `<span class="cmp${c.fly ? " fly" : ""}${g === 1 ? " young" : ""}${frames.length > 1 ? " two" : ""}" title="${esc(c.n)}"><svg viewBox="0 0 16 12" shape-rendering="crispEdges" aria-hidden="true">${COMP_CACHE[h.id]}</svg></span>`;
+}
+function companionNote(h, tier){
+  const c = COMPANIONS[h.id], g = compStage(tier);
+  return !g ? `${c.n} joins at ${HERO_TIERS[2]} hero XP` : g === 1 ? `${c.n} is young · grows up at ${HERO_TIERS[4]} hero XP` : tier >= 6 ? `${c.n} · fully grown · legendary aura` : `${c.n} · fully grown · aura at ${HERO_TIERS[5]} hero XP`;
+}
+const heroSpot = (h, tier) => `<div class="spot${tier >= 6 ? " aura" : ""}" style="--hc:${h.c}">${companion(h, tier)}${heroSprite(h)}</div>`;
+
+// ---- pixel colosseum behind battles: crowd, gates, torches, sand
+let ARENA_BG = "";
+function arenaBackdrop(){
+  if (ARENA_BG) return ARENA_BG;
+  const R = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+  let seed = 11; const rand = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  let s = R(0, 0, 128, 72, "#241B4E");
+  [[8, 3], [27, 6], [49, 2], [70, 5], [96, 3], [118, 7]].forEach(([x, y]) => s += R(x, y, 1, 1, "#ABA5D8"));
+  s += R(0, 11, 128, 23, "#3A2E5A") + R(0, 11, 128, 1, "#463F8E");
+  const fans = ["#FF77AE", "#FFC83D", "#4FE3E0", "#ABA5D8", "#FF9F43", "#5BE37D", "#F5C9A0", "#C8A2FF"];
+  let a = "", b = "";
+  for (let row = 0; row < 5; row++){ const y = 13 + row * 4; for (let x = row % 2 * 2; x < 128; x += 4){ const p = R(x, y, 2, 2, fans[rand() * fans.length | 0]) + R(x, y + 2, 2, 1, "#2A2148"); if (rand() < .5) a += p; else b += p; } }
+  s += `<g class="fans">${a}</g><g class="fans b">${b}</g>`;
+  s += R(0, 33, 128, 2, "#15122E") + R(0, 35, 128, 14, "#7A5A44");
+  for (let y = 35, k = 0; y < 49; y += 4, k++){ s += R(0, y + 3, 128, 1, "#5E4434"); for (let x = k % 2 * 4; x < 128; x += 8) s += R(x, y, 1, 3, "#5E4434"); }
+  [14, 59, 104].forEach(x => { s += R(x + 2, 37, 6, 1, "#15122E") + R(x + 1, 38, 8, 1, "#15122E") + R(x, 39, 10, 10, "#15122E"); for (let k = 1; k < 10; k += 2) s += R(x + k, 40, 1, 9, "#2E2766"); });
+  [[36, "#FF77AE"], [86, "#4FE3E0"]].forEach(([x, c]) => s += R(x, 35, 6, 7, c) + R(x, 42, 2, 1, c) + R(x + 4, 42, 2, 1, c) + R(x + 2, 37, 2, 2, "#FFF7E6"));
+  let fl = "";
+  [30, 52, 76, 98].forEach(x => { s += R(x, 41, 1, 5, "#5A3E2C") + R(x - 1, 40, 3, 1, "#C98A10"); fl += R(x - 1, 37, 3, 3, "#FF8A3C") + R(x, 36, 1, 2, "#FFE27A"); });
+  s += `<g class="flame">${fl}</g>`;
+  s += R(0, 49, 128, 23, "#C9A26A") + R(0, 49, 128, 1, "#8E6A3E") + R(0, 50, 128, 1, "#B08850");
+  for (let k = 0; k < 70; k++) s += R(rand() * 128 | 0, 51 + rand() * 21 | 0, 1, 1, rand() < .5 ? "#B08850" : "#DDBA82");
+  return ARENA_BG = `<svg class="stagebg" viewBox="0 0 128 72" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
+}
+
+// ---- hero camp on Base: the hero paces by the campfire; tap them for a pep talk
+const HERO_LINES = {
+  jon: ["Winter is coming. So is your interview.", "I know nothing. Yet. Let's study.", "The North remembers your streak."],
+  dany: ["Dracarys! Burn through that mission.", "I will take what is mine: an offer.", "Break the chains of procrastination."],
+  tyrion: ["I drink and I know things. You study and you know things.", "A mind needs books like a sword needs a whetstone.", "Never forget what you are: prepared."],
+  arya: ["Not today. Unless it's study time.", "Stick them with the pointy end of SQL.", "A girl has a goal: train today."],
+  brienne: ["I swore an oath to finish this mission.", "Steady. One question at a time.", "Guard your streak with honor."],
+  sam: ["I read everything. You can too.", "The Citadel would approve of this session.", "Late-night study? I'll bring snacks."],
+  cersei: ["When you play the game of interviews, you win.", "Power is knowing the answer first.", "A crown is earned in daily quests."],
+  bran: ["I see your future. It has an offer in it.", "Everything happens for a reason. Practice is the reason.", "Look closer. The answer is there."]
+};
+let DEN_BG = "";
+function denBackdrop(){
+  if (DEN_BG) return DEN_BG;
+  const R = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+  let seed = 5; const rand = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  let s = R(0, 0, 128, 56, "#1C1840") + R(0, 14, 128, 12, "#231D52") + R(0, 26, 128, 14, "#2E2766");
+  let tw = ""; for (let k = 0; k < 18; k++) tw += R(rand() * 128 | 0, rand() * 22 | 0, 1, 1, k % 3 ? "#ABA5D8" : "#FFF7E6");
+  s += `<g class="tw">${tw}</g>` + R(101, 5, 6, 6, "#FFF7E6") + R(100, 6, 1, 4, "#FFF7E6") + R(107, 6, 1, 4, "#FFF7E6") + R(103, 7, 2, 2, "#DCD6F0");
+  for (let x = 0; x < 128; x++){ const y = Math.round(24 + 5 * Math.sin(x / 9) + 3 * Math.sin(x / 4.3 + 1)); s += R(x, y, 1, 40 - y, "#3A2E5A"); }
+  [6, 34, 48, 70, 92, 120].forEach((x, k) => { const hgt = 12 + (k % 3) * 2; for (let r = 0; r < hgt; r++){ const w = 1 + Math.floor(r / 2) * 2; s += R(x - (w >> 1), 40 - hgt + r, w, 1, r % 4 === 3 ? "#16362B" : "#1F4A3A"); } s += R(x, 40, 1, 2, "#5A3E2C"); });
+  s += R(0, 40, 128, 16, "#3E7A4A") + R(0, 40, 128, 1, "#5BA060");
+  for (let k = 0; k < 60; k++) s += R(rand() * 128 | 0, 42 + rand() * 14 | 0, 1, 1, rand() < .5 ? "#2F6040" : "#5BA060");
+  for (let r = 0; r < 12; r++) s += R(16 - r, 30 + r, 2 * r + 2, 1, r % 3 ? "#C8584A" : "#A8443A");
+  s += R(14, 36, 6, 6, "#2A1420") + R(16, 29, 2, 2, "#FFC83D");
+  s += R(102, 46, 10, 2, "#5A3E2C") + R(104, 45, 6, 1, "#7A5A44");
+  s += `<g class="flame">${R(103, 41, 8, 4, "#FF8A3C") + R(105, 38, 4, 3, "#FF8A3C") + R(106, 40, 2, 5, "#FFE27A") + R(106, 36, 2, 2, "#FFC83D")}</g>`;
+  return DEN_BG = `<svg class="stagebg" viewBox="0 0 128 56" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
+}
+function heroDenHTML(){
+  const h = myHero();
+  if (!h) return `<section class="panel den"><span class="hud">Your hero</span><p class="muted">Pick a hero to guard your base and fight in the Arena.</p><button class="gbtn gold" id="denpick">Choose your hero</button></section>`;
+  const tier = heroTier(mine, h.id);
+  return `<section class="panel den" style="--hc:${h.c}">
+    <div class="denscene">${denBackdrop()}<div class="walker" id="denhero" role="button" tabindex="0" aria-label="Talk to ${esc(h.n)}"><div class="face">${heroSpot(h, tier)}</div><span class="say" id="densay" hidden></span></div></div>
+    <div class="row"><div style="min-width:0;flex:1"><span class="hud">Your hero · tap to talk</span><b class="hname">${esc(h.n)}</b><span class="hud" style="color:var(--muted)">${esc(companionNote(h, tier))}</span></div><button class="gbtn" id="denarena">Arena</button></div>
+  </section>`;
+}
+function bindDen(){
+  const pick = $("denpick"); if (pick) pick.onclick = () => go2heroes();
+  const ar = $("denarena"); if (ar) ar.onclick = () => go("arena");
+  const w = $("denhero"), say = $("densay"), h = myHero(); if (!w || !h) return;
+  let k = Math.random() * 3 | 0, t = 0;
+  const talk = () => {
+    const lines = HERO_LINES[h.id] || []; say.textContent = lines[k++ % lines.length] || ""; say.hidden = false;
+    const spr = w.querySelector(".spr"); spr.classList.remove("jump"); void spr.offsetWidth; spr.classList.add("jump");
+    try { sfx.click(); } catch (e){}
+    clearTimeout(t); t = setTimeout(() => { say.hidden = true; }, 3200);
+  };
+  w.onclick = talk; w.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); talk(); } };
+}
 
 // ---- battle animations (pixel particles on a canvas over the page)
 const FX = { cv: null, ctx: null, parts: [], raf: 0 };
@@ -2950,7 +3221,7 @@ function fxLoop(){
   FX.raf = FX.parts.length ? requestAnimationFrame(fxLoop) : 0;
 }
 function addParts(list){ if (reduceMotion() || !fxCanvas()) return; FX.parts.push(...list); if (!FX.raf) FX.raf = requestAnimationFrame(fxLoop); }
-function centerOf(el){ if (!el) return { x: innerWidth / 2, y: innerHeight / 2 }; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }
+function centerOf(el){ const spr = el && el.querySelector && el.querySelector(".spr"); if (spr) el = spr; if (!el) return { x: innerWidth / 2, y: innerHeight / 2 }; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }
 const rnd = (a, b) => a + Math.random() * (b - a);
 const P = {
   burst(c, color, n, speed){ const out = []; for (let k = 0; k < n; k++){ const a = rnd(0, Math.PI * 2), v = rnd(speed * .4, speed); out.push({ x: c.x, y: c.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: .15, life: rnd(22, 40) | 0, size: rnd(3, 6) | 0, color }); } return out; },
@@ -2983,7 +3254,7 @@ function fxEvent(e, ctx){
       if (e.s === "double"){ addParts(P.slash(cThem, "#FFC83D", true).concat(P.burst(cThem, col, 26, 6))); floatText(them, `-${e.v} CRIT!`, "dmg big"); shake(them, true); flashEl(them, "#FFC83D"); }
       else if (e.s === "pierce"){ addParts(P.spear(cMe, cThem, "#E6ECFF").concat(P.burst(cThem, col, 16, 5))); floatText(them, `-${e.v} PIERCE`, "dmg"); shake(them, true); }
       else { addParts(P.slash(cThem, col, e.sp >= 80).concat(P.burst(cThem, col, 12, 4))); floatText(them, `-${e.v}${e.sp >= 80 ? " FAST!" : ""}`, "dmg"); shake(them, e.sp >= 80); flashEl(them, "#FF6B6B"); }
-      if (H) { const cr = me && me.querySelector(".crest"); if (cr){ cr.classList.remove("lunge"); void cr.offsetWidth; cr.classList.add("lunge"); } }
+      if (H) { const cr = me && me.querySelector(".spr"); if (cr){ cr.classList.remove("lunge"); void cr.offsetWidth; cr.classList.add("lunge"); } }
       break;
     case "miss": case "timeout": addParts(P.burst(cMe, "#7C76AE", 8, 2)); floatText(me, e.t === "miss" ? "MISS -5" : "TIME UP -5", "self"); shake(me, false); break;
     case "block": addParts(P.ring(cMe, "#7FB0FF", 90)); floatText(me, "BLOCKED", "block"); flashEl(me, "#7FB0FF"); break;
@@ -3249,9 +3520,12 @@ function renderBattle(){
   if (st.turns - 1 > fight.shownTurn){ fight.shownTurn = st.turns - 1; const lt = st.log[st.turns - 1]; fight.resultUntil = Date.now() + (over ? 0 : Math.max(2600, 900 + lt.ev.length * 420)); fight.pendingFx = { turn: lt, from: st.turns > 1 ? st.log[st.turns - 2].hp : [MAXHP, MAXHP], to: st.hp.slice(), heroes: [myH, opH] }; if (over) setTimeout(() => (st.winner === "draw" ? sfx.draw : st.winner === 0 ? sfx.victory : sfx.defeat)(), 300 + lt.ev.length * 420); }
   const shp = fight.pendingFx ? fight.pendingFx.from : st.hp;
   if (Date.now() < fight.resultUntil) resultTurn = st.log[st.turns - 1];
+  const tls = [meRec ? meRec.tl : 1, opp ? opp.d.bt[b.id].tl : 1];
+  const fighter = (x, H) => { const side = x === 0 ? "me" : "opp", end = !over || st.winner === "draw" ? "" : st.winner === x ? " win" : " down";
+    return `<div class="fighter ${side}${end}"><div class="plate"><div class="row"><b>${esc(names[x])}</b><span class="spacer"></span><span class="hpnum">${shp[x]}</span></div>${hpBar(shp[x], side === "me" ? "me" : "op")}<span class="hud">${H ? esc(H.n) : "not joined"}</span>${statusTags(st, x)}</div>
+      ${H ? heroSpot(H, tls[x] || 1) : `<div class="spot"><span class="ghost">${heroSprite(HEROES[0])}<i>?</i></span></div>`}</div>`; };
   const head = `<div class="row"><button class="back" id="bback">← Arena</button><span class="spacer"></span><span class="hud">${esc(quizTitle(b))}${b.src === "ai" ? " · AI" : ""}</span></div>
-    <section class="fighter opp">${opH ? crest(opH, 44) : `<span class="crest empty" style="width:44px;height:44px">?</span>`}<div class="fmeta"><div class="row"><b>${esc(names[1])}</b><span class="hud">${opH ? esc(opH.n) : "not joined"}</span><span class="spacer"></span><span class="hpnum">${shp[1]}</span></div>${hpBar(shp[1], "op")}${statusTags(st, 1)}</div></section>`;
-  const foot = `<section class="fighter me">${myH ? crest(myH, 44) : ""}<div class="fmeta"><div class="row"><b>You</b><span class="hud">${myH ? esc(myH.n) : ""}</span><span class="spacer"></span><span class="hpnum">${shp[0]}</span></div>${hpBar(shp[0], "me")}${statusTags(st, 0)}</div></section>`;
+    <section class="stage">${arenaBackdrop()}${fighter(0, myH)}<span class="vsx">VS</span>${fighter(1, opH)}</section>`;
   let middle = "";
   if (over){
     const won = st.winner === 0, draw = st.winner === "draw";
@@ -3287,7 +3561,7 @@ function renderBattle(){
       ${silenced ? `<p class="tag mute" style="justify-self:center">Silenced: no skills this turn</p>` : ""}${skills.length ? `<div class="skillbar">${skills.map(([sid, nm]) => `<button class="skillbtn${fight.armed === sid ? " armed" : ""}" data-skill="${sid}" ${silenced || used.has(sid) || (fight.armed && fight.armed !== sid) ? "disabled" : ""} title="${esc(SKILLS[sid].d)}"><b>${esc(nm)}</b><span>${used.has(sid) ? "Used" : esc(SKILLS[sid].d)}</span></button>`).join("")}</div>` : ""}`;
     fight.lim = lim; fight.qi = i;
   } else { fight.qi = null; }
-  $("view").innerHTML = `<div class="wrap battle" style="gap:12px">${head}${middle}${foot}</div>`;
+  $("view").innerHTML = `<div class="wrap battle" style="gap:12px">${head}${middle}</div>`;
   if (fight.pendingFx){ const pf = fight.pendingFx; fight.pendingFx = null; runFx(pf); }
   $("bback").onclick = () => { fight = null; go("arena"); };
   const nx = $("bnext"); if (nx) nx.onclick = () => { fight.resultUntil = 0; render(); };
@@ -3330,7 +3604,7 @@ function renderHeroes(){
       : `<div class="row"><button class="back" id="hback">← Arena</button><span class="spacer"></span><span class="hud">Choose your hero</span></div>`}
     <div class="heroes">${HEROES.map(h => { const open = heroOpen(h.id), cur = mine.hero === h.id, tier = heroTier(mine, h.id);
       return `<article class="hero${cur ? " cur" : ""}${open ? "" : " locked"}" style="--hc:${h.c}">
-        <div class="row">${crest(h, 52)}<div style="min-width:0"><b class="hname">${esc(h.n)}</b><div class="hud">${esc(h.r)}${cur ? " · Active" : ""}</div></div></div>
+        <div class="row"><span class="hspr">${heroSprite(h)}</span><div style="min-width:0"><b class="hname">${esc(h.n)}</b><div class="hud">${esc(h.r)}${cur ? " · Active" : ""}</div></div></div>
         <ul class="hskills">${h.sk.map(([sid, nm], k) => `<li class="${k < tier ? "on" : ""}"><b>${esc(nm)}</b><span>${esc(SKILLS[sid].d)}</span><em class="hud">${k < tier ? "Ready" : `${HERO_TIERS[k]} hero XP`}</em></li>`).join("")}</ul>
         ${open ? `<button class="gbtn ${cur ? "" : "gold"}" data-pick="${h.id}" ${cur ? "disabled" : ""}>${cur ? "Your hero" : first ? "Choose" : "Switch to this hero"}</button>` : `<span class="lockmsg hud">Unlocks at level ${h.unlock + 1} · or buy in the Shop</span>`}
       </article>`; }).join("")}</div>
@@ -3352,8 +3626,9 @@ function renderArena(){
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
     <div class="cols sl"><div class="side">
     <section class="panel herocard" style="--hc:${h.c}">
-      <div class="row">${crest(h, 64)}<div style="min-width:0;flex:1"><span class="hud">Your hero</span><div class="pname">${esc(h.n)}</div><div class="ptitle-tag">${esc(h.r.toUpperCase())}</div></div></div>
-      <div><div class="xpbar"><i style="width:${next ? Math.round(hx / next * 100) : 100}%"></i></div><div class="xptext"><span>${hx} hero XP</span><span>${next ? `${next - hx} to next skill` : "All skills unlocked"}</span></div></div>
+      <div class="stage mini">${arenaBackdrop()}<span class="arenatitle">The Arena</span>${heroSpot(h, tier)}</div>
+      <div class="row">${crest(h, 48)}<div style="min-width:0;flex:1"><span class="hud">Your hero</span><div class="pname">${esc(h.n)}</div><div class="ptitle-tag">${esc(h.r.toUpperCase())}</div></div></div>
+      <div><div class="xpbar"><i style="width:${next ? Math.round(hx / next * 100) : 100}%"></i></div><div class="xptext"><span>${hx} hero XP</span><span>${next ? `${next - hx} to next skill` : "All skills unlocked"}</span></div><span class="hud" style="color:var(--muted)">${esc(companionNote(h, tier))}</span></div>
       <ul class="hskills">${h.sk.map(([sid, nm], k) => `<li class="${k < tier ? "on" : ""}"><b>${esc(nm)}</b><span>${esc(SKILLS[sid].d)}</span><em class="hud">${k < tier ? "Ready" : `${HERO_TIERS[k]} hero XP`}</em></li>`).join("")}</ul>
       <div class="row"><button class="gbtn" id="switchhero">Change hero</button><button class="gbtn" id="toshop">Shop ${coinTag(coinBalance(mine))}</button><span class="spacer"></span><button class="gbtn gold" id="newbattle">Battle</button></div>
     </section>
@@ -3540,7 +3815,7 @@ function shopCatalog(){
   if (h && tier < 6) out.push({ key: `sk:${h.id}:${tier + 1}`, cat: "skills", name: `Unlock ${h.sk[tier][1]}`, price: SKILL_PRICES[tier], badge: "New",
     desc: `${SKILLS[h.sk[tier][0]].d} Skill ${tier + 1} of 6 for ${h.n}, or earn it free at ${HERO_TIERS[tier]} hero XP.`, art: crest(h, 80), thumb: crest(h, 40), glow: h.c + "55" });
   HEROES.filter(x => !heroOpen(x.id)).forEach(x => out.push({ key: "hero:" + x.id, cat: "heroes", name: x.n, price: HERO_PRICE,
-    desc: `${x.r}. Normally unlocks at level ${x.unlock + 1}.`, art: crest(x, 80), thumb: crest(x, 40), glow: x.c + "55" }));
+    desc: `${x.r}. Normally unlocks at level ${x.unlock + 1}.`, art: heroSprite(x, 72), thumb: crest(x, 40), glow: x.c + "55" }));
   Object.entries(TITLES).forEach(([id, t]) => out.push({ key: "title:" + id, cat: "titles", name: t.n, price: t.p, desc: "A title shown under your name on your player card.",
     equip: titleOwned(mine, id), art: `<span class="sicon">${COIN_SVG}</span>`, thumb: `<span class="sicon">${COIN_SVG}</span>`, glow: "#FFC83D44" }));
   return out;
@@ -3961,7 +4236,7 @@ function checkIncoming(){
   if(fresh.length){
     const m=fresh[fresh.length-1], tp=m.p?liveTopic(m.p):null;
     // Toast unless it landed in the conversation that's on screen.
-    if(view!=="chat"||(tp?tp.id:null)!==thread)toast(`${mateName(m.who)}${tp?` in “${clip(tp.x,28)}”`:""}: ${clip(m.k==="t"?"📌 "+m.x:m.x,60)}`);
+    if(view!=="chat"||(tp?tp.id:null)!==thread)toast(`${mateName(m.who)}${tp?` in “${clip(tp.x,28)}”`:""}: ${clip(m.k==="t"?"📌 "+m.x:msgText(m),60)}`);
   }
 }
 function renderBadge(){const b=$("chatbadge");const n=view==="chat"?0:unreadCount();b.hidden=!n;b.textContent=n>9?"9+":String(n);}
@@ -3975,6 +4250,72 @@ function sendMsg(text,kind,r,p){
   if(p&&liveTopic(p))m.p=p;
   pushMsg(m);
   return true;
+}
+// Photos in chat: an "m" message whose i is a path in the post-photos bucket (<sender id>/ch<id>.jpg), with its
+// size in w/h so the bubble keeps its shape while the signed link loads. x holds the caption, or PIC_TEXT if none.
+const PIC_TEXT="📷 Photo";
+let chatPic=null; // the photo waiting in the composer: {blob, preview, w, h, busy, err}
+const picTried={};
+const picPath=m=>m.i&&m.i.startsWith((m.me?myId:m.who)+"/")?m.i:"";
+const msgText=m=>m.i?(m.x===PIC_TEXT?PIC_TEXT:"📷 "+m.x):m.x;
+function pickChatPic(){
+  if(!sb||!myId||mode!=="shared"){toast("Sign in with study-list access to send photos");return;}
+  const i=document.createElement("input");i.type="file";i.accept="image/*";
+  i.onchange=()=>{const f=i.files&&i.files[0];if(f)useChatPic(f);};
+  i.click();
+}
+async function useChatPic(file){
+  let blob=null,w=0,h=0;
+  try{
+    blob=await shrinkPhoto(file);
+    const u=URL.createObjectURL(blob);
+    const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u;});
+    w=img.naturalWidth;h=img.naturalHeight;
+    clearChatPic();chatPic={blob,preview:u,w,h,busy:false,err:""};
+  }catch(e){toast("That photo couldn't be opened. Try a JPEG or PNG.");return;}
+  renderPicBar();
+  const f=$("chatin");if(f){f.dispatchEvent(new Event("input"));if(!coarse())f.focus();}
+}
+function clearChatPic(){if(chatPic&&chatPic.preview&&!chatPic.sent)URL.revokeObjectURL(chatPic.preview);chatPic=null;}
+function renderPicBar(){
+  const bar=$("picbar");if(!bar)return;
+  if(!chatPic){bar.hidden=true;bar.innerHTML="";return;}
+  bar.hidden=false;
+  bar.innerHTML=`<img alt="Photo to send" src="${esc(chatPic.preview)}"><span class="${chatPic.err?"err":""}">${esc(chatPic.err||(chatPic.busy?"Sending photo…":"Add a caption, or just send"))}</span>${chatPic.busy?"":`<button type="button" id="picx" aria-label="Remove photo">✕</button>`}`;
+  const x=$("picx");if(x)x.onclick=()=>{clearChatPic();renderPicBar();const f=$("chatin");f.dispatchEvent(new Event("input"));f.focus();};
+}
+async function sendPic(caption,r,p){
+  if(!chatPic||chatPic.busy)return false;
+  const pic=chatPic;pic.busy=true;pic.err="";renderPicBar();
+  const id=msgId(),path=`${myId}/ch${id}.jpg`;
+  const {error}=await sb.storage.from(PHOTO_BUCKET).upload(path,pic.blob,{contentType:"image/jpeg"});
+  if(chatPic!==pic)return false;
+  pic.busy=false;
+  if(error){pic.err=/bucket|not found/i.test(error.message||"")?"Photo storage isn't set up yet. Run section 5 of supabase/schema.sql.":"Couldn't send the photo. Check your connection and try again.";renderPicBar();return false;}
+  photoUrls[path]={u:pic.preview,exp:Infinity};pic.sent=true;
+  const m={id,t:new Date().toISOString(),x:String(caption||"").trim().slice(0,500)||PIC_TEXT,k:"m",i:path,w:pic.w,h:pic.h};
+  if(r&&findMsg(r))m.r=r;
+  if(p&&liveTopic(p))m.p=p;
+  chatPic=null;renderPicBar();pushMsg(m);
+  return true;
+}
+// Ask for signed links to chat photos we haven't got yet (each path at most once a minute if it fails).
+let signingPics=false;
+async function signChatPics(){
+  if(!sb||!started||signingPics)return;
+  const now=Date.now(),need=[...new Set(allMsgs().map(picPath).filter(p=>p&&!(photoUrls[p]&&photoUrls[p].exp>now+6e5)&&!(picTried[p]>now-6e4)))];
+  if(!need.length)return;
+  need.forEach(p=>{picTried[p]=now;});signingPics=true;
+  try{
+    const {data}=await sb.storage.from(PHOTO_BUCKET).createSignedUrls(need,PHOTO_TTL);
+    let got=false;(data||[]).forEach(x=>{if(x.signedUrl){photoUrls[x.path]={u:x.signedUrl,exp:now+PHOTO_TTL*1000};got=true;}});
+    if(got&&view==="chat")refreshLog();
+  }catch(e){}finally{signingPics=false;}
+}
+function picHTML(m){
+  const p=picPath(m),ph=p&&photoUrls[p],ar=m.w&&m.h?` style="aspect-ratio:${m.w}/${m.h}"`:"";
+  const img=ph?`<span class="mimg" data-cpic="${esc(p)}" role="button" tabindex="0" aria-label="Open photo"${ar}><img alt="Photo from ${m.me?"you":esc(mateName(m.who))}" src="${esc(ph.u)}"></span>`:`<span class="mimg wait"${ar||' style="aspect-ratio:4/3"'}>${PIC_SVG}</span>`;
+  return `<span class="mpic">${img}${m.x!==PIC_TEXT?`<span class="bub">${linkify(esc(m.x))}</span>`:""}</span>`;
 }
 function startTopic(title,src){
   title=String(title||"").trim().replace(/\s+/g," ").slice(0,120); if(!title)return null;
@@ -3992,7 +4333,9 @@ function unsend(id){
   const tp=liveTopic(id);
   if(!confirm(tp?"Unsend this topic? It and its discussion will be removed for everyone.":"Unsend this message? It will be removed for everyone."))return;
   if(replyTo===id)replyTo=null;
-  change(d=>{const m=d.chat.find(x=>x.id===id);if(m&&(m.k==="m"||m.k==="e"||m.k==="t")){m.k="u";m.x="unsent";delete m.r;}},{now:true,quiet:true});
+  let gone="";
+  change(d=>{const m=d.chat.find(x=>x.id===id);if(m&&(m.k==="m"||m.k==="e"||m.k==="t")){if(m.i&&m.i.startsWith(myId+"/"))gone=m.i;m.k="u";m.x="unsent";delete m.r;delete m.i;delete m.w;delete m.h;}},{now:true,quiet:true});
+  if(gone&&sb)sb.storage.from(PHOTO_BUCKET).remove([gone]);
   renderReplyBar();
 }
 function reactsFor(){
@@ -4004,7 +4347,7 @@ function fmtDay(iso){const d=new Date(iso),k=dayKey(d),t=todayKey();const y=new 
 function fmtAgo(iso){const ms=Date.now()-Date.parse(iso);if(!iso||isNaN(ms))return "";const m=Math.round(ms/6e4);return m<60?`Active ${Math.max(1,m)}m ago`:m<1440?`Active ${Math.round(m/60)}h ago`:m<10080?`Active ${Math.round(m/1440)}d ago`:"";}
 const isJumbo=x=>{const t=x.replace(/\s/g,"");return t.length>0&&/^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|‍|️)+$/u.test(t)&&(t.match(/\p{Extended_Pictographic}/gu)||[]).length<=3;};
 const linkify=h=>h.replace(/https?:\/\/[^\s<]+[^\s<.,:;!?)\]]/g,u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
-const msgPreview=m=>m.k==="u"?"Unsent message":m.k==="q"||m.k==="b"?m.x:m.k==="t"?"📌 "+m.x:clip(m.x,80);
+const msgPreview=m=>m.k==="u"?"Unsent message":m.k==="q"||m.k==="b"?m.x:m.k==="t"?"📌 "+m.x:clip(msgText(m),80);
 function replyLabel(m,q){
   const who=m.me?"You":mateName(m.who);
   if(m.k==="t")return q?`Topic from ${q.me?"your":mateName(q.who)+"'s"} message`:"Topic from a message";
@@ -4034,10 +4377,10 @@ function chatLogHTML(){
     const prev=msgs[i-1], next=msgs[i+1];
     if(split(prev,m))html+=`<span class="daysep">${esc(fmtDay(m.t))} · ${esc(fmtTime(m.t))}</span>`;
     const first=split(prev,m)||prev.who!==m.who, last=split(m,next)||next.who!==m.who, rs=rx[m.id]||[];
-    const cls=["msg",m.me?"me":"them",first&&"first",last&&"last",m.k==="e"&&"emote",m.k==="m"&&isJumbo(m.x)&&"jumbo",m.k==="u"&&"unsent",rs.length&&"rx",openMid===m.id&&"open"].filter(Boolean).join(" ");
+    const cls=["msg",m.me?"me":"them",first&&"first",last&&"last",m.k==="e"&&"emote",m.k==="m"&&!m.i&&isJumbo(m.x)&&"jumbo",m.k==="u"&&"unsent",rs.length&&"rx",openMid===m.id&&"open"].filter(Boolean).join(" ");
     const q=m.r&&byId[m.r];
     const quote=m.r?`<button class="rquote" data-jump="${esc(m.r)}"><span class="hud">${esc(replyLabel(m,q))}</span><span>${esc(q?msgPreview(q):"Message no longer available")}</span></button>`:"";
-    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
+    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):m.k==="m"&&m.i?picHTML(m):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
     const chip=rs.length?`<span class="rxs" data-rxlist="${esc(m.id)}" role="button" tabindex="0" aria-label="See reactions">${[...new Set(rs.map(r=>r.e))].join("")}${rs.length>1?`<b>${rs.length}</b>`:""}</span>`:"";
     const more=m.k!=="u"?`<button class="mact" data-more="${esc(m.id)}" aria-label="Message options">⋯</button>`:"";
     html+=`<div class="${cls}" data-mid="${esc(m.id)}">${m.me?"":`<img class="mav${last?"":" blank"}" alt="" src="${esc(mateAvatar(m.who))}">`}<div class="mcol">${quote}<div class="mrow">${body}${more}${chip}</div><span class="meta">${m.me?"You":esc(mateName(m.who))} · ${esc(fmtDay(m.t))} ${esc(fmtTime(m.t))}</span></div></div>`;
@@ -4060,7 +4403,7 @@ function refreshChatHead(){const h=$("chead");if(h&&view==="chat")h.innerHTML=ch
 function refreshLog(){
   const log=$("chatlog");if(!log)return;
   const near=log.scrollHeight-log.scrollTop-log.clientHeight<80;
-  log.innerHTML=chatLogHTML(); bindPlay();
+  log.innerHTML=chatLogHTML(); bindPlay(); signChatPics();
   const msgs=inView(allMsgs()), lastM=msgs[msgs.length-1], newer=lastM&&lastM.id!==lastLogId;
   lastLogId=lastM?lastM.id:"";
   if(near||(newer&&lastM.me))log.scrollTop=log.scrollHeight;
@@ -4085,11 +4428,11 @@ function menuKey(e){if(e.key==="Escape")closeMenu();}
 function openMenu(id,anchor){
   const m=findMsg(id); if(!m||m.k==="u")return;
   closeMenu();
-  const cur=mine.rx[id]||"", text=m.k==="m"||m.k==="e"||m.k==="t";
+  const cur=mine.rx[id]||"", text=m.k==="m"||m.k==="e"||m.k==="t", copyable=text&&m.x!==PIC_TEXT;
   const bg=document.createElement("div");bg.className="mmenu-bg";
   const box=document.createElement("div");box.className="mmenu";box.setAttribute("role","menu");
   box.innerHTML=`<div class="rxbar" role="group" aria-label="React">${REACTS.map(e=>`<button type="button" data-r="${e}" class="${e===cur?"on":""}" aria-label="React ${e}" aria-pressed="${e===cur}">${e}</button>`).join("")}</div>
-    <div class="acts"><button type="button" data-a="reply">Reply</button>${!thread&&(m.k==="m"||m.k==="e")?`<button type="button" data-a="topic">Start a topic from this</button>`:""}${text?`<button type="button" data-a="copy">Copy</button>`:""}${m.me&&text?`<button type="button" data-a="unsend" class="danger">Unsend</button>`:""}</div>`;
+    <div class="acts"><button type="button" data-a="reply">Reply</button>${!thread&&(m.k==="m"||m.k==="e")?`<button type="button" data-a="topic">Start a topic from this</button>`:""}${copyable?`<button type="button" data-a="copy">Copy</button>`:""}${m.me&&text?`<button type="button" data-a="unsend" class="danger">Unsend</button>`:""}</div>`;
   document.body.append(bg,box);
   const r=anchor.getBoundingClientRect(), bw=box.offsetWidth, bh=box.offsetHeight;
   let top=r.top-bh-8; if(top<12)top=Math.min(r.bottom+8,innerHeight-bh-12);
@@ -4100,7 +4443,7 @@ function openMenu(id,anchor){
     if(b.dataset.r){closeMenu();toggleReact(id,b.dataset.r);return;}
     const a=b.dataset.a;closeMenu();
     if(a==="reply"){replyTo=id;renderReplyBar();$("chatin").focus();}
-    else if(a==="topic")openTopicSheet(m.x,id);
+    else if(a==="topic")openTopicSheet(m.x===PIC_TEXT?"":m.x,id);
     else if(a==="copy"){(navigator.clipboard?navigator.clipboard.writeText(m.x):Promise.reject()).then(()=>toast("Copied"),()=>toast("Couldn't copy"));}
     else if(a==="unsend")unsend(id);};
   box.querySelector("button").focus({preventScroll:true});
@@ -4132,6 +4475,7 @@ function bindLog(log){
     const tb=e.target.closest("[data-topic]"); if(tb){openThread(tb.dataset.topic);return;}
     const mo=e.target.closest("[data-more]"); if(mo){openMenu(mo.dataset.more,mo.closest(".mrow").querySelector(".bub")||mo);return;}
     const rl=e.target.closest("[data-rxlist]"); if(rl){showReacts(rl.dataset.rxlist);return;}
+    const cp=e.target.closest("[data-cpic]"); if(cp){openPhoto(cp.dataset.cpic);return;}
     const bub=e.target.closest(".bub"); if(!bub||bub.classList.contains("qinvite")||e.target.closest("a,button"))return;
     const msg=bub.closest(".msg[data-mid]"); if(!msg||msg.classList.contains("unsent")||msg.classList.contains("typing"))return;
     const id=msg.dataset.mid, now=Date.now();
@@ -4139,7 +4483,7 @@ function bindLog(log){
     if(lastTap.id===id&&now-lastTap.t<320){openMid=lastTap.prev||null;lastTap={id:"",t:0};toggleReact(id,"❤️");return;}
     lastTap={id,t:now,prev:openMid}; openMid=openMid===id?null:id; refreshLog();
   });
-  log.addEventListener("keydown",e=>{const rl=e.target.closest("[data-rxlist]");if(rl&&(e.key==="Enter"||e.key===" ")){e.preventDefault();showReacts(rl.dataset.rxlist);}});
+  log.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const rl=e.target.closest("[data-rxlist]"),cp=e.target.closest("[data-cpic]");if(rl){e.preventDefault();showReacts(rl.dataset.rxlist);}else if(cp){e.preventDefault();openPhoto(cp.dataset.cpic);}});
 }
 function openThread(id){
   if(!liveTopic(id)){toast("That topic is no longer in the chat");return;}
@@ -4178,18 +4522,27 @@ function renderChat(){
   $("view").innerHTML=`<div class="wrap chatwrap" data-thread="${esc(thread||"")}">
     <section class="panel chead" id="chead">${chatHeadHTML()}</section>
     <div class="chatbox"><div class="chatlog" id="chatlog" aria-live="polite">${chatLogHTML()}</div><button type="button" class="jumpbtn" id="jumpbtn" hidden>↓ Latest</button></div>
-    <div class="emotes" role="group" aria-label="Quick reactions">${thread?"":`<button class="duel" id="battlebtn">Battle</button><button class="duel" id="duelbtn">Quiz duel</button><button class="topicb" id="topicbtn">📌 Topic</button>`}${EMOTES.map((e,i)=>`<button data-emote="${i}" class="${e.love?"love":""}">${esc(e.x)}</button>`).join("")}</div>
+    <div class="emotes" role="group" aria-label="Quick reactions">${thread?"":`<button class="duel" id="battlebtn">Battle</button><button class="duel" id="duelbtn">Quiz duel</button><button class="topicb" id="topicbtn">📌 Topic</button>`}<button class="picb" id="picchip">📷 Photo</button>${EMOTES.map((e,i)=>`<button data-emote="${i}" class="${e.love?"love":""}">${esc(e.x)}</button>`).join("")}</div>
     <div class="replybar" id="replybar" hidden></div>
+    <div class="picbar" id="picbar" hidden></div>
     <div class="emojipanel" id="emojipanel" role="group" aria-label="Emoji" hidden>${EMOJI.map(e=>`<button type="button" data-emoji="${e}" aria-label="${e}">${e}</button>`).join("")}</div>
-    <form class="composer" id="composer"><button type="button" class="cbtn" id="emojibtn" aria-label="Emoji" aria-expanded="false">${SMILE}</button><textarea id="chatin" rows="1" maxlength="500" placeholder="${thread?"Reply in this topic":"Aa"}" autocomplete="off" enterkeyhint="send" aria-label="Message"></textarea><button class="cbtn send like" type="submit" id="sendbtn" aria-label="Send a like">👍</button></form>
+    <form class="composer" id="composer"><button type="button" class="cbtn" id="picbtn" aria-label="Send a photo">${PIC_SVG}</button><button type="button" class="cbtn" id="emojibtn" aria-label="Emoji" aria-expanded="false">${SMILE}</button><textarea id="chatin" rows="1" maxlength="500" placeholder="${thread?"Reply in this topic":"Aa"}" autocomplete="off" enterkeyhint="send" aria-label="Message"></textarea><button class="cbtn send like" type="submit" id="sendbtn" aria-label="Send a like">👍</button></form>
   </div>`;
   const log2=$("chatlog"), f=$("chatin"), sendb=$("sendbtn"), panel=$("emojipanel");
   const msgs=inView(allMsgs()); lastLogId=msgs.length?msgs[msgs.length-1].id:"";
-  log2.scrollTop=log2.scrollHeight; bindLog(log2); renderReplyBar();
-  const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim();sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
+  log2.scrollTop=log2.scrollHeight; bindLog(log2); renderReplyBar(); renderPicBar(); signChatPics();
+  const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim()||!!chatPic;sendb.disabled=!!(chatPic&&chatPic.busy);sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
   f.oninput=()=>{sync();if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
   f.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}};
-  $("composer").onsubmit=e=>{e.preventDefault();const text=f.value.trim()||"👍";if(sendMsg(text,"m",replyTo,thread)){f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();}};
+  const sent=()=>{f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();};
+  $("composer").onsubmit=async e=>{
+    e.preventDefault();
+    if(chatPic){if(chatPic.busy)return;const p=sendPic(f.value,replyTo,thread);sync();if(await p&&$("chatin")===f)sent();else sync();return;}
+    if(sendMsg(f.value.trim()||"👍","m",replyTo,thread))sent();
+  };
+  $("picbtn").onclick=$("picchip").onclick=pickChatPic;
+  // Pasting a screenshot attaches it, like Messenger on desktop.
+  f.onpaste=e=>{const it=[...((e.clipboardData&&e.clipboardData.items)||[])].find(x=>x.kind==="file"&&/^image\//.test(x.type));const file=it&&it.getAsFile();if(!file)return;e.preventDefault();if(!sb||!myId||mode!=="shared"){toast("Sign in with study-list access to send photos");return;}useChatPic(file);};
   $("emojibtn").onclick=()=>{panel.hidden=!panel.hidden;$("emojibtn").setAttribute("aria-expanded",String(!panel.hidden));};
   panel.onclick=e=>{const b=e.target.closest("[data-emoji]");if(!b)return;const s=f.selectionStart??f.value.length,t=f.selectionEnd??s;f.value=(f.value.slice(0,s)+b.dataset.emoji+f.value.slice(t)).slice(0,500);const c=s+b.dataset.emoji.length;f.setSelectionRange(c,c);sync();if(!coarse())f.focus();};
   $("jumpbtn").onclick=()=>{log2.scrollTo({top:log2.scrollHeight,behavior:"smooth"});};
@@ -4403,7 +4756,7 @@ async function onSession(session){
   if (!session){
     document.body.classList.remove("authed"); viewer = null; started = false; dataReady = false; players = {}; myId = null; mode = "local";
     if (channel){ sb.removeChannel(channel); channel = null; }
-    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; thread = null; closeMenu(); closeTopicSheet(); resetFeed(); isAdmin = null; freshUnlock();
+    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; thread = null; clearChatPic(); closeMenu(); closeTopicSheet(); resetFeed(); isAdmin = null; freshUnlock();
     if (authView !== "check" && authView !== "newpass") authView = "signin";
     renderWho(); renderAuth(); return;
   }

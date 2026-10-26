@@ -12,7 +12,8 @@ function whatsNew(record, old, others, senderName){
   const fresh = (d.chat || []).filter(m => m && m.id && !seen.has(m.id)).slice(-3);
   const everyone = (d.chat || []).concat(others.flatMap(o => o.data.chat || []));
   for (const m of fresh){
-    const text = String(m.x || "");
+    // Photo messages carry x = caption, or "📷 Photo" when there is none.
+    const text = m.i && m.x !== "📷 Photo" ? "📷 " + String(m.x || "") : String(m.x || "");
     const topic = m.p && everyone.find(x => x && x.id === m.p && x.k === "t");
     if (m.k === "b") notes.push({ title: `⚔ ${senderName} challenges you to battle`, body: text, tag: "battle-" + m.q, url: "/#chat" });
     else if (m.k === "q") notes.push({ title: `${senderName} sent you a quiz duel`, body: text, tag: "quiz-" + m.q, url: "/#chat" });
