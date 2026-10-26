@@ -183,6 +183,8 @@ The APK loads your live site, so new features arrive the moment you push to GitH
 
 ## Everyday admin
 
+**Manage users in the app:** Add `ADMIN_EMAILS` to Vercel Environment Variables as a comma-separated list of administrator emails. Each admin must also be in `public.members` to sign in. After redeploying, admins can open **Party → User management** to grant or remove study-list access, or permanently delete a Supabase Auth account. Deleting an account also removes its linked profile, progress, and push subscriptions. The admin endpoint uses `SUPABASE_SERVICE_ROLE_KEY` only on the server.
+
 **Add someone to the study list** in SQL Editor:
 
 ```sql

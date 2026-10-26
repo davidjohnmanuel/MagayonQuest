@@ -42,6 +42,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 a{color:var(--cyan)}
 button:focus-visible,input:focus-visible,a:focus-visible,label:focus-within{outline:2px solid var(--cyan);outline-offset:2px}
 .panel{background:var(--panel);border:2px solid var(--edge);border-radius:14px;padding:16px;display:grid;gap:12px;min-width:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.06),0 4px 0 var(--shadow)}
+.admin-users{display:grid;gap:8px}
+.admin-user{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--edge)}
+.admin-user:last-child{border-bottom:0}
+.admin-user-info{min-width:0;display:grid;gap:2px}
+.admin-user-info b{overflow-wrap:anywhere}
+.admin-user-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:520px){.admin-user{grid-template-columns:1fr}.admin-user-actions{justify-content:flex-start}}
 .ptitle{display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
 .ptitle h3{font-size:17px;letter-spacing:.01em}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -1602,6 +1609,60 @@ function renderMissions(){
   V.querySelectorAll("[data-studynow]").forEach(b=>b.onclick=()=>{pickTopic=b.dataset.studynow;startTimer(pickTopic);});
 }
 
+async function adminRequest(method="GET", body){
+  const { data } = await sb.auth.getSession();
+  if (!data.session) throw new Error("Sign in again to manage users.");
+  const response = await fetch("/api/admin-users", {
+    method,
+    headers: { authorization: `Bearer ${data.session.access_token}`, ...(body ? { "content-type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const result = await response.json().catch(() => ({}));
+  return { response, result };
+}
+async function loadAdminUsers(panel){
+  const status = panel.querySelector("[data-admin-status]");
+  try {
+    const { response, result } = await adminRequest();
+    if (!panel.isConnected) return;
+    if (response.status === 403 || response.status === 503){ panel.hidden = true; return; }
+    panel.hidden = false;
+    if (!response.ok){ status.textContent = result.error || "Could not load user settings."; return; }
+    const list = panel.querySelector("[data-admin-list]");
+    status.textContent = `${result.users.length} account${result.users.length === 1 ? "" : "s"}`;
+    list.innerHTML = result.users.map(user=>{
+      const state = user.isMember ? "Study-list access" : user.hasAccount ? (user.confirmed ? "No study-list access" : "Email not verified") : "Invited · no account yet";
+      return `<div class="admin-user"><div class="admin-user-info"><b>${esc(user.email)}</b><span class="hud">${state}</span></div><div class="admin-user-actions">${user.isMember ? `<button class="linkbtn" data-admin-action="remove" data-email="${esc(user.email)}">Remove access</button>` : `<button class="linkbtn" data-admin-action="add" data-email="${esc(user.email)}">Grant access</button>`}${user.hasAccount ? `<button class="linkbtn" data-admin-action="delete" data-email="${esc(user.email)}">Delete account</button>` : ""}</div></div>`;
+    }).join("") || `<p class="muted">No users yet.</p>`;
+    panel.querySelector("[data-admin-add]").onsubmit = async event=>{
+      event.preventDefault();
+      const input = panel.querySelector("[name=admin-email]"), button = event.submitter;
+      button.disabled = true; status.textContent = "Saving…";
+      try {
+        const { response: actionResponse, result: actionResult } = await adminRequest("POST", { action: "add", email: input.value.trim() });
+        if (!actionResponse.ok) throw new Error(actionResult.error || "Could not grant access.");
+        input.value = ""; await loadAdminUsers(panel);
+      } catch (error){ status.textContent = error.message; }
+      finally { if (button.isConnected) button.disabled = false; }
+    };
+    list.querySelectorAll("[data-admin-action]").forEach(button=>button.onclick=async()=>{
+      const action = button.dataset.adminAction, email = button.dataset.email;
+      const prompt = action === "delete" ? `Permanently delete ${email} and their Supabase data?` : action === "remove" ? `Remove study-list access for ${email}?` : `Grant study-list access to ${email}?`;
+      if (!window.confirm(prompt)) return;
+      button.disabled = true; status.textContent = "Saving…";
+      try {
+        const { response: actionResponse, result: actionResult } = await adminRequest("POST", { action, email });
+        if (!actionResponse.ok) throw new Error(actionResult.error || "Could not update this user.");
+        await loadAdminUsers(panel);
+      } catch (error){ status.textContent = error.message; }
+      finally { if (button.isConnected) button.disabled = false; }
+    });
+  } catch (error){
+    if (!panel.isConnected) return;
+    panel.hidden = false; status.textContent = error.message || "Could not load user settings.";
+  }
+}
+
 function renderUs(){
   const ids=mate();
   const card=(id,d,isMe)=>{const xp=xpOf(d,isMe?(myId||"me"):id),lv=levelOf(xp),st=statusOf(d);
@@ -1625,11 +1686,13 @@ function renderUs(){
     <section class="panel"><div class="ptitle"><h3>Training this week</h3><div class="legend"><span>${esc(myName())}</span>${ids[0]?`<span class="mate">${esc(mateName(ids[0]))}</span>`:""}</div></div>
       <div class="bars">${MODULES.map(m=>`<div class="bar"><div class="top"><span>${esc(m.title)}</span><span>${fmtMin(wMe[m.id]||0)}${ids[0]?` · ${fmtMin(wMate[m.id]||0)}`:""}</span></div><div class="track"><i class="me" style="width:${(wMe[m.id]||0)/maxW*100}%"></i>${ids[0]?`<i class="mate" style="width:${(wMate[m.id]||0)/maxW*100}%"></i>`:""}</div></div>`).join("")}</div></section>
     ${window.FDE_NOTIF?window.FDE_NOTIF.html():""}
+    <section class="panel" id="admin-users-panel" hidden><div class="ptitle"><h3>User management</h3><span class="hud" data-admin-status></span></div><form class="row" data-admin-add><input name="admin-email" type="email" required maxlength="254" placeholder="Email address" aria-label="Email address"><button class="gbtn" type="submit">Grant access</button></form><div class="admin-users" data-admin-list></div></section>
     <section class="panel pact"><span class="hud">House rule</span><h3>The coffee pact</h3><p class="muted">Whoever goes AFK for more than 3 days buys the next coffee. Study date included.</p></section>
   </div>`;
   const nf=$("mynote"); if(nf){const save=()=>{const v=nf.value.trim().slice(0,140);if(v!==mine.note)change(d=>{d.note=v;});};nf.onchange=save;nf.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();nf.blur();}};}
   $("totrophies").onclick=()=>go("trophies");
   if(window.FDE_NOTIF)window.FDE_NOTIF.bind();
+  loadAdminUsers($("admin-users-panel"));
   refreshProfiles();
 }
 
