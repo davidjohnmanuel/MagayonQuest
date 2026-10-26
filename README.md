@@ -77,6 +77,10 @@ Without this, the email confirmation and password-reset links point to the wrong
 
 **Add to home screen:** on iPhone, Safari → Share → Add to Home Screen. On Android, Chrome → ⋮ → Add to Home screen. It then opens full-screen like an app.
 
+## Settings
+
+Tap the gear at the top right (or **Settings, notifications and members** in the Party tab). Every player can change their display name, daily goal and sound, turn notifications on or off, see each member's level, combo and when they last trained, and sign out. Admins (emails in `ADMIN_EMAILS` on Vercel) also see **User management** there to grant or remove access.
+
 ## Chat
 
 The **Chat** tab works like a messaging app:

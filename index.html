@@ -517,6 +517,31 @@ details.intel[open] summary::after{content:"-"}
 .soundbtn[aria-pressed="false"]{color:var(--dim)}
 .soundbtn svg{width:20px;height:20px}
 .mast .who{margin-left:0}
+.setbtn{margin-left:0}
+.setbtn[aria-current="true"]{border-color:var(--gold)}
+body:not(.authed) .setbtn{display:none}
+.setwrap{gap:14px}
+.mems{display:grid}
+.mem{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--edge)}
+.mem:last-child{border-bottom:0}
+.mem .cav{position:relative;flex:none;width:42px;height:42px}
+.mem .cav img{width:42px;height:42px;border-radius:50%;border:2px solid var(--pink);display:block}
+.mem.me .cav img{border-color:var(--gold)}
+.mem .cav .dot{position:absolute;right:-1px;bottom:-1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2.5px solid var(--panel)}
+.meminfo{min-width:0;display:grid;gap:2px}
+.meminfo b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meminfo b small{font-family:var(--f-hud);font-size:9.5px;color:var(--gold);margin-left:6px;font-weight:400}
+.meminfo .hud{font-size:9.5px;color:var(--muted)}
+.meminfo .sub{font-size:12.5px;color:var(--dim)}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;flex-wrap:wrap}
+.setrow+.setrow{border-top:1px solid var(--edge)}
+.setrow > span{display:grid;gap:2px}
+.setrow > span small{color:var(--dim);font-size:12.5px}
+.switch{border:2px solid var(--edge-hi);background:var(--shadow);border-radius:20px;width:54px;height:30px;padding:0;position:relative;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--dim);transition:transform .15s,background .15s}
+.switch[aria-checked="true"]{border-color:var(--gold)}
+.switch[aria-checked="true"]::after{transform:translateX(24px);background:var(--gold)}
+.nameform{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 .coinfloat{display:flex;align-items:center;gap:6px;bottom:calc(var(--tabh) + 108px + env(safe-area-inset-bottom,0px));animation-delay:.1s}
 .coinfloat svg{width:22px;height:22px}
 
@@ -596,6 +621,7 @@ body:not(.authed) main,body:not(.authed) .dock,body:not(.authed) #save-note{disp
     <span class="logo">FDE<b>//</b>QUEST</span>
     <span class="hud" id="today-label"></span>
     <button class="soundbtn" id="soundbtn" aria-pressed="true" aria-label="Mute sound"></button>
+    <button class="soundbtn setbtn" id="setbtn" aria-label="Settings and members"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
     <span class="who" id="who"></span>
   </header>
   <section class="gate" id="gate" hidden></section>
@@ -1372,7 +1398,7 @@ function normalize(raw){
     const days=Object.keys(raw.time).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-120);
     for(const day of days){const t=raw.time[day];if(!t||typeof t!=="object")continue;const o={};for(const k in t){const v=Math.round(Number(t[k]));if(MOD[k]&&v>0&&v<=1440)o[k]=v;}if(Object.keys(o).length)d.time[day]=o;}
   }
-  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":"m"};if(o.k==="q"||o.k==="b")o.q=m.q;if((o.k==="m"||o.k==="e")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;return o;}).slice(-120);
+  if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":"m"};if(o.k==="q"||o.k==="b")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;return o;}).slice(-120);
   if(raw.rx&&typeof raw.rx==="object")Object.keys(raw.rx).filter(k=>/^[a-z0-9]{4,24}$/.test(k)&&REACTS.includes(raw.rx[k])).slice(-200).forEach(k=>{d.rx[k]=raw.rx[k];});
   if(typeof raw.seen==="string"&&!isNaN(Date.parse(raw.seen)))d.seen=raw.seen.slice(0,40);
   if(Array.isArray(raw.quizzes))d.quizzes=raw.quizzes.filter(z=>z&&typeof z.id==="string"&&/^q[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs)})).filter(z=>z.m.length&&z.qs.length).slice(-8);
@@ -1484,8 +1510,9 @@ function render(){
   const ae=document.activeElement, keep=ae&&ae.id&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA")&&ae.type!=="checkbox"?{id:ae.id,v:ae.value}:null;
   checkIncoming();
   if(dataReady&&!mine.hero&&view!=="heroes"&&mode!=="readonly"){view="heroes";}
-  if(view==="today")renderToday(); else if(view==="missions")renderMissions(); else if(view==="us")renderUs(); else if(view==="chat")renderChat(); else if(view==="quiz")renderQuiz(); else if(view==="arena")renderArena(); else if(view==="battle")renderBattle(); else if(view==="heroes")renderHeroes(); else if(view==="shop")renderShop(); else if(view==="exam")renderExam(); else if(view==="cert")renderCert(); else renderTrophies();
+  if(view==="today")renderToday(); else if(view==="missions")renderMissions(); else if(view==="us")renderUs(); else if(view==="chat")renderChat(); else if(view==="quiz")renderQuiz(); else if(view==="arena")renderArena(); else if(view==="battle")renderBattle(); else if(view==="heroes")renderHeroes(); else if(view==="shop")renderShop(); else if(view==="exam")renderExam(); else if(view==="cert")renderCert(); else if(view==="settings")renderSettings(); else renderTrophies();
   renderSoundBtn();
+  {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
   renderBadge();
   if(keep){const f=$(keep.id);if(f){f.value=keep.v;f.focus();}}
   renderTimer(); renderNote();
@@ -1756,14 +1783,12 @@ function renderUs(){
       <div class="heat">${heatRow(myName(),mine,"")}${ids[0]?heatRow(mateName(ids[0]),normalize(players[ids[0]]),"mate"):""}</div></section>
     <section class="panel"><div class="ptitle"><h3>Training this week</h3><div class="legend"><span>${esc(myName())}</span>${ids[0]?`<span class="mate">${esc(mateName(ids[0]))}</span>`:""}</div></div>
       <div class="bars">${MODULES.map(m=>`<div class="bar"><div class="top"><span>${esc(m.title)}</span><span>${fmtMin(wMe[m.id]||0)}${ids[0]?` · ${fmtMin(wMate[m.id]||0)}`:""}</span></div><div class="track"><i class="me" style="width:${(wMe[m.id]||0)/maxW*100}%"></i>${ids[0]?`<i class="mate" style="width:${(wMate[m.id]||0)/maxW*100}%"></i>`:""}</div></div>`).join("")}</div></section>
-    ${window.FDE_NOTIF?window.FDE_NOTIF.html():""}
-    <section class="panel" id="admin-users-panel" hidden><div class="ptitle"><h3>User management</h3><span class="hud" data-admin-status></span></div><form class="row" data-admin-add><input name="admin-email" type="email" required maxlength="254" placeholder="Email address" aria-label="Email address"><button class="gbtn" type="submit">Grant access</button></form><div class="admin-users" data-admin-list></div></section>
+    <button class="gbtn" id="tosettings" style="justify-self:stretch">Settings, notifications and members</button>
     <section class="panel pact"><span class="hud">House rule</span><h3>The coffee pact</h3><p class="muted">Whoever goes AFK for more than 3 days buys the next coffee. Study date included.</p></section>
   </div>`;
   const nf=$("mynote"); if(nf){const save=()=>{const v=nf.value.trim().slice(0,140);if(v!==mine.note)change(d=>{d.note=v;});};nf.onchange=save;nf.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();nf.blur();}};}
   $("totrophies").onclick=()=>go("trophies");
-  if(window.FDE_NOTIF)window.FDE_NOTIF.bind();
-  loadAdminUsers($("admin-users-panel"));
+  $("tosettings").onclick=()=>go("settings");
   refreshProfiles();
 }
 
@@ -3142,6 +3167,7 @@ function setHash(h){try{history.replaceState(null,"","#"+h);}catch(e){}}
 function go(v,mission){view=v;current=mission||null;setHash(v==="missions"&&current?current:v);render();window.scrollTo({top:0,behavior:"auto"});}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{try{sfx.click();}catch(e){}go(b.dataset.view);});
 $("soundbtn").onclick=soundToggle;
+$("setbtn").onclick=()=>go(view==="settings"?"today":"settings");
 
 $("today-label").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
 
@@ -3427,8 +3453,66 @@ const NOTIF = {
   }
 };
 window.FDE_NOTIF = NOTIF;
+
+// ---- settings: profile, preferences, notifications, members (and user management for admins)
+function memberRows(){
+  const ids = [...new Set([myId, ...Object.keys(players)].filter(Boolean))]; // players with a saved board; signups without study-list access only have a profile
+  const rows = ids.map(id => {
+    const isMe = id === myId, d = isMe ? mine : normalize(players[id]), xp = xpOf(d, id), lv = levelOf(xp), st = statusOf(d), on = !isMe && onlineIds.has(id);
+    const name = isMe ? myName() : (profCache[id] || mateName(id)), last = d.log.length ? fmtDay(d.log[d.log.length - 1] + "T12:00:00") : "";
+    const sub = on ? "Active now" : isMe ? "That's you" : last ? `Last trained ${last.toLowerCase() === "today" || last.toLowerCase() === "yesterday" ? last.toLowerCase() : "on " + last}` : "No training logged yet";
+    return { isMe, xp, html: `<div class="mem${isMe ? " me" : ""}"><div class="cav"><img alt="" src="${esc(isMe ? myAvatar() : initialsAvatar(name || "?"))}">${on ? '<span class="dot" title="Active now"></span>' : ""}</div>
+      <div class="meminfo"><b>${esc(name || "New player")}${isMe ? "<small>YOU</small>" : ""}</b><span class="hud">LV ${lv.i + 1} · ${esc(lv.name.toUpperCase())} · ${xp} XP · ${streakOf(d.log)} DAY COMBO</span><span class="sub">${esc(sub)}</span></div>
+      <span class="pill ${st.cls}">${esc(st.t)}</span></div>` };
+  });
+  rows.sort((a, b) => (b.isMe - a.isMe) || (b.xp - a.xp));
+  return { n: rows.length, html: rows.map(r => r.html).join("") };
+}
+function renderSettings(){
+  const root = $("settings-root"), m = memberRows();
+  if (root){ // already on screen: refresh the live parts only, so typing and the admin list aren't reset
+    $("set-members").innerHTML = m.html; $("set-mcount").textContent = `${m.n} player${m.n === 1 ? "" : "s"}`;
+    $("set-notif").innerHTML = NOTIF.html(); NOTIF.bind();
+    $("set-sound").setAttribute("aria-checked", String(SFX.on));
+    $("view").querySelectorAll("[data-goal]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.goal) === mine.goal)));
+    return;
+  }
+  const email = (viewer && viewer.email) || "";
+  $("view").innerHTML = `<div class="wrap setwrap" id="settings-root">
+    <div class="row"><button class="back" id="setback">← Back</button><span class="spacer"></span><span class="hud">Settings</span></div>
+    <section class="panel"><div class="ptitle"><h3>Your profile</h3><span class="hud">${esc(email)}</span></div>
+      <form class="nameform" id="nameform"><div class="field"><label class="hud" for="setname">Display name</label><input id="setname" maxlength="40" required autocomplete="nickname" value="${esc(myName())}"></div><button class="gbtn gold" type="submit">Save</button></form>
+      <p class="muted" id="namemsg" style="font-size:13px">This is the name your party sees in chat, battles and on the board.</p></section>
+    <section class="panel"><div class="ptitle"><h3>Preferences</h3></div>
+      <div class="setrow"><span><b>Daily goal</b><small>Minutes of training that complete your day</small></span><div class="goalpick">${GOALS.map(g => `<button data-goal="${g}" aria-pressed="${g === mine.goal}">${g}m</button>`).join("")}</div></div>
+      <div class="setrow"><span><b>Sound effects</b><small>Chiptune sounds for XP, chat and battles</small></span><button class="switch" id="set-sound" role="switch" aria-checked="${SFX.on}" aria-label="Sound effects"></button></div></section>
+    <div id="set-notif">${NOTIF.html()}</div>
+    <section class="panel"><div class="ptitle"><h3>Members</h3><span class="hud" id="set-mcount">${m.n} player${m.n === 1 ? "" : "s"}</span></div><div class="mems" id="set-members">${m.html}</div></section>
+    <section class="panel" id="admin-users-panel" hidden><div class="ptitle"><h3>User management</h3><span class="hud" data-admin-status></span></div><p class="muted" style="font-size:13px">Only admins see this. Control who can sign in and save progress.</p><form class="row" data-admin-add><input name="admin-email" type="email" required maxlength="254" placeholder="Email address" aria-label="Email address"><button class="gbtn" type="submit">Grant access</button></form><div class="admin-users" data-admin-list></div></section>
+    <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div></section>
+  </div>`;
+  $("setback").onclick = () => go("us");
+  $("nameform").onsubmit = async e => {
+    e.preventDefault();
+    const f = $("setname"), btn = e.submitter, msg = $("namemsg"), v = f.value.trim().replace(/\s+/g, " ").slice(0, 40);
+    if (!v){ msg.textContent = "Enter a name."; return; }
+    if (v === myName()){ msg.textContent = "That's already your name."; return; }
+    if (!sb || !myId){ msg.textContent = "Sign in to change your name."; return; }
+    btn.disabled = true; msg.textContent = "Saving…";
+    const { error } = await sb.from("profiles").update({ display_name: v }).eq("id", myId);
+    if (btn.isConnected) btn.disabled = false;
+    if (error){ msg.textContent = "Couldn't save your name. Check your connection and try again."; return; }
+    profCache[myId] = v; viewer.name = v; viewer.avatarUrl = initialsAvatar(v); profilesCache[myId] = { name: v, avatarUrl: viewer.avatarUrl };
+    msg.textContent = "Saved. Your party will see the new name."; toast("Name updated"); renderWho(); render();
+  };
+  $("view").querySelectorAll("[data-goal]").forEach(b => b.onclick = () => change(d => { d.goal = Number(b.dataset.goal); }, { quiet: true }));
+  $("set-sound").onclick = () => { soundToggle(); $("set-sound").setAttribute("aria-checked", String(SFX.on)); };
+  const so = $("set-signout"); if (so) so.onclick = () => sb.auth.signOut();
+  NOTIF.bind();
+  if (sb && started) loadAdminUsers($("admin-users-panel"));
+}
 if ("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/sw.js").then(() => NOTIF.refresh()).then(() => { if (view === "us") render(); }).catch(() => { NOTIF.status = "unsupported"; });
+  navigator.serviceWorker.register("/sw.js").then(() => NOTIF.refresh()).then(() => { if (view === "settings") render(); }).catch(() => { NOTIF.status = "unsupported"; });
 } else NOTIF.status = "unsupported";
 </script>
 </body>
