@@ -4,6 +4,12 @@
   ],
   "headers": [
     { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }, { "key": "Service-Worker-Allowed", "value": "/" }] },
-    { "source": "/.well-known/assetlinks.json", "headers": [{ "key": "Content-Type", "value": "application/json" }] }
+    { "source": "/.well-known/assetlinks.json", "headers": [{ "key": "Content-Type", "value": "application/json" }] },
+    { "source": "/api/(.*)", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "https://localhost" },
+      { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+      { "key": "Access-Control-Allow-Headers", "value": "authorization, content-type" },
+      { "key": "Access-Control-Max-Age", "value": "86400" }
+    ] }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "FDE Quest",
+  "short_name": "FDE Quest",
+  "description": "A co-op quest game for Forward Deployed Engineer interview prep.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15122E",
+  "theme_color": "#15122E",
+  "categories": ["education", "games", "productivity"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Chat", "url": "/#chat", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Arena", "url": "/#arena", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

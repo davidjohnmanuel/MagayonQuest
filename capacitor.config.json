@@ -1,0 +1,17 @@
+{
+  "appId": "app.magayonquest.fdequest",
+  "appName": "FDE Quest",
+  "webDir": "www",
+  "backgroundColor": "#15122E",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "force"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "launchAutoHide": true,
+      "backgroundColor": "#15122E",
+      "showSpinner": false
+    }
+  }
+}

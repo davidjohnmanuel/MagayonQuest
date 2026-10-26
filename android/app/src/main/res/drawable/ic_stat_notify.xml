@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome crosshair from icon.svg, used as the notification status-bar icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="512" android:viewportHeight="512">
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="34"
+        android:pathData="M256,106a150,150 0,1 1,0 300a150,150 0,1 1,0 -300z" />
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="34"
+        android:pathData="M256,178a78,78 0,1 1,0 156a78,78 0,1 1,0 -156z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M256,226a30,30 0,1 1,0 60a30,30 0,1 1,0 -60z" />
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="30" android:strokeLineCap="round"
+        android:pathData="M256,60v72M256,380v72M60,256h72M380,256h72" />
+</vector>

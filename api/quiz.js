@@ -7,6 +7,7 @@
 //   ANTHROPIC_MODEL    - optional, defaults to claude-haiku-5-5 (fast and cheap)
 
 module.exports = async (req, res) => {
+  if (req.method === "OPTIONS") return res.status(204).end(); // CORS preflight from the Android app (headers in vercel.json)
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
 
   const { ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;

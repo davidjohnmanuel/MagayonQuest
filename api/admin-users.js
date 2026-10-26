@@ -46,6 +46,7 @@ async function authUsers(context){
 }
 
 module.exports = async (req, res) => {
+  if (req.method === "OPTIONS") return res.status(204).end(); // CORS preflight from the Android app (headers in vercel.json)
   if (req.method !== "GET" && req.method !== "POST") return res.status(405).json({ error: "Use GET or POST" });
   try {
     const context = await adminContext(req);

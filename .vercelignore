@@ -1,0 +1,6 @@
+android/
+www/
+scripts/
+assets/
+capacitor.config.json
+*.jks

@@ -2,6 +2,7 @@
 const { userFromToken, pushTo } = require("./_push");
 
 module.exports = async (req, res) => {
+  if (req.method === "OPTIONS") return res.status(204).end(); // CORS preflight from the Android app (headers in vercel.json)
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
   try {
     const user = await userFromToken(req.headers.authorization || "");

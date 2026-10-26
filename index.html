@@ -410,6 +410,19 @@ details.intel[open] summary::after{content:"-"}
 .qinvite .qscores{display:flex;gap:12px;font-family:var(--f-hud);font-size:10.5px;color:var(--cyan)!important}
 .qinvite .gbtn{margin-top:4px;min-height:40px;font-size:14px}
 .emotes button.duel{border-color:var(--gold);background:var(--gold);color:var(--gold-ink);box-shadow:0 3px 0 #A87A00}
+.emotes button.topicb{border-color:var(--cyan);color:var(--cyan)}
+.qinvite.tcard,.msg.them .qinvite.tcard{border-color:var(--cyan)!important}
+.tcard b{overflow-wrap:anywhere}
+.tcard > span:not(.hud):not(.qscores){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.tophead{display:grid;gap:4px;background:var(--panel);border:2px solid var(--cyan);border-radius:14px;padding:10px 12px;margin-bottom:6px}
+.tophead .hud{font-size:9.5px;color:var(--cyan)}
+.tophead b{font-family:var(--f-display);font-size:17px;overflow-wrap:anywhere}
+.tophead .tsrc{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.chead .tback{flex:none;justify-self:auto;font-size:22px;padding:0 6px 0 2px;min-width:36px}
+.tlist{display:grid;gap:6px;max-height:40vh;overflow-y:auto}
+.tlist button{display:grid;gap:2px;text-align:left;border:2px solid var(--edge);background:var(--shadow);border-radius:12px;padding:10px 12px;color:var(--ink)}
+.tlist b{font-family:var(--f-display);font-size:15px;overflow-wrap:anywhere}
+.tlist span{font-size:12px;color:var(--muted)}
 
 /* Heroes + arena */
 .crest{position:relative;display:grid;place-items:center;flex:none;border-radius:14px 14px 50% 50%/14px 14px 38% 38%;background:linear-gradient(160deg,color-mix(in srgb,var(--hc) 38%,#1C1840),#15122E);border:3px solid var(--hc);box-shadow:0 4px 0 var(--shadow),inset 0 0 18px color-mix(in srgb,var(--hc) 30%,transparent);color:var(--hc)}
@@ -612,6 +625,11 @@ body:not(.authed) main,body:not(.authed) .dock,body:not(.authed) #save-note{disp
 .linkbtn{background:none;border:0;color:var(--cyan);font-weight:700;padding:8px 0;min-height:40px;font-size:14px}
 .signout{background:none;border:2px solid var(--edge);border-radius:8px;padding:2px 8px;font-family:var(--f-hud);font-size:10px;color:var(--muted);min-height:30px}
 .who .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Inactivity lock: covers everything until the access code is entered */
+.lock{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--bg);background-image:linear-gradient(180deg,var(--bg2),var(--bg) 420px);overflow-y:auto}
+.lock .gate{margin:0;text-align:left}
+.lock .lockic{width:44px;height:44px;color:var(--gold)}
+body.locked{overflow:hidden}
 </style>
 
 </head>
@@ -644,12 +662,17 @@ body:not(.authed) main,body:not(.authed) .dock,body:not(.authed) #save-note{disp
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="sheetwrap" id="battlesheet" hidden role="dialog" aria-modal="true" aria-label="Battle challenge"></div>
 <div class="sheetwrap" id="quizsheet" hidden role="dialog" aria-modal="true" aria-label="New quiz duel"></div>
+<div class="sheetwrap" id="topicsheet" hidden role="dialog" aria-modal="true" aria-label="Topics"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
+<div class="lock" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-t"></div>
 
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const CFG=window.FDE_CONFIG||{}; const PARTNER=CFG.partnerName||"Player 2";
+// Inside the Android app (Capacitor) the page is served from https://localhost, so API calls and email links go to the website.
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const SITE=NATIVE?String(CFG.appUrl||"").replace(/\/$/,""):"", CAP=NATIVE?window.Capacitor.Plugins:{};
 const YT=v=>"https://www.youtube.com/watch?v="+v;
 const MODULES = [
  {id:"role", code:"FDE-01", title:"What an FDE is",
@@ -1710,7 +1733,7 @@ function renderMissions(){
 async function adminRequest(method="GET", body){
   const { data } = await sb.auth.getSession();
   if (!data.session) throw new Error("Sign in again to manage users.");
-  const response = await fetch("/api/admin-users", {
+  const response = await fetch(SITE + "/api/admin-users", {
     method,
     headers: { authorization: `Bearer ${data.session.access_token}`, ...(body ? { "content-type": "application/json" } : {}) },
     body: body ? JSON.stringify(body) : undefined
@@ -2933,7 +2956,7 @@ const LS_READ=()=>LS+":read";
 let lastRead=""; try{lastRead=localStorage.getItem(LS_READ())||"";}catch(e){}
 const seenMsgs=new Set(); let seenReady=false;
 // Messenger-style extras: replies, reactions, typing and presence (presence/typing come from the realtime channel)
-let replyTo=null, openMid=null, lastTap={id:"",t:0}, typingAt={}, onlineIds=new Set(), chatRT=null, typingSent=0, lastLogId="";
+let replyTo=null, openMid=null, lastTap={id:"",t:0}, typingAt={}, onlineIds=new Set(), chatRT=null, typingSent=0, lastLogId="", thread=null;
 const coarse=()=>window.matchMedia&&matchMedia("(pointer:coarse)").matches;
 function allMsgs(){
   const out=mine.chat.map(m=>({...m,who:myId||"me",me:true}));
@@ -2941,6 +2964,13 @@ function allMsgs(){
   return out.sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0);
 }
 const findMsg=id=>allMsgs().find(m=>m.id===id);
+// Topics: a "t" message starts a discussion. Messages carrying its id in p live in that thread, not the main chat.
+const liveTopic=id=>{const t=id&&findMsg(id);return t&&t.k==="t"?t:null;};
+const clip=(s,n)=>s.length>n?s.slice(0,n-1)+"…":s;
+// Thread messages stay out of the main chat while their topic exists (even unsent); orphans fall back into it.
+function inView(msgs){const ids=new Set(msgs.map(m=>m.id));return msgs.filter(m=>thread?m.p===thread:!m.p||!ids.has(m.p));}
+function topicStats(id,msgs){const rs=msgs.filter(m=>m.p===id&&m.k!=="u");return{n:rs.length,last:rs[rs.length-1]||null};}
+const nReplies=n=>`${n} ${n===1?"reply":"replies"}`;
 function unreadCount(){return allMsgs().filter(m=>!m.me&&m.t>lastRead).length;}
 function markRead(){
   const th=allMsgs().filter(m=>!m.me);if(!th.length)return;const last=th[th.length-1].t;
@@ -2957,26 +2987,41 @@ function checkIncoming(){
   const fresh=theirs.filter(m=>!seenMsgs.has(m.id));
   fresh.forEach(m=>{seenMsgs.add(m.id);typingAt[m.who]=0;});
   if(fresh.length){try{(fresh.some(m=>m.k==="b")?sfx.challenge:sfx.message)();}catch(e){}}
-  if(fresh.length&&view!=="chat"){const m=fresh[fresh.length-1];toast(`${mateName(m.who)}: ${m.x.length>60?m.x.slice(0,57)+"…":m.x}`);}
+  if(fresh.length){
+    const m=fresh[fresh.length-1], tp=m.p?liveTopic(m.p):null;
+    // Toast unless it landed in the conversation that's on screen.
+    if(view!=="chat"||(tp?tp.id:null)!==thread)toast(`${mateName(m.who)}${tp?` in “${clip(tp.x,28)}”`:""}: ${clip(m.k==="t"?"📌 "+m.x:m.x,60)}`);
+  }
 }
 function renderBadge(){const b=$("chatbadge");const n=view==="chat"?0:unreadCount();b.hidden=!n;b.textContent=n>9?"9+":String(n);}
-function sendMsg(text,kind,r){
+const msgId=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,8)).slice(0,20);
+function pushMsg(m){change(d=>{d.chat.push(m);if(d.chat.length>120)d.chat=d.chat.slice(-120);},{now:true,quiet:true});}
+function sendMsg(text,kind,r,p){
   text=String(text||"").trim().slice(0,500); if(!text)return false;
   if(mode==="readonly"){toast("View only: ask David to add your email to the study list");return false;}
-  const id=(Date.now().toString(36)+Math.random().toString(36).slice(2,8)).slice(0,20);
-  const m={id,t:new Date().toISOString(),x:text,k:kind==="e"?"e":"m"};
+  const m={id:msgId(),t:new Date().toISOString(),x:text,k:kind==="e"?"e":"m"};
   if(r&&findMsg(r))m.r=r;
-  change(d=>{d.chat.push(m);if(d.chat.length>120)d.chat=d.chat.slice(-120);},{now:true,quiet:true});
+  if(p&&liveTopic(p))m.p=p;
+  pushMsg(m);
   return true;
+}
+function startTopic(title,src){
+  title=String(title||"").trim().replace(/\s+/g," ").slice(0,120); if(!title)return null;
+  if(mode==="readonly"){toast("View only: ask David to add your email to the study list");return null;}
+  const m={id:msgId(),t:new Date().toISOString(),x:title,k:"t"};
+  if(src&&findMsg(src))m.r=src;
+  pushMsg(m);
+  return m.id;
 }
 function toggleReact(id,e){
   if(!REACTS.includes(e))return;
   change(d=>{if(d.rx[id]===e)delete d.rx[id];else d.rx[id]=e;},{now:true,quiet:true});
 }
 function unsend(id){
-  if(!confirm("Unsend this message? It will be removed for everyone."))return;
+  const tp=liveTopic(id);
+  if(!confirm(tp?"Unsend this topic? It and its discussion will be removed for everyone.":"Unsend this message? It will be removed for everyone."))return;
   if(replyTo===id)replyTo=null;
-  change(d=>{const m=d.chat.find(x=>x.id===id);if(m&&(m.k==="m"||m.k==="e")){m.k="u";m.x="unsent";delete m.r;}},{now:true,quiet:true});
+  change(d=>{const m=d.chat.find(x=>x.id===id);if(m&&(m.k==="m"||m.k==="e"||m.k==="t")){m.k="u";m.x="unsent";delete m.r;}},{now:true,quiet:true});
   renderReplyBar();
 }
 function reactsFor(){
@@ -2988,21 +3033,32 @@ function fmtDay(iso){const d=new Date(iso),k=dayKey(d),t=todayKey();const y=new 
 function fmtAgo(iso){const ms=Date.now()-Date.parse(iso);if(!iso||isNaN(ms))return "";const m=Math.round(ms/6e4);return m<60?`Active ${Math.max(1,m)}m ago`:m<1440?`Active ${Math.round(m/60)}h ago`:m<10080?`Active ${Math.round(m/1440)}d ago`:"";}
 const isJumbo=x=>{const t=x.replace(/\s/g,"");return t.length>0&&/^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|‍|️)+$/u.test(t)&&(t.match(/\p{Extended_Pictographic}/gu)||[]).length<=3;};
 const linkify=h=>h.replace(/https?:\/\/[^\s<]+[^\s<.,:;!?)\]]/g,u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
-const msgPreview=m=>m.k==="u"?"Unsent message":m.k==="q"||m.k==="b"?m.x:m.x.length>80?m.x.slice(0,79)+"…":m.x;
+const msgPreview=m=>m.k==="u"?"Unsent message":m.k==="q"||m.k==="b"?m.x:m.k==="t"?"📌 "+m.x:clip(m.x,80);
 function replyLabel(m,q){
   const who=m.me?"You":mateName(m.who);
+  if(m.k==="t")return q?`Topic from ${q.me?"your":mateName(q.who)+"'s"} message`:"Topic from a message";
   if(!q)return `${who} replied to a message`;
   return `${who} replied to ${q.who===m.who?(m.me?"yourself":"themself"):q.me?"you":mateName(q.who)}`;
 }
+function topicCardHTML(m,all){
+  const s=topicStats(m.id,all);
+  return `<span class="bub qinvite tcard"><span class="hud">📌 ${m.me?"You started a topic":`${esc(mateName(m.who))} started a topic`}</span><b>${esc(m.x)}</b>
+    <span>${s.n?`${nReplies(s.n)} · ${s.last.me?"You":esc(mateName(s.last.who))}: ${esc(msgPreview(s.last))}`:"No replies yet"}</span>
+    <button class="gbtn cyan" data-topic="${esc(m.id)}">${s.n?"Open discussion":"Start the discussion"}</button></span>`;
+}
+function topicHeadHTML(tp,byId,empty){
+  const q=tp.r&&byId[tp.r];
+  return `<div class="tophead"><span class="hud">📌 Topic · started by ${tp.me?"you":esc(mateName(tp.who))} · ${esc(fmtDay(tp.t))}</span><b>${esc(tp.x)}</b>${q?`<span class="tsrc">From: “${esc(msgPreview(q))}”</span>`:""}${empty?`<span class="tsrc">No replies yet. Kick off the discussion below.</span>`:""}</div>`;
+}
 function chatLogHTML(){
-  const msgs=allMsgs(), ids=mate();
+  const all=allMsgs(), msgs=inView(all), ids=mate(), tp=thread&&liveTopic(thread);
   const typers=ids.filter(id=>typingAt[id]&&Date.now()-typingAt[id]<5000);
-  if(!msgs.length&&!typers.length)return `<div class="chatempty"><b>Party chat</b>${ids.length?`Say hi to ${esc(mateName(ids[0]))}, tap a quick reaction, or start a quiz duel.`:"Start a quiz duel to practise, or wait for your party member to join."}</div>`;
-  const rx=reactsFor(), byId={}; msgs.forEach(m=>{byId[m.id]=m;});
+  if(!tp&&!msgs.length&&!typers.length)return `<div class="chatempty"><b>Party chat</b>${ids.length?`Say hi to ${esc(mateName(ids[0]))}, tap a quick reaction, or start a quiz duel.`:"Start a quiz duel to practise, or wait for your party member to join."}</div>`;
+  const rx=reactsFor(), byId={}; all.forEach(m=>{byId[m.id]=m;});
   const seen=ids.map(id=>normalize(players[id]).seen).sort().pop()||"";
   const mineList=msgs.filter(m=>m.me), lastMine=mineList[mineList.length-1];
   const split=(a,b)=>!a||!b||Math.abs(Date.parse(b.t)-Date.parse(a.t))>15*6e4||dayKey(new Date(a.t))!==dayKey(new Date(b.t));
-  let html="";
+  let html=tp?topicHeadHTML(tp,byId,!msgs.length):"";
   msgs.forEach((m,i)=>{
     const prev=msgs[i-1], next=msgs[i+1];
     if(split(prev,m))html+=`<span class="daysep">${esc(fmtDay(m.t))} · ${esc(fmtTime(m.t))}</span>`;
@@ -3010,7 +3066,7 @@ function chatLogHTML(){
     const cls=["msg",m.me?"me":"them",first&&"first",last&&"last",m.k==="e"&&"emote",m.k==="m"&&isJumbo(m.x)&&"jumbo",m.k==="u"&&"unsent",rs.length&&"rx",openMid===m.id&&"open"].filter(Boolean).join(" ");
     const q=m.r&&byId[m.r];
     const quote=m.r?`<button class="rquote" data-jump="${esc(m.r)}"><span class="hud">${esc(replyLabel(m,q))}</span><span>${esc(q?msgPreview(q):"Message no longer available")}</span></button>`:"";
-    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
+    const body=m.k==="q"?quizCardHTML(m):m.k==="b"?battleCardHTML(m):m.k==="t"?topicCardHTML(m,all):`<span class="bub">${m.k==="u"?esc(m.me?"You unsent a message":`${mateName(m.who)} unsent a message`):linkify(esc(m.x))}</span>`;
     const chip=rs.length?`<span class="rxs" data-rxlist="${esc(m.id)}" role="button" tabindex="0" aria-label="See reactions">${[...new Set(rs.map(r=>r.e))].join("")}${rs.length>1?`<b>${rs.length}</b>`:""}</span>`:"";
     const more=m.k!=="u"?`<button class="mact" data-more="${esc(m.id)}" aria-label="Message options">⋯</button>`:"";
     html+=`<div class="${cls}" data-mid="${esc(m.id)}">${m.me?"":`<img class="mav${last?"":" blank"}" alt="" src="${esc(mateAvatar(m.who))}">`}<div class="mcol">${quote}<div class="mrow">${body}${more}${chip}</div><span class="meta">${m.me?"You":esc(mateName(m.who))} · ${esc(fmtDay(m.t))} ${esc(fmtTime(m.t))}</span></div></div>`;
@@ -3023,7 +3079,8 @@ function chatLogHTML(){
   return html;
 }
 function chatHeadHTML(){
-  const ids=mate();
+  const ids=mate(), tp=thread&&liveTopic(thread);
+  if(tp)return `<button type="button" class="back tback" id="tback" aria-label="Back to chat">←</button><div class="cnm"><b>📌 ${esc(tp.x)}</b><span>Topic · ${nReplies(topicStats(tp.id,allMsgs()).n)}</span></div>`;
   if(!ids.length)return `<div class="cnm"><b>Party chat</b><span>Waiting for Player 2</span></div>`;
   const id=ids[0], on=onlineIds.has(id), ago=on?"":fmtAgo(normalize(players[id]).updated);
   return `<div class="cav"><img alt="" src="${esc(mateAvatar(id))}">${on?'<span class="dot" title="Active now"></span>':""}</div><div class="cnm"><b>${esc(mateName(id))}</b><span class="${on?"on":""}">${on?"Active now":esc(ago||"Party chat")}</span></div>`;
@@ -3033,7 +3090,7 @@ function refreshLog(){
   const log=$("chatlog");if(!log)return;
   const near=log.scrollHeight-log.scrollTop-log.clientHeight<80;
   log.innerHTML=chatLogHTML(); bindPlay();
-  const msgs=allMsgs(), lastM=msgs[msgs.length-1], newer=lastM&&lastM.id!==lastLogId;
+  const msgs=inView(allMsgs()), lastM=msgs[msgs.length-1], newer=lastM&&lastM.id!==lastLogId;
   lastLogId=lastM?lastM.id:"";
   if(near||(newer&&lastM.me))log.scrollTop=log.scrollHeight;
   else if(newer){const j=$("jumpbtn");j.hidden=false;j.classList.add("new");j.textContent="↓ New messages";}
@@ -3057,11 +3114,11 @@ function menuKey(e){if(e.key==="Escape")closeMenu();}
 function openMenu(id,anchor){
   const m=findMsg(id); if(!m||m.k==="u")return;
   closeMenu();
-  const cur=mine.rx[id]||"", text=m.k==="m"||m.k==="e";
+  const cur=mine.rx[id]||"", text=m.k==="m"||m.k==="e"||m.k==="t";
   const bg=document.createElement("div");bg.className="mmenu-bg";
   const box=document.createElement("div");box.className="mmenu";box.setAttribute("role","menu");
   box.innerHTML=`<div class="rxbar" role="group" aria-label="React">${REACTS.map(e=>`<button type="button" data-r="${e}" class="${e===cur?"on":""}" aria-label="React ${e}" aria-pressed="${e===cur}">${e}</button>`).join("")}</div>
-    <div class="acts"><button type="button" data-a="reply">Reply</button>${text?`<button type="button" data-a="copy">Copy</button>`:""}${m.me&&text?`<button type="button" data-a="unsend" class="danger">Unsend</button>`:""}</div>`;
+    <div class="acts"><button type="button" data-a="reply">Reply</button>${!thread&&(m.k==="m"||m.k==="e")?`<button type="button" data-a="topic">Start a topic from this</button>`:""}${text?`<button type="button" data-a="copy">Copy</button>`:""}${m.me&&text?`<button type="button" data-a="unsend" class="danger">Unsend</button>`:""}</div>`;
   document.body.append(bg,box);
   const r=anchor.getBoundingClientRect(), bw=box.offsetWidth, bh=box.offsetHeight;
   let top=r.top-bh-8; if(top<12)top=Math.min(r.bottom+8,innerHeight-bh-12);
@@ -3072,10 +3129,11 @@ function openMenu(id,anchor){
     if(b.dataset.r){closeMenu();toggleReact(id,b.dataset.r);return;}
     const a=b.dataset.a;closeMenu();
     if(a==="reply"){replyTo=id;renderReplyBar();$("chatin").focus();}
+    else if(a==="topic")openTopicSheet(m.x,id);
     else if(a==="copy"){(navigator.clipboard?navigator.clipboard.writeText(m.x):Promise.reject()).then(()=>toast("Copied"),()=>toast("Couldn't copy"));}
     else if(a==="unsend")unsend(id);};
   box.querySelector("button").focus({preventScroll:true});
-  try{navigator.vibrate&&navigator.vibrate(10);}catch(e){}
+  try{if(CAP.Haptics)CAP.Haptics.impact({style:"LIGHT"});else navigator.vibrate&&navigator.vibrate(10);}catch(e){}
 }
 function showReacts(id){
   const rs=reactsFor()[id]||[];
@@ -3100,6 +3158,7 @@ function bindLog(log){
   log.addEventListener("click",e=>{
     if(suppress){suppress=false;e.preventDefault();return;}
     const j=e.target.closest("[data-jump]"); if(j){jumpTo(j.dataset.jump);return;}
+    const tb=e.target.closest("[data-topic]"); if(tb){openThread(tb.dataset.topic);return;}
     const mo=e.target.closest("[data-more]"); if(mo){openMenu(mo.dataset.more,mo.closest(".mrow").querySelector(".bub")||mo);return;}
     const rl=e.target.closest("[data-rxlist]"); if(rl){showReacts(rl.dataset.rxlist);return;}
     const bub=e.target.closest(".bub"); if(!bub||bub.classList.contains("qinvite")||e.target.closest("a,button"))return;
@@ -3111,32 +3170,65 @@ function bindLog(log){
   });
   log.addEventListener("keydown",e=>{const rl=e.target.closest("[data-rxlist]");if(rl&&(e.key==="Enter"||e.key===" ")){e.preventDefault();showReacts(rl.dataset.rxlist);}});
 }
+function openThread(id){
+  if(!liveTopic(id)){toast("That topic is no longer in the chat");return;}
+  thread=id; replyTo=null; closeMenu();
+  if(view!=="chat")go("chat");else renderChat();
+}
+function closeThread(){
+  const was=thread; thread=null; replyTo=null; renderChat();
+  if(was)requestAnimationFrame(()=>jumpTo(was));
+}
+function closeTopicSheet(){const s=$("topicsheet");s.hidden=true;s.innerHTML="";}
+function openTopicSheet(text,src){
+  const s=$("topicsheet"), all=allMsgs();
+  const act=m=>{const l=topicStats(m.id,all).last;return(l||m).t;};
+  const list=all.filter(m=>m.k==="t").sort((a,b)=>act(a)<act(b)?1:-1).slice(0,8);
+  s.hidden=false;
+  s.innerHTML=`<form class="box qsheet" id="topicform">
+    <div class="row"><h3>Topics</h3><span class="spacer"></span><button type="button" class="back" id="tclose" aria-label="Close">✕</button></div>
+    <label class="field"><span class="hud">New topic</span><input id="topicin" maxlength="120" placeholder="e.g. How should we split system design prep?" autocomplete="off" enterkeyhint="send"></label>
+    <span class="muted" style="font-size:13px">${src?"Links back to the message you picked. ":""}It's posted to the chat as a card, and the discussion gets its own thread.</span>
+    <button class="gbtn gold big" type="submit">Post topic to chat</button>
+    ${list.length?`<span class="hud">Recent topics</span><div class="tlist">${list.map(m=>`<button type="button" data-topic="${esc(m.id)}"><b>${esc(m.x)}</b><span>${m.me?"You":esc(mateName(m.who))} · ${nReplies(topicStats(m.id,all).n)} · ${esc(fmtDay(act(m)))}</span></button>`).join("")}</div>`:""}
+  </form>`;
+  const inp=$("topicin"); inp.value=text?clip(text.trim().replace(/\s+/g," "),120):"";
+  $("tclose").onclick=closeTopicSheet;
+  s.onclick=e=>{if(e.target===s){closeTopicSheet();return;}const b=e.target.closest("[data-topic]");if(b){closeTopicSheet();openThread(b.dataset.topic);}};
+  $("topicform").onsubmit=e=>{e.preventDefault();const id=startTopic(inp.value,src);if(id){closeTopicSheet();openThread(id);}else inp.focus();};
+  if(!coarse()||!text)inp.focus();
+}
 function renderChat(){
+  if(thread&&!liveTopic(thread))thread=null;
   markRead();
-  const log=$("chatlog");
-  if(log&&$("chatin")){refreshLog();refreshChatHead();return;}
+  const log=$("chatlog"), wrap=$("view").firstElementChild;
+  if(log&&$("chatin")&&wrap.dataset.thread===(thread||"")){refreshLog();refreshChatHead();return;}
   closeMenu();
-  $("view").innerHTML=`<div class="wrap chatwrap">
+  $("view").innerHTML=`<div class="wrap chatwrap" data-thread="${esc(thread||"")}">
     <section class="panel chead" id="chead">${chatHeadHTML()}</section>
     <div class="chatbox"><div class="chatlog" id="chatlog" aria-live="polite">${chatLogHTML()}</div><button type="button" class="jumpbtn" id="jumpbtn" hidden>↓ Latest</button></div>
-    <div class="emotes" role="group" aria-label="Quick reactions"><button class="duel" id="battlebtn">Battle</button><button class="duel" id="duelbtn">Quiz duel</button>${EMOTES.map((e,i)=>`<button data-emote="${i}" class="${e.love?"love":""}">${esc(e.x)}</button>`).join("")}</div>
+    <div class="emotes" role="group" aria-label="Quick reactions">${thread?"":`<button class="duel" id="battlebtn">Battle</button><button class="duel" id="duelbtn">Quiz duel</button><button class="topicb" id="topicbtn">📌 Topic</button>`}${EMOTES.map((e,i)=>`<button data-emote="${i}" class="${e.love?"love":""}">${esc(e.x)}</button>`).join("")}</div>
     <div class="replybar" id="replybar" hidden></div>
     <div class="emojipanel" id="emojipanel" role="group" aria-label="Emoji" hidden>${EMOJI.map(e=>`<button type="button" data-emoji="${e}" aria-label="${e}">${e}</button>`).join("")}</div>
-    <form class="composer" id="composer"><button type="button" class="cbtn" id="emojibtn" aria-label="Emoji" aria-expanded="false">${SMILE}</button><textarea id="chatin" rows="1" maxlength="500" placeholder="Aa" autocomplete="off" enterkeyhint="send" aria-label="Message"></textarea><button class="cbtn send like" type="submit" id="sendbtn" aria-label="Send a like">👍</button></form>
+    <form class="composer" id="composer"><button type="button" class="cbtn" id="emojibtn" aria-label="Emoji" aria-expanded="false">${SMILE}</button><textarea id="chatin" rows="1" maxlength="500" placeholder="${thread?"Reply in this topic":"Aa"}" autocomplete="off" enterkeyhint="send" aria-label="Message"></textarea><button class="cbtn send like" type="submit" id="sendbtn" aria-label="Send a like">👍</button></form>
   </div>`;
   const log2=$("chatlog"), f=$("chatin"), sendb=$("sendbtn"), panel=$("emojipanel");
-  const msgs=allMsgs(); lastLogId=msgs.length?msgs[msgs.length-1].id:"";
+  const msgs=inView(allMsgs()); lastLogId=msgs.length?msgs[msgs.length-1].id:"";
   log2.scrollTop=log2.scrollHeight; bindLog(log2); renderReplyBar();
   const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim();sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
   f.oninput=()=>{sync();if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
   f.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}};
-  $("composer").onsubmit=e=>{e.preventDefault();const text=f.value.trim()||"👍";if(sendMsg(text,"m",replyTo)){f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();}};
+  $("composer").onsubmit=e=>{e.preventDefault();const text=f.value.trim()||"👍";if(sendMsg(text,"m",replyTo,thread)){f.value="";replyTo=null;renderReplyBar();sync();panel.hidden=true;$("emojibtn").setAttribute("aria-expanded","false");f.focus();}};
   $("emojibtn").onclick=()=>{panel.hidden=!panel.hidden;$("emojibtn").setAttribute("aria-expanded",String(!panel.hidden));};
   panel.onclick=e=>{const b=e.target.closest("[data-emoji]");if(!b)return;const s=f.selectionStart??f.value.length,t=f.selectionEnd??s;f.value=(f.value.slice(0,s)+b.dataset.emoji+f.value.slice(t)).slice(0,500);const c=s+b.dataset.emoji.length;f.setSelectionRange(c,c);sync();if(!coarse())f.focus();};
   $("jumpbtn").onclick=()=>{log2.scrollTo({top:log2.scrollHeight,behavior:"smooth"});};
-  $("view").querySelectorAll("[data-emote]").forEach(b=>b.onclick=()=>sendMsg(EMOTES[Number(b.dataset.emote)].x,"e"));
-  $("duelbtn").onclick=openQuizSheet;
-  $("battlebtn").onclick=()=>{if(!myHero()){go2heroes();return;}openBattleSheet();};
+  $("view").querySelectorAll("[data-emote]").forEach(b=>b.onclick=()=>sendMsg(EMOTES[Number(b.dataset.emote)].x,"e",null,thread));
+  $("chead").onclick=e=>{if(e.target.closest("#tback"))closeThread();};
+  if(!thread){
+    $("duelbtn").onclick=openQuizSheet;
+    $("battlebtn").onclick=()=>{if(!myHero()){go2heroes();return;}openBattleSheet();};
+    $("topicbtn").onclick=()=>openTopicSheet();
+  }
   bindPlay();
 }
 function bindPlay(){$("view").querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>playQuiz(b.dataset.play));$("view").querySelectorAll("[data-battle]").forEach(b=>b.onclick=()=>openBattle(b.dataset.battle));}
@@ -3230,14 +3322,14 @@ function renderAuth(){
     try {
       const { data: current } = await sb.auth.getSession();
       if (!current.session) throw new Error("Sign in again to join the study list.");
-      const access = await fetch("/api/signup-code", {
+      const access = await fetch(SITE + "/api/signup-code", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "authorize", email: current.session.user.email, code: $("a-join-code").value.trim() })
       });
       const accessResult = await access.json().catch(() => ({}));
       if (!access.ok){ authMsg = accessResult.error || "Couldn't verify the access code."; renderAuth(); return; }
-      const complete = await fetch("/api/signup-code", {
+      const complete = await fetch(SITE + "/api/signup-code", {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${current.session.access_token}` },
         body: JSON.stringify({ action: "complete", inviteToken: accessResult.inviteToken })
@@ -3254,14 +3346,15 @@ function renderAuth(){
     e.preventDefault();
     const btn = f.querySelector("button[type=submit]"); btn.disabled = true;
     const val = id => { const x = $(id); return x ? x.value.trim() : ""; };
-    const back = location.origin + location.pathname;
+    const back = NATIVE ? SITE + "/" : location.origin + location.pathname;
     try {
       if (authView === "signin"){
+        freshUnlock();
         const { error } = await sb.auth.signInWithPassword({ email: val("a-email"), password: $("a-pass").value });
         if (error){ authMsg = /invalid login/i.test(error.message) ? "That email and password don't match. Try again, or reset your password." : /not confirmed/i.test(error.message) ? "Confirm your email first: open the link we sent you, then sign in." : error.message; renderAuth(); }
       } else if (authView === "signup"){
         const email = val("a-email");
-        const access = await fetch("/api/signup-code", {
+        const access = await fetch(SITE + "/api/signup-code", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ action: "authorize", email, code: val("a-code") })
@@ -3289,7 +3382,7 @@ async function onSession(session){
   if (!session){
     document.body.classList.remove("authed"); viewer = null; started = false; dataReady = false; players = {}; myId = null; mode = "local";
     if (channel){ sb.removeChannel(channel); channel = null; }
-    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; closeMenu();
+    if (chatCh){ sb.removeChannel(chatCh); chatCh = null; } chatRT = null; onlineIds = new Set(); typingAt = {}; replyTo = null; thread = null; closeMenu(); closeTopicSheet(); freshUnlock();
     if (authView !== "check" && authView !== "newpass") authView = "signin";
     renderWho(); renderAuth(); return;
   }
@@ -3301,7 +3394,7 @@ async function onSession(session){
   const inviteToken = u.user_metadata && u.user_metadata.signup_invite;
   if (inviteToken){
     try {
-      const response = await fetch("/api/signup-code", {
+      const response = await fetch(SITE + "/api/signup-code", {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ action: "complete", inviteToken })
@@ -3320,7 +3413,7 @@ async function onSession(session){
   try { const raw = localStorage.getItem(LS); if (raw) mine = normalize(JSON.parse(raw)); } catch (e){}
   myId = u.id; mode = "shared"; dirty = false; saveMsg = ""; started = true;
   document.body.classList.add("authed");
-  renderAuth(); render(); subscribe();
+  renderAuth(); render(); subscribe(); checkIdle();
 }
 let sessionChain = Promise.resolve();
 function queueSession(s){ sessionChain = sessionChain.then(() => onSession(s)).catch(() => {}); }
@@ -3365,6 +3458,81 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && started) pull();
 });
 
+// ---- inactivity lock
+// After LOCK_MS without a tap, key, scroll or mouse move the app covers itself until the access code
+// (SIGNUP_CODE on Vercel) is entered. api/signup-code.js checks the code, so it never reaches the browser.
+// The last-active time and locked flag live in localStorage, so a reload or reopening the app can't skip the lock.
+const LOCK_MS = 30000, LS_LOCK = "fde-lock";
+let lockedNow = false, lockMsg = "", lockTries = 0, lockWaitUntil = 0, lastWrite = 0;
+function readLock(){ try { return JSON.parse(localStorage.getItem(LS_LOCK)) || {}; } catch (e){ return {}; } }
+function writeLock(locked){ try { localStorage.setItem(LS_LOCK, JSON.stringify({ at: lastAct, locked })); } catch (e){} }
+let lastAct = readLock().at || Date.now();
+function noteActive(){
+  if (lockedNow) return;
+  lastAct = Date.now();
+  if (lastAct - lastWrite > 2000){ lastWrite = lastAct; writeLock(false); }
+}
+function checkIdle(){
+  if (!started || lockedNow) return;
+  if (readLock().locked || Date.now() - lastAct >= LOCK_MS) lockApp();
+}
+function lockApp(){
+  lockedNow = true; lockMsg = ""; writeLock(true);
+  closeMenu();
+  if (document.activeElement) document.activeElement.blur();
+  document.body.classList.add("locked");
+  document.querySelectorAll("body > :not(#lock):not(script)").forEach(el => { el.inert = true; });
+  renderLock();
+}
+// Called after a correct code, a fresh sign-in or a sign-out.
+function freshUnlock(){
+  lastAct = lastWrite = Date.now(); writeLock(false);
+  if (!lockedNow) return;
+  lockedNow = false; lockMsg = "";
+  document.body.classList.remove("locked");
+  document.querySelectorAll("body > [inert]").forEach(el => { el.inert = false; });
+  const l = $("lock"); l.hidden = true; l.innerHTML = "";
+}
+function renderLock(){
+  const l = $("lock"); l.hidden = false;
+  l.innerHTML = `<form class="gate" id="lockform">
+    <svg class="lockic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>
+    <h2 id="lock-t">Quest locked</h2>
+    <p>${viewer ? `Signed in as <b>${esc(viewer.name || viewer.email)}</b>. ` : ""}The app locks after ${LOCK_MS / 1000} seconds without activity. Enter the access code to continue.</p>
+    ${lockMsg ? `<p class="amsg" role="alert">${esc(lockMsg)}</p>` : ""}
+    ${field("lock-code", "Access code", "password", "off")}
+    <button class="gbtn gold big" type="submit">Unlock</button>
+    <div class="row"><span class="spacer"></span><button type="button" class="linkbtn" id="lock-out">Sign out</button></div>
+  </form>`;
+  const inp = $("lock-code");
+  if (!coarse()) inp.focus();
+  $("lock-out").onclick = () => sb.auth.signOut();
+  $("lockform").onsubmit = async e => {
+    e.preventDefault();
+    const wait = Math.ceil((lockWaitUntil - Date.now()) / 1000);
+    if (wait > 0){ lockMsg = `Too many wrong tries. Wait ${wait}s and try again.`; renderLock(); return; }
+    const btn = e.target.querySelector("button[type=submit]"); btn.disabled = true;
+    try {
+      const { data } = await sb.auth.getSession();
+      if (!data.session){ sb.auth.signOut(); return; }
+      const r = await fetch(SITE + "/api/signup-code", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${data.session.access_token}` },
+        body: JSON.stringify({ action: "unlock", code: inp.value.trim() })
+      });
+      const result = await r.json().catch(() => ({}));
+      if (r.ok){ lockTries = 0; freshUnlock(); return; }
+      // Five wrong codes in a row pause unlocking for 30 seconds.
+      if (r.status === 403 && ++lockTries >= 5){ lockTries = 0; lockWaitUntil = Date.now() + 30000; }
+      lockMsg = result.error || "Couldn't check the access code. Try again.";
+    } catch (err){ lockMsg = "Couldn't reach the server. Check your connection and try again."; }
+    renderLock();
+  };
+}
+["pointerdown", "pointermove", "keydown", "wheel", "touchstart", "scroll"].forEach(t => document.addEventListener(t, noteActive, { capture: true, passive: true }));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkIdle(); });
+setInterval(checkIdle, 1000);
+
 if (!sb){ authView = "setup"; renderAuth(); }
 else {
   authView = "loading"; renderAuth();
@@ -3379,20 +3547,33 @@ if (CFG.aiQuiz && sb) aiGen = async (prompt, signal) => {
   const { data } = await sb.auth.getSession();
   const tok = data.session && data.session.access_token;
   let r;
-  try { r = await fetch("/api/quiz", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + tok }, body: JSON.stringify({ prompt }), signal }); }
+  try { r = await fetch(SITE + "/api/quiz", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + tok }, body: JSON.stringify({ prompt }), signal }); }
   catch (e) { throw { code: e && e.name === "AbortError" ? "cancelled" : "upstream_error" }; }
   if (!r.ok) throw { code: r.status === 503 ? "sampling_disabled" : r.status === 403 ? "not_granted" : "upstream_error" };
   const j = await r.json(); return j.questions;
 };
 
 // ---- installable app + push notifications (deployed version only)
+// In the Android app, pushes come through Firebase (Capacitor PushNotifications) instead of the service worker.
+const LS_FCM = "fde-fcm-token";
 const NOTIF = {
-  supported: "serviceWorker" in navigator && "PushManager" in window && "Notification" in window,
+  supported: NATIVE ? !!CAP.PushNotifications : "serviceWorker" in navigator && "PushManager" in window && "Notification" in window,
   status: "checking", busy: false, msg: "",
-  key(){ return CFG.vapidPublicKey && !/YOUR-/.test(CFG.vapidPublicKey) ? CFG.vapidPublicKey : ""; },
+  key(){
+    if (NATIVE) return CFG.androidPush ? "fcm" : "";
+    return CFG.vapidPublicKey && !/YOUR-/.test(CFG.vapidPublicKey) ? CFG.vapidPublicKey : "";
+  },
+  fcmToken(){ try { return localStorage.getItem(LS_FCM) || ""; } catch (e){ return ""; } },
   async refresh(){
     if (!this.supported){ this.status = "unsupported"; return; }
     if (!this.key()){ this.status = "nokey"; return; }
+    if (NATIVE){
+      try {
+        const p = await CAP.PushNotifications.checkPermissions();
+        this.status = p.receive === "denied" ? "denied" : p.receive === "granted" && this.fcmToken() ? "on" : "off";
+      } catch (e){ this.status = "off"; }
+      return;
+    }
     try {
       const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
       this.status = Notification.permission === "denied" ? "denied" : sub ? "on" : "off";
@@ -3402,7 +3583,7 @@ const NOTIF = {
     const S = {
       checking: ["Checking…", ""],
       unsupported: ["Not available here", "Install the app (Add to Home screen) and open it from there. On iPhone, notifications need iOS 16.4 or later."],
-      nokey: ["Not set up yet", "David needs to add the VAPID key to config.js (see README)."],
+      nokey: ["Not set up yet", NATIVE ? "David needs to connect the Android app to Firebase (see README)." : "David needs to add the VAPID key to config.js (see README)."],
       denied: ["Blocked", "Notifications are blocked for this app. Turn them on in your phone's settings for this app, then reload."],
       off: ["Off", "Get a ping for chats, quiz duels, battle challenges, your turn in battle, and a daily reminder."],
       on: ["On", "This device gets chats, invites, battle turns and the 8pm reminder."]
@@ -3418,8 +3599,32 @@ const NOTIF = {
     const t = $("notiftest"); if (t) t.onclick = () => this.test();
   },
   b64(key){ const p = "=".repeat((4 - key.length % 4) % 4), raw = atob((key + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from([...raw].map(c => c.charCodeAt(0))); },
+  // Ask Firebase for this phone's token; it arrives through the "registration" event.
+  fcmRegister(){
+    const P = CAP.PushNotifications;
+    return new Promise(async (resolve, reject) => {
+      const ok = await P.addListener("registration", t => { ok.remove(); bad.remove(); resolve(t.value); });
+      const bad = await P.addListener("registrationError", e => { ok.remove(); bad.remove(); reject(e); });
+      P.register().catch(reject);
+    });
+  },
+  async enableNative(){
+    const perm = await CAP.PushNotifications.requestPermissions();
+    if (perm.receive !== "granted"){ this.status = perm.receive === "denied" ? "denied" : "off"; this.msg = perm.receive === "denied" ? "" : "Allow notifications when your phone asks."; return; }
+    const token = await this.fcmRegister();
+    const { error } = await sb.from("push_subs").upsert({ endpoint: "fcm:" + token, user_id: myId, sub: { fcm: token } });
+    if (error) throw error;
+    try { localStorage.setItem(LS_FCM, token); } catch (e){}
+    this.status = "on"; this.msg = ""; toast("Notifications on"); try { sfx.coin(); } catch (e){}
+  },
   async enable(){
     this.busy = true; this.msg = ""; render();
+    if (NATIVE){
+      try { await this.enableNative(); }
+      catch (e){ this.msg = "Couldn't turn on notifications. Check your connection and try again."; }
+      finally { this.busy = false; render(); }
+      return;
+    }
     try {
       const perm = await Notification.requestPermission();
       if (perm !== "granted"){ this.status = perm === "denied" ? "denied" : "off"; this.msg = perm === "denied" ? "" : "Allow notifications when your phone asks."; return; }
@@ -3435,8 +3640,15 @@ const NOTIF = {
   async disable(){
     this.busy = true; render();
     try {
-      const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
-      if (sub){ await sb.from("push_subs").delete().eq("endpoint", sub.endpoint); await sub.unsubscribe(); }
+      if (NATIVE){
+        const token = this.fcmToken();
+        if (token) await sb.from("push_subs").delete().eq("endpoint", "fcm:" + token);
+        await CAP.PushNotifications.unregister();
+        try { localStorage.removeItem(LS_FCM); } catch (e){}
+      } else {
+        const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
+        if (sub){ await sb.from("push_subs").delete().eq("endpoint", sub.endpoint); await sub.unsubscribe(); }
+      }
       this.status = "off"; toast("Notifications off");
     } catch (e){ this.msg = "Couldn't turn them off. Try again."; }
     finally { this.busy = false; render(); }
@@ -3445,7 +3657,7 @@ const NOTIF = {
     this.busy = true; render();
     try {
       const { data } = await sb.auth.getSession();
-      const r = await fetch("/api/notify-test", { method: "POST", headers: { authorization: "Bearer " + (data.session && data.session.access_token) } });
+      const r = await fetch(SITE + "/api/notify-test", { method: "POST", headers: { authorization: "Bearer " + (data.session && data.session.access_token) } });
       const j = await r.json().catch(() => ({}));
       this.msg = r.ok && j.sent ? "Test sent. It should appear in a few seconds." : r.status === 503 ? "The server isn't set up for notifications yet (see README)." : "Couldn't send a test. Turn notifications off and on again.";
     } catch (e){ this.msg = "Couldn't reach the server."; }
@@ -3511,9 +3723,44 @@ function renderSettings(){
   NOTIF.bind();
   if (sb && started) loadAdminUsers($("admin-users-panel"));
 }
-if ("serviceWorker" in navigator){
+if (NATIVE) nativeSetup();
+else if ("serviceWorker" in navigator){
   navigator.serviceWorker.register("/sw.js").then(() => NOTIF.refresh()).then(() => { if (view === "settings") render(); }).catch(() => { NOTIF.status = "unsupported"; });
 } else NOTIF.status = "unsupported";
+
+// ---- Android app: back button, notification taps
+function nativeBack(){
+  if (document.querySelector(".mmenu")){ closeMenu(); return; }
+  const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet })[sheet.id](); return; }
+  if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
+  if (view === "chat" && thread){ closeThread(); return; }
+  const back = $("view").querySelector("button.back");
+  if (back){ back.click(); return; }
+  if (view !== "today"){ go("today"); return; }
+  CAP.App.minimizeApp();
+}
+function openFromPush(url){
+  const h = String(url || "").split("#")[1] || "";
+  if (["today", "missions", "arena", "us", "chat", "trophies"].includes(h)) go(h);
+  else if (MOD[h]) go("missions", h);
+}
+function nativeSetup(){
+  if (CAP.App) CAP.App.addListener("backButton", nativeBack);
+  const P = CAP.PushNotifications;
+  if (P && CFG.androidPush){
+    P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
+    // The app is open, so Android shows nothing; only a test asks to be seen anyway.
+    P.addListener("pushNotificationReceived", n => { if (n.data && n.data.always) toast(n.body || n.data.body || "Notification received"); });
+    // Firebase can rotate the token; keep the saved device current.
+    if (NOTIF.fcmToken()) P.checkPermissions().then(p => p.receive === "granted" && NOTIF.fcmRegister()).then(token => {
+      if (!token || token === NOTIF.fcmToken() || !sb || !myId) return;
+      sb.from("push_subs").delete().eq("endpoint", "fcm:" + NOTIF.fcmToken()).then(() => sb.from("push_subs").upsert({ endpoint: "fcm:" + token, user_id: myId, sub: { fcm: token } }))
+        .then(() => { try { localStorage.setItem(LS_FCM, token); } catch (e){} });
+    }).catch(() => {});
+  }
+  NOTIF.refresh().then(() => { if (view === "settings") render(); });
+}
 </script>
 </body>
 </html>

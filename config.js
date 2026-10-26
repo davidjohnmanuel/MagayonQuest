@@ -7,6 +7,10 @@ window.FDE_CONFIG = {
   partnerName: "Bert",
   // Set to true after adding ANTHROPIC_API_KEY to Vercel (see README, "AI-generated quizzes").
   aiQuiz: false,
+  // The website's address. The Android app calls its /api routes and sends email links there.
+  appUrl: "https://magayonquest.vercel.app",
+  // Set to true after adding android/app/google-services.json (see README, "Android app").
+  androidPush: false,
   // Public key for push notifications (safe to commit). Its private half goes in Vercel only.
-  vapidPublicKey: "BNSS253wgUs2DFPmWR39smvkq7GA9JCVfYRTRmdh5HJ3JLt-417JwDH9C59t1RaINI6Q1iqwE1QTSSFUtdGGsbo"
+  vapidPublicKey: "BKvLc-2w06r3dMt28FqkhpC6FtJw7rX5lcT4SrM5s0IsBSap-jTb9XozeAs6iECrGFsPg0nG6VBI8j97G-3Agu0"
 };

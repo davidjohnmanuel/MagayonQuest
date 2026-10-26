@@ -12,7 +12,7 @@ It is plain HTML with no build step. Supabase handles login and data, and Vercel
 | `config.js` | Your Supabase URL and key go here |
 | `supabase/schema.sql` | Creates the tables and privacy rules |
 | `api/quiz.js` | Optional: generates AI quizzes with Claude |
-| `api/signup-code.js` | Checks the private signup code and adds verified emails to the study list |
+| `api/signup-code.js` | Checks the private signup code, adds verified emails to the study list, and unlocks the auto-lock screen |
 | `sw.js` | Makes it installable, opens offline, shows notifications |
 | `api/notify.js`, `api/notify-test.js`, `api/remind.js`, `api/_push.js` | Push notifications: chats, invites, battle turns, daily reminder |
 | `package.json`, `vercel.json` | Notification library and the daily 8pm reminder schedule |
@@ -77,6 +77,15 @@ Without this, the email confirmation and password-reset links point to the wrong
 
 **Add to home screen:** on iPhone, Safari → Share → Add to Home Screen. On Android, Chrome → ⋮ → Add to Home screen. It then opens full-screen like an app.
 
+## Auto-lock
+
+After 30 seconds without a tap, keypress, scroll or mouse move, the app locks behind a full-screen **Quest locked** screen. Enter the access code (the same `SIGNUP_CODE` used for signup) to get back in, or tap **Sign out**. Reloading the page or reopening the app doesn't get around the lock. Timers and live sync keep running while it's locked.
+
+- The code is checked by `api/signup-code.js`, so unlocking needs a connection and only works on the deployed Vercel site, not a plain local file server.
+- After five wrong codes in a row, unlocking pauses for 30 seconds.
+- To change the timeout, edit `LOCK_MS` in `index.html`. Changing `SIGNUP_CODE` in Vercel changes the unlock code too.
+- This is a privacy screen for a phone left on the table. It doesn't protect against someone with the browser's developer tools open on an already signed-in device.
+
 ## Settings
 
 Tap the gear at the top right (or **Settings, notifications and members** in the Party tab). Every player can change their display name, daily goal and sound, turn notifications on or off, see each member's level, combo and when they last trained, and sign out. Admins (emails in `ADMIN_EMAILS` on Vercel) also see **User management** there to grant or remove access.
@@ -87,6 +96,7 @@ The **Chat** tab works like a messaging app:
 
 - **React:** double-tap a message to ❤️ it, or long-press (right-click or hover **⋯** on a computer) to pick ❤️ 😂 😮 😢 😡 👍.
 - **Reply, copy, unsend:** in the same long-press menu. Unsend removes your message for both of you.
+- **Topics:** tap **📌 Topic** to post a discussion topic to the chat, or pick **Start a topic from this** in a message's long-press menu. The topic shows up as a card with its reply count and latest reply. Tap **Open discussion** to go into its thread, where messages stay out of the main chat, and tap **←** to go back. The Topic sheet also lists recent topics so you can reopen them.
 - **Seen and typing:** your partner's avatar appears under your last message once they've read it, and you'll see typing dots and "Active now" while they're in the app.
 - **Composer:** the emoji button opens a picker. With an empty box, the send button sends a 👍. Enter sends on a computer; Shift+Enter adds a new line.
 - Tap a message to see its time. Links open in a new tab.

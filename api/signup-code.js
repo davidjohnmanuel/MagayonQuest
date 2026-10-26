@@ -21,6 +21,7 @@ function readInvite(token, key){
 }
 
 module.exports = async (req, res) => {
+  if (req.method === "OPTIONS") return res.status(204).end(); // CORS preflight from the Android app (headers in vercel.json)
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
 
   const { SIGNUP_CODE, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
@@ -34,11 +35,32 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = SUPABASE_URL.replace(/\/$/, "");
-  if (body.action === "authorize") {
-    if (!SIGNUP_CODE) return res.status(503).json({ error: "Account creation is not configured" });
+  const codeMatches = () => {
     const code = Buffer.from(String(body.code || "").trim());
     const expected = Buffer.from(SIGNUP_CODE);
-    if (code.length !== expected.length || !crypto.timingSafeEqual(code, expected)) {
+    return code.length === expected.length && crypto.timingSafeEqual(code, expected);
+  };
+
+  // The inactivity lock screen: a signed-in player re-enters the access code to get back in.
+  if (body.action === "unlock") {
+    if (!SIGNUP_CODE) return res.status(503).json({ error: "The access code is not configured" });
+    const auth = req.headers.authorization || "";
+    if (!auth.startsWith("Bearer ")) return res.status(401).json({ error: "Sign in again." });
+    try {
+      const userResponse = await fetch(`${baseUrl}/auth/v1/user`, {
+        headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, authorization: auth }
+      });
+      if (!userResponse.ok) return res.status(401).json({ error: "Your session expired. Sign in again." });
+    } catch (e) {
+      return res.status(502).json({ error: "Could not reach the account service. Try again." });
+    }
+    if (!codeMatches()) return res.status(403).json({ error: "That access code is incorrect." });
+    return res.status(200).json({ ok: true });
+  }
+
+  if (body.action === "authorize") {
+    if (!SIGNUP_CODE) return res.status(503).json({ error: "Account creation is not configured" });
+    if (!codeMatches()) {
       return res.status(403).json({ error: "That access code is incorrect." });
     }
     const email = String(body.email || "").trim().toLowerCase();

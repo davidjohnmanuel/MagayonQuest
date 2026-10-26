@@ -10,10 +10,14 @@ function whatsNew(record, old, others, senderName){
   // 1. New chat messages, quiz invites and battle challenges
   const seen = new Set((od.chat || []).map(m => m && m.id));
   const fresh = (d.chat || []).filter(m => m && m.id && !seen.has(m.id)).slice(-3);
+  const everyone = (d.chat || []).concat(others.flatMap(o => o.data.chat || []));
   for (const m of fresh){
     const text = String(m.x || "");
+    const topic = m.p && everyone.find(x => x && x.id === m.p && x.k === "t");
     if (m.k === "b") notes.push({ title: `⚔ ${senderName} challenges you to battle`, body: text, tag: "battle-" + m.q, url: "/#chat" });
     else if (m.k === "q") notes.push({ title: `${senderName} sent you a quiz duel`, body: text, tag: "quiz-" + m.q, url: "/#chat" });
+    else if (m.k === "t") notes.push({ title: `📌 ${senderName} started a topic`, body: trim(text, 140), tag: "topic-" + m.id, url: "/#chat" });
+    else if (topic) notes.push({ title: `${senderName} in “${trim(String(topic.x || ""), 40)}”`, body: trim(text, 140), tag: "topic-" + topic.id, url: "/#chat" });
     else notes.push({ title: senderName, body: trim(text, 140), tag: "chat", url: "/#chat" });
   }
   // 2. A new reaction on someone else's message (only the latest one, so a burst of taps is one ping)
