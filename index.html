@@ -4945,8 +4945,15 @@ async function refreshAll(){
 // Without a tap on "I'm still here" in that time it covers itself until the access code
 // (SIGNUP_CODE on Vercel) is entered. api/signup-code.js checks the code, so it never reaches the browser.
 // The last-active time and locked flag live in localStorage, so a reload or reopening the app can't skip the lock.
-const LOCK_MS = 30000, CONFIRM_MS = 10000, LS_LOCK = "fde-lock";
-let lockedNow = false, warnedNow = false, lockMsg = "", lockTries = 0, lockWaitUntil = 0, lastWrite = 0;
+// The "Quest lock" switch in Settings turns it off on this device ("fde-lock-on" = "off").
+const LOCK_MS = 30000, CONFIRM_MS = 10000, LS_LOCK = "fde-lock", LS_LOCK_ON = "fde-lock-on";
+let lockedNow = false, warnedNow = false, lockMsg = "", lockTries = 0, lockWaitUntil = 0, lastWrite = 0, lockOn = true;
+try { lockOn = localStorage.getItem(LS_LOCK_ON) !== "off"; } catch (e){}
+function lockToggle(){
+  lockOn = !lockOn;
+  try { localStorage.setItem(LS_LOCK_ON, lockOn ? "on" : "off"); } catch (e){}
+  stayActive(); // start a fresh 40 seconds when turned back on
+}
 function readLock(){ try { return JSON.parse(localStorage.getItem(LS_LOCK)) || {}; } catch (e){ return {}; } }
 function writeLock(locked){ try { localStorage.setItem(LS_LOCK, JSON.stringify({ at: lastAct, locked })); } catch (e){} }
 let lastAct = readLock().at || Date.now();
@@ -4956,7 +4963,7 @@ function noteActive(){
   if (lastAct - lastWrite > 2000){ lastWrite = lastAct; writeLock(false); }
 }
 function checkIdle(){
-  if (!started || lockedNow) return;
+  if (!started || lockedNow || !lockOn) return;
   const idle = Date.now() - lastAct;
   if (readLock().locked || idle >= LOCK_MS + CONFIRM_MS) lockApp();
   else if (idle >= LOCK_MS) showWarn(LOCK_MS + CONFIRM_MS - idle);
@@ -5211,6 +5218,7 @@ function renderSettings(){
     $("set-notif").innerHTML = NOTIF.html(); NOTIF.bind();
     $("set-sound").setAttribute("aria-checked", String(SFX.on));
     if (avImg) avImg.src = myAvatar();
+    $("set-ver").textContent = verText();
     $("view").querySelectorAll("[data-goal]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.goal) === mine.goal)));
     return;
   }
@@ -5225,11 +5233,13 @@ function renderSettings(){
       <p class="muted" id="namemsg" style="font-size:13px">This is the name your party sees in chat, battles and on the board.</p></section>
     <section class="panel"><div class="ptitle"><h3>Preferences</h3></div>
       <div class="setrow"><span><b>Daily goal</b><small>Minutes of training that complete your day</small></span><div class="goalpick">${GOALS.map(g => `<button data-goal="${g}" aria-pressed="${g === mine.goal}">${g}m</button>`).join("")}</div></div>
-      <div class="setrow"><span><b>Sound effects</b><small>Chiptune sounds for XP, chat and battles</small></span><button class="switch" id="set-sound" role="switch" aria-checked="${SFX.on}" aria-label="Sound effects"></button></div></section>
+      <div class="setrow"><span><b>Sound effects</b><small>Chiptune sounds for XP, chat and battles</small></span><button class="switch" id="set-sound" role="switch" aria-checked="${SFX.on}" aria-label="Sound effects"></button></div>
+      <div class="setrow"><span><b>Quest lock</b><small>Lock the app after ${(LOCK_MS + CONFIRM_MS) / 1000} seconds without activity</small></span><button class="switch" id="set-lock" role="switch" aria-checked="${lockOn}" aria-label="Quest lock"></button></div></section>
     <div id="set-notif">${NOTIF.html()}</div>
     <section class="panel"><div class="ptitle"><h3>Members</h3><span class="hud" id="set-mcount">${m.n} player${m.n === 1 ? "" : "s"}</span></div><div class="mems" id="set-members">${m.html}</div></section>
     <section class="panel" id="admin-users-panel" hidden><div class="ptitle"><h3>User management</h3><span class="hud" data-admin-status></span></div><p class="muted" style="font-size:13px">Only admins see this. Control who can sign in and save progress.</p><form class="row" data-admin-add><input name="admin-email" type="email" required maxlength="254" placeholder="Email address" aria-label="Email address"><button class="gbtn" type="submit">Grant access</button></form><div class="admin-users" data-admin-list></div></section>
-    <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div></section>
+    <section class="panel"><div class="ptitle"><h3>Account</h3></div><div class="setrow"><span><b>Signed in</b><small>${esc(email || "On this device only")}</small></span>${sb && started ? `<button class="gbtn" id="set-signout">Sign out</button>` : ""}</div>
+      <div class="setrow"><span><b>App version</b><small id="set-ver">${esc(verText())}</small></span>${NATIVE ? `<button class="gbtn" id="set-upd">Check for updates</button>` : ""}</div></section>
   </div>`;
   $("setback").onclick = () => go("us");
   const mp = $("set-myprofile"); if (mp) mp.onclick = () => openProfile(myId);
@@ -5251,7 +5261,14 @@ function renderSettings(){
   };
   $("view").querySelectorAll("[data-goal]").forEach(b => b.onclick = () => change(d => { d.goal = Number(b.dataset.goal); }, { quiet: true }));
   $("set-sound").onclick = () => { soundToggle(); $("set-sound").setAttribute("aria-checked", String(SFX.on)); };
+  $("set-lock").onclick = () => { lockToggle(); $("set-lock").setAttribute("aria-checked", String(lockOn)); };
   const so = $("set-signout"); if (so) so.onclick = () => sb.auth.signOut();
+  const up = $("set-upd"); if (up) up.onclick = async () => {
+    up.disabled = true; up.textContent = "Checking…";
+    const latest = await checkAppUpdate(true);
+    if (up.isConnected){ up.disabled = false; up.textContent = "Check for updates"; }
+    if (latest) toast("You're on the latest version"); else if ($("updsheet").hidden) toast("Couldn't check for updates. Check your connection.");
+  };
   NOTIF.bind(); bindMembers();
   if (sb && started) loadAdminUsers($("admin-users-panel"));
 }
@@ -5284,8 +5301,10 @@ function openFromPush(url){
 // The website's version.json names the newest APK (scripts/release-android.mjs writes it). When its build is
 // higher than this app's versionCode, offer the download. Below "min" the update is required and can't be skipped.
 const LS_UPD = "fde-upd-later", UPD_SNOOZE = 12 * 3600e3;
-let updChecked = 0, updMust = false;
+let updChecked = 0, updMust = false, appInfo = null; // appInfo: this app's {version, build}, for Settings
+const verText = () => !NATIVE ? "Website · always the latest version" : appInfo ? `${appInfo.version} (build ${appInfo.build})` : "Checking…";
 // force (tapping the release notification) skips the hourly limit and a "Later" snooze.
+// Resolves true when the site confirms this is the newest build.
 async function checkAppUpdate(force){
   if (!CAP.App || !SITE || (!force && Date.now() - updChecked < 3600e3) || !$("updsheet").hidden) return;
   updChecked = Date.now();
@@ -5293,7 +5312,7 @@ async function checkAppUpdate(force){
     const [info, res] = await Promise.all([CAP.App.getInfo(), fetch(SITE + "/version.json", { cache: "no-store" })]);
     if (!res.ok) return;
     const v = await res.json(), have = Number(info.build) || 0, latest = Number(v.build) || 0;
-    if (latest <= have) return;
+    if (latest <= have) return true;
     const must = have < (Number(v.min) || 0);
     let later = {}; try { later = JSON.parse(localStorage.getItem(LS_UPD)) || {}; } catch (e){}
     if (!must && !force && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
@@ -5316,7 +5335,8 @@ function closeUpdate(){
   const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
 }
 function nativeSetup(){
-  if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", () => checkAppUpdate()); checkAppUpdate(); }
+  if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", () => checkAppUpdate()); checkAppUpdate();
+    CAP.App.getInfo().then(i => { appInfo = i; const sv = $("set-ver"); if (sv) sv.textContent = verText(); }).catch(() => {}); }
   const P = CAP.PushNotifications;
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
