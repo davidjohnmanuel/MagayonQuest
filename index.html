@@ -1004,13 +1004,16 @@ body:not(.authed) .bellbtn{display:none}
 /* Feed tab, and the latest-posts card on Base */
 body[data-view="feed"] #view>.wrap{max-width:680px}
 .latest{gap:8px}
-.lpost{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;background:var(--shadow);border:1px solid var(--edge);border-radius:12px;padding:8px 10px;color:var(--ink);width:100%}
-.lpost>img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--pink)}
-.lpost .lp{display:grid;gap:1px;min-width:0}
-.lpost .lp small{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lpost .lp .hud{font-size:9.5px}
-.lpost .lthumb{width:46px;height:46px;border-radius:8px;object-fit:cover}
+.latestposts{display:grid;gap:12px}
 .latest .row .gbtn{flex:1}
+.profile-map .map{margin-top:8px}
+.profile-map-details{display:grid;gap:6px;margin-top:12px}
+.profile-map-details details{padding:9px 10px;background:var(--shadow);border:1px solid var(--edge);border-radius:10px}
+.profile-map-details summary{cursor:pointer;font-weight:700}
+.profile-map-details ul{display:grid;gap:5px;margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:13px}
+.profile-map-details li span{color:var(--green);font-family:var(--f-hud);font-size:10px;white-space:nowrap}
+.progress-sheet{max-width:760px;max-height:calc(100dvh - 24px);overflow-y:auto;align-content:start;border-color:var(--edge-hi);box-shadow:0 0 50px rgba(112,104,208,.3)}
+.progress-sheet .profile-map{padding:0;border:0;background:none;box-shadow:none}
 /* Laptop and desktop: a website layout. The tabs move into a sticky top bar (placeTabs), pages widen into main + side columns, and sheets become centred dialogs. Phones and the Android app keep the app layout, where the column wrappers vanish. */
 .cols,.cols>.main,.cols>.side{display:contents}
 .landing,.sitefoot{display:none}
@@ -1235,6 +1238,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 <div class="sheetwrap" id="prodsheet" hidden role="dialog" aria-modal="true" aria-label="Product details"></div>
 <div class="sheetwrap" id="updsheet" hidden role="alertdialog" aria-modal="true" aria-label="App update"></div>
 <div class="sheetwrap" id="bellsheet" hidden role="dialog" aria-modal="true" aria-label="Notifications"></div>
+<div class="sheetwrap" id="progresssheet" hidden role="dialog" aria-modal="true" aria-labelledby="progress-title"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
 <div class="lock warn" id="idlewarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="warn-t"></div>
@@ -2279,6 +2283,40 @@ function renderMap(){
   bindCertPanel();
 }
 
+function moduleXP(d,m){
+  return m.checks.filter(c=>d.checks[c.id]).length*10
+    +m.cards.filter(c=>d.cards[c.id]==="got").length*5
+    +m.watch.concat(m.read).filter(r=>d.res[r.id]).length*5;
+}
+function moduleItems(d,m){
+  return [
+    ...m.checks.filter(c=>d.checks[c.id]).map(c=>({ title:c.t, xp:10 })),
+    ...m.cards.filter(c=>d.cards[c.id]==="got").map(c=>({ title:`Defeated card: ${c.q}`, xp:5 })),
+    ...m.watch.concat(m.read).filter(r=>d.res[r.id]).map(r=>({ title:`Claimed: ${r.t}`, xp:5 }))
+  ];
+}
+function profileMapHTML(d){
+  const xs=MODULES.map((m,i)=>i===MODULES.length-1?50:(i%2?70:30));
+  const pts=MODULES.map((m,i)=>[xs[i],i*108+60]);
+  const H=MODULES.length*108+20;
+  const pathD=pts.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" ");
+  const totalDone=MODULES.reduce((s,m)=>s+doneCount(d,m),0);
+  const totalItems=MODULES.reduce((s,m)=>s+m.checks.length+m.cards.length+m.watch.length+m.read.length,0);
+  const totalXP=MODULES.reduce((s,m)=>s+moduleXP(d,m),0);
+  return `<section class="panel profile-map"><div class="ptitle"><h3>Quest map</h3><span class="hud">${totalDone} / ${totalItems} finished · ${totalXP} mission XP claimed</span></div>
+    <div class="map" style="--n:${MODULES.length}">
+      <svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${pathD}" fill="none" stroke="#463F8E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${pathD}" fill="none" stroke="#7068D0" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+      ${MODULES.map((m,i)=>{const p=modPct(d,m),st=starsOf(p),boss=m.id==="ready",done=doneCount(d,m),count=m.checks.length+m.cards.length+m.watch.length+m.read.length,xp=moduleXP(d,m),cls=boss?"boss"+(p>=100?" done":""):p>=100?"done":p>0?"prog":"";
+        return `<div class="node" style="left:${xs[i]}%;top:${pts[i][1]}px" aria-label="${esc(m.title)}, ${done} of ${count} items finished, ${xp} XP claimed">
+          <span class="orb ${cls}">${boss?"BOSS":String(i+1).padStart(2,"0")}</span>
+          <span class="stars">${[0,1,2].map(k=>IC.star(k<st)).join("")}</span>
+          <span class="nlabel ${xs[i]>50?"l":"r"}"><span class="hud">${boss?"Final boss":m.code}</span>${esc(m.title)}<span class="hud" style="color:var(--cyan)">${p}% · ${done}/${count} items · ${xp} XP</span></span>
+        </div>`;}).join("")}
+    </div>
+    <div class="profile-map-details">${MODULES.map(m=>{const done=moduleItems(d,m),count=m.checks.length+m.cards.length+m.watch.length+m.read.length;return `<details><summary>${esc(m.title)} · ${done.length}/${count} finished · ${moduleXP(d,m)} XP</summary>${done.length?`<ul>${done.map(x=>`<li>${esc(x.title)} <span>+${x.xp} XP</span></li>`).join("")}</ul>`:`<p class="muted">No completed items yet.</p>`}</details>`;}).join("")}</div>
+  </section>`;
+}
+
 function lootList(items,kind){
   return `<div class="loot">${items.map(r=>`<div class="litem${mine.res[r.id]?" done":""}">
     <span class="licon ${kind==="watch"?"yt":"doc"}">${kind==="watch"?IC.play:IC.doc}</span>
@@ -2526,20 +2564,30 @@ function renderFeed(){
     const clear=$("feedclear");if(clear)clear.onclick=()=>{feedQuery="";renderFeed();};
   }
 }
-// Base: the two newest posts, linking to the Feed tab
+function latestPostsHTML(){
+  if (!feed.loaded) return `<p class="muted">Loading posts…</p>`;
+  if (feed.err) return `<p class="amsg">${esc(feed.err)}</p>`;
+  const list = feed.posts.slice(0, 2);
+  return list.length ? list.map(postHTML).join("") : `<p class="muted">No posts yet. Share a win, a photo, or answer today's question.</p>`;
+}
+// Base: show the two newest posts as full feed cards
 function latestHTML(){
   if (mode !== "shared") return "";
-  const list = feed.posts.slice(0, 2);
   return `<section class="panel latest" id="latest"><div class="ptitle"><h3>Latest from your party</h3><button class="linkbtn" data-tofeed>Open feed</button></div>
-    ${!feed.loaded ? `<p class="muted">Loading posts…</p>` : list.length ? list.map(p => { const w = whoOf(p.user_id), img = p.image_path && photoUrls[p.image_path]; return `<button class="lpost" data-lpost="${p.id}"><img alt="" src="${esc(w.av)}"><span class="lp"><b>${esc(w.isMe ? "You" : w.name)}</b><small>${esc(postSnip(p.body) || "Shared a photo")}</small><span class="hud">${esc(postTime(p.created_at))}</span></span>${img ? `<img class="lthumb" alt="" src="${esc(img.u)}">` : "<span></span>"}</button>`; }).join("")
-      : `<p class="muted">No posts yet. Share a win, a photo, or answer today's question.</p>`}
-    <div class="row"><button class="gbtn" data-tofeed="write">Write a post</button></div></section>`;
+    <div id="latestcomposer"></div>
+    <div class="latestposts" id="latestposts">${latestPostsHTML()}</div>
+    <div class="row"><button class="gbtn" data-compose>Write a post</button></div></section>`;
 }
 function bindLatest(root){
-  root.querySelectorAll("[data-tofeed]").forEach(b => b.onclick = () => { go("feed"); if (b.dataset.tofeed === "write"){ const t = $("posttext"); if (t) t.focus(); } });
-  root.querySelectorAll("[data-lpost]").forEach(b => b.onclick = () => openPost(b.dataset.lpost));
+  root.querySelectorAll("[data-tofeed]").forEach(b => b.onclick = () => go("feed"));
+  root.querySelectorAll("[data-compose]").forEach(b => b.onclick = () => {
+    const slot = $("latestcomposer");
+    if (slot.innerHTML){ slot.innerHTML = ""; b.textContent = "Write a post"; return; }
+    slot.innerHTML = composerHTML(); bindComposer(); b.textContent = "Cancel";
+    const t = $("posttext"); if (t){ t.scrollIntoView({ block: "center", behavior: "smooth" }); t.focus({ preventScroll: true }); }
+  });
+  bindFeed($("latestposts"), !$("feedlist"));
 }
-function refreshLatest(){ const el = $("latest"); if (el){ el.outerHTML = latestHTML(); bindLatest($("view")); } }
 function bindPeople(root){ root.querySelectorAll(".people [data-profile]").forEach(b => b.onclick = () => openProfile(b.dataset.profile)); }
 
 // Get-to-know-you questions. Answers are ordinary posts whose first line is "💬 <question>".
@@ -2616,7 +2664,7 @@ async function loadFeed(){
     (signed || []).forEach(x => { if (x.signedUrl) photoUrls[x.path] = { u: x.signedUrl, exp: now + PHOTO_TTL * 1000 }; });
   }
   feed.posts = data || [];
-  refreshFeed(); refreshLatest(); renderBell();
+  refreshFeed(); renderBell();
 }
 function subscribeFeed(){
   if (feedCh) sb.removeChannel(feedCh);
@@ -2776,7 +2824,7 @@ async function deleteComment(id){
   if (error){ toast("Couldn't delete the comment"); return; }
   loadFeed();
 }
-function bindFeed(root){
+function bindFeed(root, scheduleExpiry = true){
   if (!root) return;
   root.querySelectorAll("[data-profile]").forEach(b => b.onclick = () => openProfile(b.dataset.profile));
   root.querySelectorAll("[data-plike]").forEach(b => b.onclick = () => toggleLike(b.dataset.plike));
@@ -2790,17 +2838,23 @@ function bindFeed(root){
   root.querySelectorAll("[data-clearsearch]").forEach(b => b.onclick = () => {feedQuery="";renderFeed();});
   root.querySelectorAll("[data-feedmore]").forEach(b => b.onclick = () => { feedMax += 10; refreshFeed(); });
   root.querySelectorAll("[data-cform]").forEach(f => f.onsubmit = e => { e.preventDefault(); sendComment(f.dataset.cform, f.querySelector("input")); });
-  clearTimeout(postDeleteExpiryTimer); postDeleteExpiryTimer=null;
-  const expiry=Math.min(...[...root.querySelectorAll("[data-pdel]")].map(b=>Date.parse(feed.posts.find(p=>p.id===b.dataset.pdel)?.created_at||"")+POST_DELETE_MS-Date.now()));
-  if(Number.isFinite(expiry))postDeleteExpiryTimer=setTimeout(refreshFeed,Math.max(1,expiry+1));
+  if(scheduleExpiry){
+    clearTimeout(postDeleteExpiryTimer); postDeleteExpiryTimer=null;
+    const expiry=Math.min(...[...root.querySelectorAll("[data-pdel]")].map(b=>Date.parse(feed.posts.find(p=>p.id===b.dataset.pdel)?.created_at||"")+POST_DELETE_MS-Date.now()));
+    if(Number.isFinite(expiry))postDeleteExpiryTimer=setTimeout(refreshFeed,Math.max(1,expiry+1));
+  }
 }
 // Redraw just the post list so the composer and anything being typed survive live updates.
 function refreshFeed(){
-  const el = $("feedlist"); if (!el) return;
   const ae = document.activeElement, keep = ae && ae.id && ae.id.startsWith("pc-") ? { id: ae.id, v: ae.value } : null;
-  el.innerHTML = feedListHTML(el.dataset.uid || ""); bindFeed(el);
-  const cnt = $("postcount"); if (cnt) cnt.textContent = feed.posts.filter(p => p.user_id === profileId).length;
+  const el = $("feedlist");
+  if (el){
+    el.innerHTML = feedListHTML(el.dataset.uid || ""); bindFeed(el);
+  }
+  const latest = $("latestposts");
+  if (latest){ latest.innerHTML = latestPostsHTML(); bindFeed(latest, !el); }
   if (keep){ const f = $(keep.id); if (f){ f.value = keep.v; f.focus(); } }
+  const cnt = $("postcount"); if (cnt) cnt.textContent = feed.posts.filter(p => p.user_id === profileId).length;
 }
 function feedSectionHTML(uid){
   return `${!uid || uid === myId ? composerHTML() : ""}<div class="feed" id="feedlist" data-uid="${esc(uid || "")}">${feedListHTML(uid)}</div>`;
@@ -2824,14 +2878,33 @@ function renderProfile(){
       ${d.cert ? `<span class="certbadge">★ Certified FDE · ${Math.round(d.cert.sc / d.cert.n * 100)}%</span>` : ""}
       <div class="pstats"><div><b id="postcount">${feed.posts.filter(p => p.user_id === id).length}</b><span>posts</span></div><div><b>${xp}</b><span>XP</span></div><div><b>${streakOf(d.log)}</b><span>combo</span></div><div><b>${fmtMin(totalMins(d))}</b><span>all time</span></div></div>
       ${(() => { const k = d.sess.filter(sessKept).length; return d.sess.length ? `<p class="muted kept">Kept <b>${k}</b> of ${d.sess.length} study commitment${d.sess.length === 1 ? "" : "s"}</p>` : ""; })()}
-      ${w.isMe ? `<div class="row"><button class="gbtn" id="profphoto">Change photo</button><button class="gbtn" id="profedit">Edit name and settings</button></div>` : ""}
+      <div class="row"><button class="gbtn" id="profprogress" aria-haspopup="dialog" aria-controls="progresssheet">View progress map</button>${w.isMe ? `<button class="gbtn" id="profphoto">Change photo</button><button class="gbtn" id="profedit">Edit name and settings</button>` : ""}</div>
     </section>
     </div><div class="main">${feedSectionHTML(id)}</div></div>
   </div>`;
   $("profback").onclick = () => go("us");
   const pe = $("profedit"); if (pe) pe.onclick = () => go("settings");
+  $("profprogress").onclick = () => openProfileProgress(id);
   [$("profav"), $("profphoto")].forEach(b => { if (b) b.onclick = pickAvatar; });
   bindFeedSection();
+}
+
+function openProfileProgress(id){
+  const isMe = id === myId;
+  const d = isMe ? mine : players[id] ? normalize(players[id]) : blank();
+  const name = whoOf(id).name;
+  const s = $("progresssheet");
+  s.innerHTML = `<section class="box qsheet progress-sheet"><div class="row"><h3 id="progress-title">${esc(name)}'s progress</h3><span class="spacer"></span><button class="back" id="progressclose" aria-label="Close progress map">✕</button></div>${profileMapHTML(d)}</section>`;
+  s.hidden = false;
+  $("progressclose").onclick = closeProfileProgress;
+  s.onclick = e => { if (e.target === s) closeProfileProgress(); };
+  s.onkeydown = e => { if (e.key === "Escape") closeProfileProgress(); };
+  $("progressclose").focus();
+}
+function closeProfileProgress(){
+  const s = $("progresssheet");
+  s.hidden = true; s.innerHTML = ""; s.onkeydown = null; s.onclick = null;
+  const opener = $("profprogress"); if (opener) opener.focus();
 }
 
 // Full-screen photo viewer
@@ -5613,7 +5686,7 @@ function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, bellsheet: closeBell, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, bellsheet: closeBell, progresssheet: closeProfileProgress, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
