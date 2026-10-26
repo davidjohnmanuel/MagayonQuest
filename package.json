@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@capacitor/keyboard": "^7.0.6",
+    "@supabase/supabase-js": "2.45.4",
     "web-push": "3.6.7"
   },
   "devDependencies": {

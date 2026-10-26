@@ -1225,7 +1225,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 <div class="lock" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-t"></div>
 
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script>
 const CFG=window.FDE_CONFIG||{}; const PARTNER=CFG.partnerName||"Player 2";
 // Inside the Android app (Capacitor) the page is served from https://localhost, so API calls and email links go to the website.
@@ -4386,10 +4386,14 @@ function syncChatViewport(){
 window.addEventListener("resize",syncChatViewport);
 if(window.visualViewport)window.visualViewport.addEventListener("resize",syncChatViewport);
 if(NATIVE&&CAP.Keyboard&&typeof CAP.Keyboard.addListener==="function"){
-  CAP.Keyboard.addListener("keyboardWillShow",()=>{chatKeyboardOpen=true;chatKeyboardResized=true;syncChatViewport();})
-    .catch(error=>console.error("Could not attach Android keyboard show listener",error));
-  CAP.Keyboard.addListener("keyboardWillHide",()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();})
-    .catch(error=>console.error("Could not attach Android keyboard hide listener",error));
+  const listen= (event,callback)=>{
+    try{
+      const handle=CAP.Keyboard.addListener(event,callback);
+      if(handle&&typeof handle.catch==="function")handle.catch(error=>console.error(`Could not attach Android keyboard ${event} listener`,error));
+    }catch(error){console.error(`Could not attach Android keyboard ${event} listener`,error);}
+  };
+  listen("keyboardWillShow",()=>{chatKeyboardOpen=true;chatKeyboardResized=true;syncChatViewport();});
+  listen("keyboardWillHide",()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();});
 }
 function allMsgs(){
   const out=mine.chat.map(m=>({...m,who:myId||"me",me:true}));

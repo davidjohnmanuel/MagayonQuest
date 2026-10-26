@@ -1,9 +1,9 @@
 {
-  "build": 7,
-  "version": "1.6",
+  "build": 9,
+  "version": "1.8",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Fix Android chat keyboard positioning"
+    "Fix startup crash and bundle Supabase locally"
   ]
 }

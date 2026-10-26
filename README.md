@@ -2,7 +2,7 @@
 
 A co-op quest game for two people preparing for Forward Deployed Engineer interviews. It has daily quests, a training timer, a 22-mission world map with stars, a Road to FDE 2027 plan, a job tracker, a final certification exam, YouTube and reading loot, battle cards, party chat, quiz duels, a hero-based quiz battle arena, a party screen and trophies.
 
-It is plain HTML with no build step. Supabase handles login and data, and Vercel hosts it.
+It is plain HTML. Supabase handles login and data, and Vercel hosts it. The Supabase JavaScript runtime is bundled locally so app startup doesn't depend on a third-party CDN.
 
 ## What's in here
 
@@ -10,6 +10,7 @@ It is plain HTML with no build step. Supabase handles login and data, and Vercel
 | --- | --- |
 | `index.html` | The whole app |
 | `config.js` | Your Supabase URL and key go here |
+| `supabase.js` | Locally bundled Supabase browser runtime |
 | `supabase/schema.sql` | Creates the tables and privacy rules |
 | `api/quiz.js` | Generates AI quizzes with Google Gemini |
 | `api/signup-code.js` | Checks the private signup code, adds verified emails to the study list, and unlocks the auto-lock screen |
@@ -283,7 +284,7 @@ delete from public.members where email = 'someone@example.com';
 
 ## Android app
 
-The Android app is a Capacitor build of the same `index.html`. The page is packaged inside the APK, so there's no browser bar and it opens instantly. It still talks to the same Supabase and Vercel API, so the website and the app share one account and one board. The web version doesn't change.
+The Android app is a Capacitor build of the same `index.html`. The page and Supabase browser runtime are packaged inside the APK, so app startup does not depend on a third-party CDN. It still talks to the same Supabase and Vercel API, so the website and the app share one account and one board.
 
 | Path | What it does |
 | --- | --- |
