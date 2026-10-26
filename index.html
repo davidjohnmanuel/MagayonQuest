@@ -4372,16 +4372,25 @@ const coarse=()=>window.matchMedia&&matchMedia("(pointer:coarse)").matches;
 let chatViewportBase=window.innerHeight, chatKeyboardOpen=false, chatKeyboardResized=false;
 function syncChatViewport(){
   const vv=window.visualViewport, height=vv?vv.height:window.innerHeight;
+  const nativeKeyboard=!!(NATIVE&&CAP.Keyboard);
   if(!chatKeyboardOpen)chatViewportBase=window.innerHeight;
   const gap=Math.max(0,window.innerHeight-(height+(vv?vv.offsetTop:0)));
-  if(chatKeyboardOpen&&height<chatViewportBase-100)chatKeyboardResized=true;
-  else if(chatKeyboardOpen&&chatKeyboardResized&&height>chatViewportBase-80){chatKeyboardOpen=false;chatKeyboardResized=false;}
+  if(!nativeKeyboard){
+    if(chatKeyboardOpen&&height<chatViewportBase-100)chatKeyboardResized=true;
+    else if(chatKeyboardOpen&&chatKeyboardResized&&height>chatViewportBase-80){chatKeyboardOpen=false;chatKeyboardResized=false;}
+  }
   document.documentElement.style.setProperty("--chat-viewport-height",`${height}px`);
-  document.documentElement.style.setProperty("--chat-keyboard-gap",`${gap}px`);
+  document.documentElement.style.setProperty("--chat-keyboard-gap",`${nativeKeyboard?0:gap}px`);
   document.body.classList.toggle("keyboard-open",chatKeyboardOpen&&(coarse()||NATIVE));
 }
 window.addEventListener("resize",syncChatViewport);
 if(window.visualViewport)window.visualViewport.addEventListener("resize",syncChatViewport);
+if(NATIVE&&CAP.Keyboard&&typeof CAP.Keyboard.addListener==="function"){
+  CAP.Keyboard.addListener("keyboardWillShow",()=>{chatKeyboardOpen=true;chatKeyboardResized=true;syncChatViewport();})
+    .catch(error=>console.error("Could not attach Android keyboard show listener",error));
+  CAP.Keyboard.addListener("keyboardWillHide",()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();})
+    .catch(error=>console.error("Could not attach Android keyboard hide listener",error));
+}
 function allMsgs(){
   const out=mine.chat.map(m=>({...m,who:myId||"me",me:true}));
   mate().forEach(id=>normalize(players[id]).chat.forEach(m=>out.push({...m,who:id,me:false})));
@@ -4710,7 +4719,7 @@ function renderChat(){
   const msgs=inView(allMsgs()); lastLogId=msgs.length?msgs[msgs.length-1].id:"";
   log2.scrollTop=log2.scrollHeight; bindLog(log2); renderReplyBar(); renderPicBar(); signChatPics();
   const sync=()=>{f.style.height="auto";f.style.height=Math.min(f.scrollHeight+4,140)+"px";const has=!!f.value.trim()||!!chatPic;sendb.disabled=!!(chatPic&&chatPic.busy);sendb.classList.toggle("like",!has);sendb.innerHTML=has?SEND:"👍";sendb.setAttribute("aria-label",has?"Send":"Send a like");};
-  f.onfocus=()=>{if(coarse()||NATIVE){chatKeyboardOpen=true;syncChatViewport();setTimeout(()=>{if(document.activeElement===f)f.scrollIntoView({block:"nearest",behavior:"smooth"});},250);}};
+  f.onfocus=()=>{if(coarse()||NATIVE){chatKeyboardOpen=true;syncChatViewport();if(!NATIVE)setTimeout(()=>{if(document.activeElement===f)f.scrollIntoView({block:"nearest",behavior:"smooth"});},250);}};
   f.onblur=()=>{chatKeyboardOpen=false;chatKeyboardResized=false;syncChatViewport();};
   f.oninput=()=>{sync();if(f.value.trim()&&chatRT&&Date.now()-typingSent>2500){typingSent=Date.now();try{chatRT.typing();}catch(e){}}};
   f.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();$("composer").requestSubmit();}};

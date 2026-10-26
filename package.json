@@ -14,6 +14,7 @@
     "android:release": "node scripts/release-android.mjs"
   },
   "dependencies": {
+    "@capacitor/keyboard": "^7.0.6",
     "web-push": "3.6.7"
   },
   "devDependencies": {

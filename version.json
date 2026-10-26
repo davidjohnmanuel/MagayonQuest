@@ -1,9 +1,9 @@
 {
-  "build": 6,
-  "version": "1.5",
+  "build": 7,
+  "version": "1.6",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Keep chat composer above mobile keyboard"
+    "Fix Android chat keyboard positioning"
   ]
 }
