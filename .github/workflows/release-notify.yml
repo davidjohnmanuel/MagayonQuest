@@ -1,0 +1,28 @@
+# When a new Android release is pushed (npm run android:release changes version.json), wait for Vercel to serve
+# it, then ask the site to push "FDE Quest x.y is out" to every Android phone. The endpoint announces each build
+# once, so re-running this is harmless.
+name: Announce Android release
+
+on:
+  push:
+    branches: [main]
+    paths: [version.json]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for the release to go live, then notify phones
+        run: |
+          build=$(jq -r .build version.json)
+          site=$(grep -o 'appUrl: *"[^"]*"' config.js | cut -d'"' -f2)
+          for i in $(seq 1 40); do
+            live=$(curl -fsS "$site/version.json?t=$(date +%s)" | jq -r .build || echo 0)
+            if [ "$live" = "$build" ]; then
+              curl -fsS -X POST "$site/api/release-notify?build=$build"; echo; exit 0
+            fi
+            echo "Site serves build $live, waiting for $build…"; sleep 15
+          done
+          echo "Build $build never went live on $site"; exit 1

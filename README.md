@@ -316,6 +316,7 @@ git add android/app/build.gradle downloads/FDE-Quest.apk version.json && git com
 
 The script bumps `versionCode` and `versionName`, builds the signed APK, copies it to `downloads/FDE-Quest.apk` and writes `version.json`. Once Vercel deploys, every installed app checks `version.json` when it opens or comes back to the foreground, at most once an hour. If there's a newer build, it shows **Update available** with your notes. **Download update** opens the APK in the phone's browser; open it when it finishes and tap **Update**. Progress lives in Supabase, so nothing is lost.
 
+- **Push notification:** when a push changes `version.json`, the GitHub Action in `.github/workflows/release-notify.yml` waits for Vercel to serve it, then calls `/api/release-notify`. That sends "FDE Quest x.y is out" with the first notes to every Android phone. Tapping it opens the update prompt, even after **Later**. Each build is announced once (the endpoint records it in a private `app-releases` storage bucket), so re-running the Action is harmless. It uses the same Firebase setup as the other notifications, so it needs `FCM_SERVICE_ACCOUNT` on Vercel.
 - **Later** hides the prompt for 12 hours.
 - Add `--required` to make older builds update before they can be used. The prompt then has no **Later** button.
 - An APK built before this feature can't check for updates, so install the first release that has it by hand.

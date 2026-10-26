@@ -71,9 +71,11 @@ async function sendFcm(token, payload){
 }
 
 // Send one payload to every saved device of the given users. Expired devices are removed.
+// userIds "android" means every Android app device instead (it has an FCM token), whoever it belongs to.
 async function pushTo(userIds, payload){
   if (!userIds.length) return 0;
-  const subs = await db(`push_subs?select=endpoint,sub,user_id&user_id=in.(${userIds.map(encodeURIComponent).join(",")})`);
+  const subs = await db(userIds === "android" ? "push_subs?select=endpoint,sub,user_id&sub->>fcm=not.is.null"
+    : `push_subs?select=endpoint,sub,user_id&user_id=in.(${userIds.map(encodeURIComponent).join(",")})`);
   let sent = 0;
   await Promise.all((subs || []).map(async s => {
     try {

@@ -4817,14 +4817,16 @@ function openFromPush(url){
   const h = String(url || "").split("#")[1] || "";
   if (["today", "missions", "arena", "us", "chat", "shop", "trophies"].includes(h)) go(h);
   else if (MOD[h]) go("missions", h);
+  else if (h === "update") checkAppUpdate(true); // "new release" push (api/release-notify.js)
 }
 // ---- Android app updates
 // The website's version.json names the newest APK (scripts/release-android.mjs writes it). When its build is
 // higher than this app's versionCode, offer the download. Below "min" the update is required and can't be skipped.
 const LS_UPD = "fde-upd-later", UPD_SNOOZE = 12 * 3600e3;
 let updChecked = 0, updMust = false;
-async function checkAppUpdate(){
-  if (!CAP.App || !SITE || Date.now() - updChecked < 3600e3 || !$("updsheet").hidden) return;
+// force (tapping the release notification) skips the hourly limit and a "Later" snooze.
+async function checkAppUpdate(force){
+  if (!CAP.App || !SITE || (!force && Date.now() - updChecked < 3600e3) || !$("updsheet").hidden) return;
   updChecked = Date.now();
   try {
     const [info, res] = await Promise.all([CAP.App.getInfo(), fetch(SITE + "/version.json", { cache: "no-store" })]);
@@ -4833,7 +4835,7 @@ async function checkAppUpdate(){
     if (latest <= have) return;
     const must = have < (Number(v.min) || 0);
     let later = {}; try { later = JSON.parse(localStorage.getItem(LS_UPD)) || {}; } catch (e){}
-    if (!must && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
+    if (!must && !force && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
     showUpdate(v, info, must);
   } catch (e){ updChecked = 0; } // offline: try again on the next resume
 }
@@ -4853,7 +4855,7 @@ function closeUpdate(){
   const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
 }
 function nativeSetup(){
-  if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", checkAppUpdate); checkAppUpdate(); }
+  if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", () => checkAppUpdate()); checkAppUpdate(); }
   const P = CAP.PushNotifications;
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
