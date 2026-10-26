@@ -3794,7 +3794,13 @@ function renderArena(){
   $("view").querySelectorAll("[data-removeb]").forEach(b => b.onclick = () => {
     const id = b.dataset.removeb;
     if (!id || !window.confirm("Remove this fight card from your Arena? The battle history and rewards will be kept, and the card will remain visible to your partner.")) return;
-    change(d => { d.hiddenBattles = [...new Set([...(d.hiddenBattles || []), id])].slice(-40); }, { now: true, quiet: true });
+    const battle = allBattles()[id];
+    if (!battle) return;
+    change(d => {
+      d.hiddenBattles = [...new Set([...(d.hiddenBattles || []), id])].slice(-40);
+      d.chat.push({ id: "c" + msgId(), t: new Date().toISOString(), x: `Removed my fight card from the Arena: ${quizTitle(battle)}`, k: "m" });
+      if (d.chat.length > 120) d.chat = d.chat.slice(-120);
+    }, { now: true, quiet: true });
     toast("Fight card removed from your Arena");
   });
 }
