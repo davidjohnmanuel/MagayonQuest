@@ -794,10 +794,95 @@ body.locked{overflow:hidden}
   .sitefoot{display:flex;align-items:center;gap:14px;justify-content:center;padding-top:28px;margin-top:8px;border-top:1px solid rgba(112,104,208,.25);font-size:13px;color:var(--dim)}
   .sitefoot .logo{font-size:12px}
 }
+
+/* Splash: plays once per session on launch, then hands off to the app or the loader */
+.splash{position:fixed;inset:0;z-index:70;display:grid;place-items:center;align-content:center;gap:22px;padding:24px;background:var(--bg);background-image:radial-gradient(circle at 50% 42%,rgba(255,200,61,.16),transparent 55%),linear-gradient(180deg,var(--bg2),var(--bg) 70%);overflow:hidden;cursor:pointer;transition:opacity .45s ease,transform .45s ease}
+.splash.out{opacity:0;transform:scale(1.06);pointer-events:none}
+.splash .star{position:absolute;width:3px;height:3px;background:#fff;box-shadow:0 0 6px #fff;opacity:0;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.85;transform:scale(1)}}
+.sp-crest{width:132px;height:132px;filter:drop-shadow(0 0 18px rgba(255,200,61,.35));animation:sp-glow 2.2s ease-in-out 1.2s infinite}
+.sp-crest .ring{fill:none;stroke:var(--gold);stroke-width:28;stroke-dasharray:1000;stroke-dashoffset:1000;animation:sp-draw .9s cubic-bezier(.6,0,.3,1) forwards}
+.sp-crest .ring.in{stroke-dasharray:500;stroke-dashoffset:500;animation-delay:.3s}
+.sp-crest .core{fill:var(--gold);transform-origin:256px 256px;transform:scale(0);animation:sp-pop .45s cubic-bezier(.3,1.6,.5,1) .8s forwards}
+.sp-crest .tick{stroke:var(--ink);stroke-width:20;stroke-linecap:round;transform-origin:256px 256px;opacity:0;animation:sp-tick .5s ease-out 1s forwards}
+.sp-crest .spin{transform-origin:256px 256px;animation:sp-spin 1.2s cubic-bezier(.5,0,.2,1) .2s both}
+@keyframes sp-draw{to{stroke-dashoffset:0}}
+@keyframes sp-pop{to{transform:scale(1)}}
+@keyframes sp-tick{from{opacity:0;transform:scale(1.5)}to{opacity:1;transform:scale(1)}}
+@keyframes sp-spin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
+@keyframes sp-glow{50%{filter:drop-shadow(0 0 30px rgba(255,200,61,.6))}}
+.sp-logo{font-family:var(--f-hud);font-size:30px;letter-spacing:.1em;color:var(--gold);text-shadow:0 3px 0 #7A5200;display:flex}
+.sp-logo span{display:inline-block;opacity:0;transform:translateY(-18px);animation:sp-drop .4s cubic-bezier(.3,1.6,.5,1) forwards;animation-delay:calc(1s + var(--i) * 60ms)}
+.sp-logo .sl{color:var(--cyan);text-shadow:0 3px 0 #13605E}
+@keyframes sp-drop{to{opacity:1;transform:none}}
+.sp-tag{opacity:0;animation:sp-fade .5s ease 1.7s forwards}
+@keyframes sp-fade{to{opacity:1}}
+.sp-bar{width:160px;height:8px;border:2px solid var(--edge-hi);border-radius:4px;background:var(--shadow);overflow:hidden}
+.sp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#FFE08A);animation:sp-fill 2.1s cubic-bezier(.4,0,.2,1) .2s forwards}
+@keyframes sp-fill{to{width:100%}}
+
+/* Loader: full-screen while signing in and while the shared board first loads */
+.loader{position:fixed;inset:0;z-index:55;display:grid;place-items:center;align-content:center;gap:18px;padding:24px;text-align:center;background:var(--bg);background-image:radial-gradient(circle at 50% 40%,rgba(79,227,224,.1),transparent 55%),linear-gradient(180deg,var(--bg2),var(--bg) 70%);transition:opacity .35s ease}
+.loader.out{opacity:0;pointer-events:none}
+.ld-crest{width:96px;height:96px;position:relative}
+.ld-crest svg{position:absolute;inset:0;width:100%;height:100%}
+.ld-crest .orbit{animation:ld-spin 1.1s linear infinite}
+.ld-crest .orbit2{animation:ld-spin 1.7s linear infinite reverse}
+.ld-crest .core{transform-origin:50% 50%;animation:ld-pulse 1.1s ease-in-out infinite}
+@keyframes ld-spin{to{transform:rotate(360deg)}}
+@keyframes ld-pulse{50%{transform:scale(.6);opacity:.6}}
+.loader h2{font-size:22px}
+.ld-tip{min-height:2.6em;max-width:300px;color:var(--muted);transition:opacity .3s ease}
+.ld-tip.fade{opacity:0}
+.ld-bar{display:flex;gap:4px}
+.ld-bar i{width:12px;height:12px;border-radius:2px;background:var(--panel2);border:1px solid var(--edge);animation:ld-blk 1.4s ease-in-out infinite;animation-delay:calc(var(--i) * 110ms)}
+@media (prefers-reduced-motion:reduce){
+  .sp-crest .ring{stroke-dashoffset:0}.sp-crest .core{transform:none}.sp-crest .tick,.sp-logo span,.sp-tag{opacity:1;transform:none}.sp-bar i{width:100%}.splash .star{opacity:.5}
+  .ld-bar i:nth-child(-n+4){background:var(--gold);border-color:#FFE08A}
+}
+@keyframes ld-blk{0%,100%{background:var(--panel2);border-color:var(--edge)}30%{background:var(--gold);border-color:#FFE08A;box-shadow:0 0 8px rgba(255,200,61,.6)}}
 </style>
 
 </head>
 <body>
+<div class="splash" id="splash" aria-label="FDE Quest" role="img">
+  <svg class="sp-crest" viewBox="0 0 512 512" aria-hidden="true">
+    <g class="spin"><circle class="ring" cx="256" cy="256" r="150"/><circle class="ring in" cx="256" cy="256" r="78"/></g>
+    <circle class="core" cx="256" cy="256" r="24"/>
+    <path class="tick" d="M256 70v62M256 380v62M70 256h62M380 256h62"/>
+  </svg>
+  <div class="sp-logo" aria-hidden="true"><span style="--i:0">F</span><span style="--i:1">D</span><span style="--i:2">E</span><span class="sl" style="--i:3">/</span><span class="sl" style="--i:4">/</span><span style="--i:5">Q</span><span style="--i:6">U</span><span style="--i:7">E</span><span style="--i:8">S</span><span style="--i:9">T</span></div>
+  <span class="hud sp-tag">Co-op interview prep</span>
+  <div class="sp-bar" aria-hidden="true"><i></i></div>
+</div>
+<script>
+// Splash once per session (each cold launch in the Android app); tap to skip.
+(function(){
+  const s = document.getElementById("splash");
+  let seen = false; try { seen = sessionStorage.getItem("fde-splash") === "1"; sessionStorage.setItem("fde-splash", "1"); } catch (e){}
+  if (seen){ s.remove(); return; }
+  for (let i = 0; i < 18; i++){
+    const st = document.createElement("i"); st.className = "star";
+    st.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 2.4).toFixed(2)}s`;
+    s.appendChild(st);
+  }
+  let reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e){}
+  const done = () => { if (s.classList.contains("out")) return; s.classList.add("out"); setTimeout(() => s.remove(), 500); };
+  s.onclick = done;
+  setTimeout(done, reduce ? 700 : 2500);
+})();
+</script>
+<div class="loader" id="loader" hidden role="status" aria-live="polite">
+  <div class="ld-crest" aria-hidden="true">
+    <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--edge)" stroke-width="6"/></svg>
+    <svg class="orbit" viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-dasharray="70 194"/></svg>
+    <svg class="orbit2" viewBox="0 0 96 96"><circle cx="48" cy="48" r="24" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-linecap="round" stroke-dasharray="40 111"/></svg>
+    <svg viewBox="0 0 96 96"><circle class="core" cx="48" cy="48" r="7" fill="var(--gold)"/></svg>
+  </div>
+  <h2 id="ld-title">Loading your quest</h2>
+  <p class="ld-tip" id="ld-tip"></p>
+  <div class="ld-bar" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i></div>
+</div>
 <div class="wrap">
   <header class="mast">
     <span class="logo">FDE<b>//</b>QUEST</span>
@@ -1717,7 +1802,7 @@ function render(){
   {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
   renderBadge();
   if(keep){const f=$(keep.id);if(f){f.value=keep.v;f.focus();}}
-  renderTimer(); renderNote();
+  renderTimer(); renderNote(); syncLoader();
 }
 let viewer=null;
 function renderNote(){
@@ -3790,9 +3875,38 @@ function renderWho(){
   } else w.innerHTML = "";
 }
 
+// Full-screen loader: covers the sign-in check, then the app until the shared board's first pull lands.
+const LOAD_TIPS = [
+  "Unrolling the world map…", "Sharpening battle cards…", "Waking up your party…", "Polishing trophies…",
+  "Tip: a daily mission keeps the co-op streak alive.", "Tip: duels are 10 questions. Speed counts.",
+  "Tip: explain the customer's problem before the solution.", "Syncing your progress…"
+];
+let loaderTipTimer = null, loaderGiveUp = null;
+function syncLoader(){
+  const l = $("loader"), authed = document.body.classList.contains("authed");
+  const on = authed ? !dataReady && !saveMsg && !loaderGiveUp?.fired : authView === "loading";
+  if (on){
+    $("ld-title").textContent = authed ? "Loading your quest" : "Signing you in";
+    if (l.hidden || l.classList.contains("out")){
+      l.hidden = false; l.classList.remove("out");
+      const tip = $("ld-tip"); let i = Math.floor(Math.random() * LOAD_TIPS.length);
+      tip.textContent = LOAD_TIPS[i];
+      clearInterval(loaderTipTimer);
+      loaderTipTimer = setInterval(() => { tip.classList.add("fade"); setTimeout(() => { i = (i + 1) % LOAD_TIPS.length; tip.textContent = LOAD_TIPS[i]; tip.classList.remove("fade"); }, 300); }, 2600);
+    }
+    // Never trap someone behind the loader if the first pull stalls.
+    if (authed && !loaderGiveUp){ loaderGiveUp = { fired: false }; const g = loaderGiveUp; setTimeout(() => { g.fired = true; syncLoader(); }, 12000); }
+  } else if (!l.hidden && !l.classList.contains("out")){
+    l.classList.add("out"); clearInterval(loaderTipTimer);
+    setTimeout(() => { if (l.classList.contains("out")) l.hidden = true; }, 380);
+  }
+  if (!authed) loaderGiveUp = null;
+}
+
 function field(id, label, type, ac, extra){ return `<div class="field"><label class="label" for="${id}">${label}</label><input id="${id}" type="${type}" autocomplete="${ac}" required ${extra || ""}></div>`; }
 function renderAuth(){
   const g = $("gate");
+  syncLoader();
   if (document.body.classList.contains("authed")){ g.hidden = true; g.innerHTML = ""; return; }
   g.hidden = false;
   const msg = authMsg ? `<p class="amsg" role="alert">${esc(authMsg)}</p>` : "";
@@ -3917,7 +4031,7 @@ function queueSession(s){ sessionChain = sessionChain.then(() => onSession(s)).c
 async function pull(){
   if (!started) return;
   const { data, error } = await sb.from("progress").select("user_id,data");
-  if (error){ saveMsg = "Couldn't load the shared board. Check your connection and reload."; renderNote(); return; }
+  if (error){ saveMsg = "Couldn't load the shared board. Check your connection and reload."; renderNote(); syncLoader(); return; }
   if ((data || []).some(r => !(r.user_id in profCache))) await loadProfiles();
   const next = {}; (data || []).forEach(r => { next[r.user_id] = r.data; });
   players = next;
