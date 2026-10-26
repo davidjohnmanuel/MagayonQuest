@@ -630,6 +630,8 @@ body:not(.authed) main,body:not(.authed) .dock,body:not(.authed) #save-note{disp
 .lock .gate{margin:0;text-align:left}
 .lock .lockic{width:44px;height:44px;color:var(--gold)}
 body.locked{overflow:hidden}
+.lock.warn{z-index:59;background:rgba(8,6,24,.82);background-image:none}
+.lock.warn .clock{display:block;text-align:center}
 /* Profiles and the party feed */
 .linkbtn.danger{color:var(--red)}
 .acct{border-color:var(--gold)}
@@ -978,6 +980,7 @@ body.locked{overflow:hidden}
 <div class="sheetwrap" id="camsheet" hidden role="dialog" aria-modal="true" aria-label="Take a photo"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
+<div class="lock warn" id="idlewarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="warn-t"></div>
 <div class="lock" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-t"></div>
 
 <script src="config.js"></script>
@@ -4247,26 +4250,51 @@ document.addEventListener("visibilitychange", () => {
 });
 
 // ---- inactivity lock
-// After LOCK_MS without a tap, key, scroll or mouse move the app covers itself until the access code
+// After LOCK_MS without a tap, key, scroll or mouse move the app asks "Still there?" for CONFIRM_MS.
+// Without a tap on "I'm still here" in that time it covers itself until the access code
 // (SIGNUP_CODE on Vercel) is entered. api/signup-code.js checks the code, so it never reaches the browser.
 // The last-active time and locked flag live in localStorage, so a reload or reopening the app can't skip the lock.
-const LOCK_MS = 30000, LS_LOCK = "fde-lock";
-let lockedNow = false, lockMsg = "", lockTries = 0, lockWaitUntil = 0, lastWrite = 0;
+const LOCK_MS = 30000, CONFIRM_MS = 10000, LS_LOCK = "fde-lock";
+let lockedNow = false, warnedNow = false, lockMsg = "", lockTries = 0, lockWaitUntil = 0, lastWrite = 0;
 function readLock(){ try { return JSON.parse(localStorage.getItem(LS_LOCK)) || {}; } catch (e){ return {}; } }
 function writeLock(locked){ try { localStorage.setItem(LS_LOCK, JSON.stringify({ at: lastAct, locked })); } catch (e){} }
 let lastAct = readLock().at || Date.now();
 function noteActive(){
-  if (lockedNow) return;
+  if (lockedNow || warnedNow) return; // only the button answers the warning
   lastAct = Date.now();
   if (lastAct - lastWrite > 2000){ lastWrite = lastAct; writeLock(false); }
 }
 function checkIdle(){
   if (!started || lockedNow) return;
-  if (readLock().locked || Date.now() - lastAct >= LOCK_MS) lockApp();
+  const idle = Date.now() - lastAct;
+  if (readLock().locked || idle >= LOCK_MS + CONFIRM_MS) lockApp();
+  else if (idle >= LOCK_MS) showWarn(LOCK_MS + CONFIRM_MS - idle);
+}
+function showWarn(left){
+  const w = $("idlewarn"), secs = Math.ceil(left / 1000);
+  if (warnedNow){ $("warn-left").textContent = secs; return; }
+  warnedNow = true; closeMenu();
+  w.hidden = false;
+  w.innerHTML = `<div class="gate">
+    <h2 id="warn-t">Still there?</h2>
+    <span class="clock" id="warn-left">${secs}</span>
+    <p>No activity for ${LOCK_MS / 1000} seconds. The quest locks when this reaches 0.</p>
+    <button class="gbtn gold big" type="button" id="warn-stay">I'm still here</button>
+  </div>`;
+  $("warn-stay").onclick = stayActive;
+  $("warn-stay").focus();
+}
+function hideWarn(){
+  warnedNow = false;
+  const w = $("idlewarn"); w.hidden = true; w.innerHTML = "";
+}
+function stayActive(){
+  hideWarn();
+  lastAct = lastWrite = Date.now(); writeLock(false);
 }
 function lockApp(){
   lockedNow = true; lockMsg = ""; writeLock(true);
-  closeMenu();
+  hideWarn(); closeMenu();
   if (document.activeElement) document.activeElement.blur();
   document.body.classList.add("locked");
   document.querySelectorAll("body > :not(#lock):not(script)").forEach(el => { el.inert = true; });
@@ -4275,6 +4303,7 @@ function lockApp(){
 // Called after a correct code, a fresh sign-in or a sign-out.
 function freshUnlock(){
   lastAct = lastWrite = Date.now(); writeLock(false);
+  hideWarn();
   if (!lockedNow) return;
   lockedNow = false; lockMsg = "";
   document.body.classList.remove("locked");
@@ -4286,7 +4315,7 @@ function renderLock(){
   l.innerHTML = `<form class="gate" id="lockform">
     <svg class="lockic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg>
     <h2 id="lock-t">Quest locked</h2>
-    <p>${viewer ? `Signed in as <b>${esc(viewer.name || viewer.email)}</b>. ` : ""}The app locks after ${LOCK_MS / 1000} seconds without activity. Enter the access code to continue.</p>
+    <p>${viewer ? `Signed in as <b>${esc(viewer.name || viewer.email)}</b>. ` : ""}The app locks after ${(LOCK_MS + CONFIRM_MS) / 1000} seconds without activity. Enter the access code to continue.</p>
     ${lockMsg ? `<p class="amsg" role="alert">${esc(lockMsg)}</p>` : ""}
     ${field("lock-code", "Access code", "password", "off")}
     <button class="gbtn gold big" type="submit">Unlock</button>
@@ -4542,6 +4571,7 @@ else if ("serviceWorker" in navigator){
 
 // ---- Android app: back button, notification taps
 function nativeBack(){
+  if (warnedNow){ stayActive(); return; }
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
