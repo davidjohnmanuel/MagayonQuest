@@ -109,9 +109,10 @@ In the **Chat** tab, tap **Quiz duel** and pick:
 
 - the missions to cover
 - 5 or 10 questions
+- a timer of 5, 10, 15, 20, 30 or 45 seconds per question
 - the question source
 
-The quiz is sent to your partner as an invite card. You both answer the same questions, 10 seconds each (running out counts as wrong), and the card shows both scores as you finish.
+The quiz is sent to your partner as an invite card. You both answer the same questions using the chosen timer (running out counts as wrong), and the card shows both scores as you finish. Unaccepted quiz and battle invitations expire after one hour; expired battle challenges move into **Archived invitations** in the Arena. The certification exam also lets you choose its timer before starting.
 
 **Question bank** works out of the box: about 50 hand-written questions across the eight missions.
 
@@ -132,9 +133,9 @@ The function only answers people who are signed in and on the study list. Your k
 - **Choosing a hero:** the first time someone signs in, they choose a hero. Four are open from the start, and the rest unlock at player levels 2–5. Switch anytime in **Arena → Change hero**.
 - **Hero skills:** each hero has six skills that unlock with that hero's XP, at 0, 100, 300, 500, 800 and 1,200. They cover block, dodge, half damage, heal, regen, double damage, pierce, lifesteal, counter, drain, burn, freeze, silence, 50/50, extra time and reveal.
 - **Look and feel:** each hero has an animated 8-bit element emblem, and every attack and skill plays its own pixel animation. Animations turn off when the phone's "reduce motion" setting is on.
-- **Starting a battle:** tap **Battle** in the Arena or Chat tab, then pick missions, 10/15/20 questions and the source. The challenge appears in chat.
+- **Starting a battle:** tap **Battle** in the Arena or Chat tab, then pick missions, 10/15/20 questions, the 5–45-second timer and the source. The challenge appears in chat.
 - **Removing a fight card:** tap **Remove** on a card in your Arena and confirm. Both players see "The battle was removed" in chat, its Arena button is disabled, and it disappears from both Arenas. Battle history and rewards are kept.
-- **Each turn:** both players answer the same question with a 10-second timer. A correct answer hits for 6–14, and faster hits harder. A wrong answer or timeout costs 5 HP. Each skill can be armed once per battle before answering.
+- **Each turn:** both players answer the same question with the selected timer. A correct answer hits for 6–14, and faster hits harder. A wrong answer or timeout costs 5 HP. Each skill can be armed once per battle before answering.
 - **Winning:** every battle lasts at least 10 questions, because nobody drops below 1 HP before then. A knockout from question 10, or the most HP at the end, wins.
 - **Fairness:** both phones compute the same result from the two answer lists. Answer times are measured on each player's own phone.
 - **Edit heroes:** the `HEROES` and `SKILLS` lists live in `index.html`.
@@ -238,7 +239,7 @@ The APK loads your live site, so new features arrive the moment you push to GitH
   - an offer: +150 XP and 100 coins
 - **Certification exam:**
   - **Unlocks** once every mission has 2+ stars.
-  - **Format:** 30 questions covering all 22 missions, 10 seconds each, no skills or items. It takes 80% to pass, and you can retake 30 minutes after a fail.
+  - **Format:** 30 questions covering all 22 missions, with a selectable timer per question, no skills or items. It takes 80% to pass, and you can retake 30 minutes after a fail.
   - **Reward:** a certificate with your name, score, date, hero and a certificate ID, which you can save as an image. It's labelled as a self-study completion certificate, not an accredited credential.
 - **Real certifications to pair with it:** listed in the job-hunt mission. AWS Cloud Practitioner, AWS AI Practitioner, Google Cloud Generative AI Leader, and free Anthropic Academy course certificates.
 

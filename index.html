@@ -428,6 +428,7 @@ body.keyboard-open .chatlog{height:max(120px,calc(var(--chat-viewport-height,100
 .rv.no{border-left-color:var(--red)}
 .rv span{font-size:13px;color:var(--muted)}
 .qinvite{display:grid!important;gap:4px;background:linear-gradient(160deg,#352E74,#241F55)!important;color:var(--ink)!important;border:2px solid var(--gold)!important;min-width:220px}
+.qinvite.expired{border-color:var(--muted)!important;filter:saturate(.55)}
 .msg.them .qinvite{border-color:var(--pink)!important}
 .qinvite b{font-family:var(--f-display);font-size:17px}
 .qinvite > span:not(.hud){font-size:12.5px;color:var(--muted)}
@@ -606,6 +607,7 @@ body.keyboard-open .chatlog{height:max(120px,calc(var(--chat-viewport-height,100
 .fight{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto;align-items:center;gap:12px;background:rgba(11,9,32,.6);border:2px solid var(--edge);border-radius:12px;padding:8px 10px}
 .fight-remove{min-height:36px;padding:4px 8px;border:1px solid var(--edge);border-radius:8px;background:rgba(11,9,32,.7);color:var(--muted);font-size:12px;font-weight:800}
 .fight-remove:hover{border-color:var(--red);color:var(--red)}
+.fight.archived{opacity:.72;border-style:dashed}
 .qinvite .gbtn:disabled{opacity:.6;cursor:not-allowed}
 .fight.live{border-color:var(--cyan);box-shadow:0 0 14px rgba(79,227,224,.25)}
 .fight.won{border-color:var(--gold)}
@@ -1981,6 +1983,10 @@ const daysBack=n=>{const out=[];for(let k=n-1;k>=0;k--){const x=new Date();x.set
 const fmtMin=m=>m>=60?`${Math.floor(m/60)}h${m%60?" "+String(m%60).padStart(2,"0")+"m":""}`:`${m}m`;
 
 const REACTS=["❤️","😂","😮","😢","😡","👍"];
+const QUIZ_TIMERS=[5,10,15,20,30,45];
+const QUIZ_INVITE_TTL=60*60*1000;
+const validQuizTimer=value=>QUIZ_TIMERS.includes(Number(value))?Number(value):10;
+const timerChoicesHTML=(seconds,attr)=>`<div class="goalpick" role="group" aria-label="Time per question">${QUIZ_TIMERS.map(n=>`<button type="button" ${attr}="${n}" aria-pressed="${validQuizTimer(seconds)===n}">${n}s</button>`).join("")}</div>`;
 function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],hiddenBattles:[],removedBattles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],av:"",updated:""};}
 const okId=k=>typeof k==="string"&&k.length<24&&/^[a-z0-9]+$/.test(k);
 function normalize(raw){
@@ -1996,11 +2002,11 @@ function normalize(raw){
   if(Array.isArray(raw.chat))d.chat=raw.chat.filter(m=>m&&typeof m.id==="string"&&/^[a-z0-9]{4,24}$/.test(m.id)&&typeof m.t==="string"&&!isNaN(Date.parse(m.t))&&typeof m.x==="string"&&m.x.trim()).map(m=>{const o={id:m.id,t:m.t.slice(0,40),x:m.x.slice(0,m.k==="t"?120:500),k:m.k==="e"?"e":m.k==="u"?"u":m.k==="t"?"t":m.k==="q"&&typeof m.q==="string"&&/^q[a-z0-9]{4,20}$/.test(m.q)?"q":m.k==="b"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"b":m.k==="br"&&typeof m.q==="string"&&/^b[a-z0-9]{4,20}$/.test(m.q)?"br":"m"};if(o.k==="q"||o.k==="b"||o.k==="br")o.q=m.q;if((o.k==="m"||o.k==="e"||o.k==="t")&&typeof m.r==="string"&&/^[a-z0-9]{4,24}$/.test(m.r))o.r=m.r;if((o.k==="m"||o.k==="e"||o.k==="u")&&typeof m.p==="string"&&/^[a-z0-9]{4,24}$/.test(m.p))o.p=m.p;if(o.k==="m"&&typeof m.i==="string"&&CHAT_IMG_RE.test(m.i)){o.i=m.i;if(m.w>0&&m.h>0&&m.w<=4000&&m.h<=4000){o.w=Math.round(m.w);o.h=Math.round(m.h);}}return o;}).slice(-120);
   if(raw.rx&&typeof raw.rx==="object")Object.keys(raw.rx).filter(k=>/^[a-z0-9]{4,24}$/.test(k)&&REACTS.includes(raw.rx[k])).slice(-200).forEach(k=>{d.rx[k]=raw.rx[k];});
   if(typeof raw.seen==="string"&&!isNaN(Date.parse(raw.seen)))d.seen=raw.seen.slice(0,40);
-  if(Array.isArray(raw.quizzes))d.quizzes=raw.quizzes.filter(z=>z&&typeof z.id==="string"&&/^q[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs)})).filter(z=>z.m.length&&z.qs.length).slice(-8);
+  if(Array.isArray(raw.quizzes))d.quizzes=raw.quizzes.filter(z=>z&&typeof z.id==="string"&&/^q[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),sec:validQuizTimer(z.sec),qs:cleanQs(z.qs)})).filter(z=>z.m.length&&z.qs.length).slice(-8);
   if(raw.qa&&typeof raw.qa==="object"){const keys=Object.keys(raw.qa).filter(k=>/^q[a-z0-9]{4,20}$/.test(k)).slice(-40);for(const k of keys){const r=raw.qa[k];if(r&&Array.isArray(r.ans))d.qa[k]={ans:r.ans.filter(v=>Number.isInteger(v)&&v>=-1&&v<4).slice(0,10),t:typeof r.t==="string"?r.t.slice(0,40):""};}}
   if(typeof raw.hero==="string"&&HERO[raw.hero])d.hero=raw.hero;
   if(raw.heroXp&&typeof raw.heroXp==="object")for(const k in raw.heroXp){const v=Math.round(Number(raw.heroXp[k]));if(HERO[k]&&v>=0&&v<1e7)d.heroXp[k]=v;}
-  if(Array.isArray(raw.battles))d.battles=raw.battles.filter(z=>z&&typeof z.id==="string"&&/^b[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),qs:cleanQs(z.qs,20)})).filter(z=>z.m.length&&z.qs.length>=3).slice(-6);
+  if(Array.isArray(raw.battles))d.battles=raw.battles.filter(z=>z&&typeof z.id==="string"&&/^b[a-z0-9]{4,20}$/.test(z.id)&&Array.isArray(z.m)&&typeof z.t==="string").map(z=>({id:z.id,m:z.m.filter(id=>MOD[id]).slice(0,8),src:z.src==="ai"?"ai":"bank",t:z.t.slice(0,40),sec:validQuizTimer(z.sec),qs:cleanQs(z.qs,20)})).filter(z=>z.m.length&&z.qs.length>=3).slice(-6);
   if(Array.isArray(raw.hiddenBattles))d.hiddenBattles=[...new Set(raw.hiddenBattles.filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
   d.removedBattles=[...new Set([...(Array.isArray(raw.removedBattles)?raw.removedBattles:[]),...(Array.isArray(raw.hiddenBattles)?raw.hiddenBattles:[])].filter(id=>typeof id==="string"&&/^b[a-z0-9]{4,20}$/.test(id)))].slice(-40);
   if(raw.bt&&typeof raw.bt==="object"){const keys=Object.keys(raw.bt).filter(k=>/^b[a-z0-9]{4,20}$/.test(k)).slice(-20);for(const k of keys){const r=raw.bt[k];if(!r||!HERO[r.h]||!Array.isArray(r.ans))continue;d.bt[k]={h:r.h,tl:Math.min(6,Math.max(1,Math.round(Number(r.tl))||1)),ans:r.ans.filter(a=>a&&Number.isInteger(a.k)&&a.k>=-1&&a.k<4).slice(0,20).map(a=>({k:a.k,ms:Math.min(60000,Math.max(0,Math.round(Number(a.ms))||0)),s:typeof a.s==="string"&&SKILLS[a.s]?a.s:"",it:typeof a.it==="string"&&ITEMS[a.it]?a.it:""}))};}}
@@ -2946,9 +2952,9 @@ function renderTrophies(){
 
 // ---- quiz duels
 let aiGen = null; // set at startup when AI generation is available: (prompt) => Promise<array>
-let quizUI = { open: false, sel: [], n: 5, src: "bank", busy: false, err: "", ctl: null };
+let quizUI = { open: false, sel: [], n: 5, sec: 10, src: "bank", busy: false, err: "", ctl: null };
 let playing = null; // {id, i, picked, start}
-const QUIZ_T = 10000;
+const quizTimeLimit = z => validQuizTimer(z.sec)*1000;
 const QID = () => "q" + (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(0, 14);
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function cleanQs(list, max){
@@ -2971,6 +2977,15 @@ function allQuizzes(){
   mate().forEach(id => add(normalize(players[id]), id));
   return out;
 }
+function quizInviteExpired(z,now=Date.now()){
+  if(!z||!mate().length)return false;
+  const created=Date.parse(z.t);
+  if(!Number.isFinite(created)||now-created<QUIZ_INVITE_TTL)return false;
+  const accepted=z.by===myId
+    ? mate().some(id=>{const r=normalize(players[id]).qa[z.id];return r&&r.ans.length>0;})
+    : Boolean(mine.qa[z.id]&&mine.qa[z.id].ans.length>0);
+  return !accepted;
+}
 function quizTitle(z){ return z.m.length >= MODULES.length ? "All missions" : z.m.map(id => MOD[id] ? MOD[id].title : id).join(" + "); }
 function resultOf(d, z){ const r = d.qa[z.id]; if (!r) return null; const right = r.ans.filter((v, i) => v === z.qs[i].a).length; return { done: r.ans.length >= z.qs.length, right, answered: r.ans.length, n: z.qs.length }; }
 
@@ -2991,10 +3006,10 @@ async function createQuiz(){
     quizUI.busy = false;
   } else { src = "bank"; qs = bankQuiz(ids, quizUI.n); }
   if (!qs.length){ quizUI.err = "No questions found for that pick."; renderQuizSheet(); return; }
-  const id = QID(), t = new Date().toISOString(), z = { id, m: ids, src, t, qs };
+  const id = QID(), t = new Date().toISOString(), z = { id, m: ids, src, t, sec: validQuizTimer(quizUI.sec), qs };
   change(d => {
     d.quizzes.push(z); if (d.quizzes.length > 8) d.quizzes = d.quizzes.slice(-8);
-    d.chat.push({ id: "c" + id.slice(1), t, x: `Quiz duel: ${quizTitle(z)} · ${qs.length} questions`, k: "q", q: id });
+    d.chat.push({ id: "c" + id.slice(1), t, x: `Quiz duel: ${quizTitle(z)} · ${qs.length} questions · ${z.sec}s each`, k: "q", q: id });
     if (d.chat.length > 120) d.chat = d.chat.slice(-120);
   }, { now: true, quiet: true });
   closeQuizSheet();
@@ -3002,7 +3017,7 @@ async function createQuiz(){
   playQuiz(id);
 }
 
-function openQuizSheet(){ quizUI = { open: true, sel: quizUI.sel || [], n: quizUI.n || 5, src: aiGen ? quizUI.src : "bank", busy: false, err: "", ctl: null }; renderQuizSheet(); }
+function openQuizSheet(){ quizUI = { open: true, sel: quizUI.sel || [], n: quizUI.n || 5, sec: validQuizTimer(quizUI.sec), src: aiGen ? quizUI.src : "bank", busy: false, err: "", ctl: null }; renderQuizSheet(); }
 function closeQuizSheet(){ if (quizUI.ctl) quizUI.ctl.abort(); quizUI.open = false; const s = $("quizsheet"); s.hidden = true; s.innerHTML = ""; }
 function renderQuizSheet(){
   const s = $("quizsheet"); if (!quizUI.open){ s.hidden = true; return; }
@@ -3014,6 +3029,8 @@ function renderQuizSheet(){
     <div class="chips wrapchips">${`<button class="tchip" data-qall aria-pressed="${all}">All missions</button>`}${MODULES.map(m => `<button class="tchip" data-qm="${m.id}" aria-pressed="${quizUI.sel.includes(m.id)}">${esc(m.title)}</button>`).join("")}</div>
     <span class="hud">Questions</span>
     <div class="goalpick">${[5, 10].map(n => `<button data-qn="${n}" aria-pressed="${quizUI.n === n}">${n}</button>`).join("")}</div>
+    <span class="hud">Seconds per question</span>
+    ${timerChoicesHTML(quizUI.sec,"data-qsec")}
     <span class="hud">Source</span>
     <div class="srcpick">
       <button class="srcopt" data-qs="bank" aria-pressed="${quizUI.src === "bank"}"><b>Question bank</b><span>Instant. Hand-written questions.</span></button>
@@ -3027,12 +3044,13 @@ function renderQuizSheet(){
   s.querySelector("[data-qall]").onclick = () => { quizUI.sel = []; renderQuizSheet(); };
   s.querySelectorAll("[data-qm]").forEach(b => b.onclick = () => { const id = b.dataset.qm; quizUI.sel = quizUI.sel.includes(id) ? quizUI.sel.filter(x => x !== id) : [...quizUI.sel, id]; if (quizUI.sel.length === MODULES.length) quizUI.sel = []; renderQuizSheet(); });
   s.querySelectorAll("[data-qn]").forEach(b => b.onclick = () => { quizUI.n = Number(b.dataset.qn); renderQuizSheet(); });
+  s.querySelectorAll("[data-qsec]").forEach(b => b.onclick = () => { quizUI.sec = validQuizTimer(b.dataset.qsec); renderQuizSheet(); });
   s.querySelectorAll("[data-qs]").forEach(b => b.onclick = () => { if (b.disabled) return; quizUI.src = b.dataset.qs; quizUI.err = ""; renderQuizSheet(); });
   const go = $("qgo"); if (go) go.onclick = () => { if (mode === "readonly"){ toast("View only: ask David to add your email to the study list"); return; } createQuiz(); };
   const st = $("qstop"); if (st) st.onclick = () => { if (quizUI.ctl) quizUI.ctl.abort(); };
 }
 
-function playQuiz(id){ const z = allQuizzes()[id]; if (!z) { toast("That quiz isn't available any more"); return; } const r = mine.qa[id]; playing = { id, i: r ? Math.min(r.ans.length, z.qs.length) : 0, picked: null }; view = "quiz"; setHash("chat"); render(); window.scrollTo({ top: 0, behavior: "auto" }); }
+function playQuiz(id){ const z = allQuizzes()[id]; if (!z) { toast("That quiz isn't available any more"); return; } if(quizInviteExpired(z)){toast("This quiz invitation expired after 1 hour");return;} const r = mine.qa[id]; playing = { id, i: r ? Math.min(r.ans.length, z.qs.length) : 0, picked: null }; view = "quiz"; setHash("chat"); render(); window.scrollTo({ top: 0, behavior: "auto" }); }
 function renderQuiz(){
   const z = playing && allQuizzes()[playing.id];
   if (!z){ view = "chat"; playing = null; renderChat(); return; }
@@ -3041,12 +3059,13 @@ function renderQuiz(){
   if (done){ $("view").innerHTML = quizResultsHTML(z); bindResults(z); return; }
   const i = playing.i, q = z.qs[i], picked = playing.picked;
   if (picked === null && playing.qi !== i){ playing.qi = i; playing.start = Date.now(); }
+  const timeLimit=quizTimeLimit(z);
   const score = r.ans.filter((v, k) => v === z.qs[k].a).length;
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
     <div class="row"><button class="back" id="qback">← Chat</button><span class="spacer"></span><span class="hud">${esc(quizTitle(z))}${z.src === "ai" ? " · AI" : ""}</span></div>
     <div class="qprog">${z.qs.map((x, k) => `<i class="${k < r.ans.length ? (r.ans[k] === x.a ? "ok" : "no") : k === i ? "cur" : ""}"></i>`).join("")}</div>
     <section class="bcard qcard">
-      <div class="row"><span class="hud">Question ${i + 1} / ${n}</span><span class="spacer"></span>${picked === null ? `<span class="hud" id="qsecs" style="color:var(--cyan)">10s</span>` : ""}<span class="hud" style="color:var(--green)">${score} correct</span></div>
+      <div class="row"><span class="hud">Question ${i + 1} / ${n}</span><span class="spacer"></span>${picked === null ? `<span class="hud" id="qsecs" style="color:var(--cyan)">${validQuizTimer(z.sec)}s</span>` : ""}<span class="hud" style="color:var(--green)">${score} correct</span></div>
       ${picked === null ? `<div class="timer"><i id="qtimer" style="width:100%"></i></div>` : ""}
       <div class="q">${esc(q.q)}</div>
     </section>
@@ -3060,8 +3079,9 @@ function renderQuiz(){
 function tickQuiz(){
   if (view !== "quiz" || !playing || playing.picked !== null || !playing.start) return;
   const el = $("qtimer"); if (!el) return;
-  const left = QUIZ_T - (Date.now() - playing.start);
-  el.style.width = Math.max(0, left / QUIZ_T * 100) + "%"; el.className = left < 3000 ? "low" : "";
+  const z = allQuizzes()[playing.id]; if(!z)return;
+  const timeLimit=quizTimeLimit(z),left = timeLimit - (Date.now() - playing.start);
+  el.style.width = Math.max(0, left / timeLimit * 100) + "%"; el.className = left < Math.min(3000,timeLimit*.3) ? "low" : "";
   const secs = Math.max(0, Math.ceil(left / 1000)); const qn = $("qsecs"); if (qn) qn.textContent = secs + "s";
   if (secs <= 3 && secs > 0 && playing.lastTick !== secs){ playing.lastTick = secs; sfx.tick(); }
   if (left <= 0){ const z = allQuizzes()[playing.id]; if (z) answer(z, -1); }
@@ -3117,9 +3137,10 @@ function quizCardHTML(m){
   if (!z) return `<span class="bub">${esc(m.x)}</span>`;
   const me = resultOf(mine, z), rv = mate()[0], them = rv ? resultOf(normalize(players[rv]), z) : null;
   const sc = r => !r ? "—" : r.done ? `${r.right}/${r.n}` : `${r.answered}/${r.n}…`;
-  return `<span class="bub qinvite"><span class="hud">${m.me ? "You started a quiz duel" : `${esc(mateName(m.who))} challenged you`}${z.src === "ai" ? " · AI" : ""}</span><b>${esc(quizTitle(z))}</b><span>${z.qs.length} questions</span>
+  const expired=quizInviteExpired(z);
+  return `<span class="bub qinvite${expired?" expired":""}"><span class="hud">${expired?"Invitation expired":m.me ? "You started a quiz duel" : `${esc(mateName(m.who))} challenged you`}${z.src === "ai" ? " · AI" : ""}</span><b>${esc(quizTitle(z))}</b><span>${z.qs.length} questions · ${validQuizTimer(z.sec)}s each</span>
     <span class="qscores"><span>You ${sc(me)}</span><span>${rv ? esc(mateName(rv)) : "P2"} ${sc(them)}</span></span>
-    <button class="gbtn ${me && me.done ? "cyan" : "gold"}" data-play="${esc(z.id)}">${me && me.done ? "See results" : me && me.answered ? "Continue" : "Play"}</button></span>`;
+    ${expired?`<button class="gbtn" disabled>Expired</button>`:`<button class="gbtn ${me && me.done ? "cyan" : "gold"}" data-play="${esc(z.id)}">${me && me.done ? "See results" : me && me.answered ? "Continue" : "Play"}</button>`}</span>`;
 }
 
 // ---- heroes, skills and the quiz battle arena
@@ -3489,8 +3510,8 @@ function myHero(){ return HERO[mine.hero] || null; }
 
 // ---- battle rules (deterministic: both phones compute the same result from the two answer lists)
 const T0 = 10000, MAXHP = 100, BATTLE_SIZES = [10, 15, 20], MIN_TURNS = 10;
-function turnLimit(i, mineRec, oppRec){
-  let t = T0;
+function turnLimit(i, mineRec, oppRec, seconds=T0/1000){
+  let t = validQuizTimer(seconds)*1000;
   if (mineRec[i] && mineRec[i].s === "time") t += 10000;
   if (mineRec[i] && mineRec[i].it === "hourglass") t += 5000;
   if (i > 0 && oppRec[i - 1] && oppRec[i - 1].s === "freeze") t -= 4000;
@@ -3516,7 +3537,7 @@ function battleState(b, A, B){
     const incoming = [0, 0], self = [0, 0], heal = [0, 0];
     for (const x of [0, 1]){
       const o = 1 - x, me = r[x], s = sk[x], ok = me.k === q.a;
-      const lim = turnLimit(i, recs[x], recs[o]);
+      const lim = turnLimit(i, recs[x], recs[o], b.sec);
       if (ok){
         const sp = s === "swift" ? 1 : Math.max(0, 1 - me.ms / lim);
         let d = Math.round(6 + 8 * sp); if (s === "double") d *= 2;
@@ -3568,6 +3589,10 @@ function opponentOf(bid){ // first other player who joined this battle
   for (const id of mate()){ const d = normalize(players[id]); if (d.bt[bid]) return { id, d }; }
   return null;
 }
+function battleInviteExpired(b,now=Date.now()){
+  const created=Date.parse(b&&b.t);
+  return Boolean(b&&mate().length&&Number.isFinite(created)&&now-created>=QUIZ_INVITE_TTL&&!opponentOf(b.id));
+}
 function battleView(b){
   const meRec = mine.bt[b.id] || null, opp = opponentOf(b.id);
   const st = battleState(b, meRec ? meRec.ans : [], opp ? opp.d.bt[b.id].ans : []);
@@ -3590,13 +3615,13 @@ function battleXP(d, all){
 }
 
 // ---- battle setup sheet
-let battleUI = { open: false, sel: [], n: 15, src: "bank", busy: false, err: "", ctl: null };
+let battleUI = { open: false, sel: [], n: 15, sec: 10, src: "bank", busy: false, err: "", ctl: null };
 function battleQs(ids, n){
   let qs = bankQuiz(ids, n);
   if (qs.length < n){ const rest = MODULES.map(m => m.id).filter(id => !ids.includes(id)); qs = qs.concat(bankQuiz(rest, n - qs.length)); }
   return qs.slice(0, n);
 }
-function openBattleSheet(){ battleUI = { ...battleUI, open: true, busy: false, err: "", src: aiGen ? battleUI.src : "bank" }; renderBattleSheet(); }
+function openBattleSheet(){ battleUI = { ...battleUI, open: true, busy: false, err: "", sec:validQuizTimer(battleUI.sec), src: aiGen ? battleUI.src : "bank" }; renderBattleSheet(); }
 function closeBattleSheet(){ if (battleUI.ctl) battleUI.ctl.abort(); battleUI.open = false; const s = $("battlesheet"); s.hidden = true; s.innerHTML = ""; }
 function renderBattleSheet(){
   const s = $("battlesheet"); if (!battleUI.open){ s.hidden = true; return; }
@@ -3609,6 +3634,8 @@ function renderBattleSheet(){
     <div class="chips wrapchips"><button class="tchip" data-ball aria-pressed="${all}">All missions</button>${MODULES.map(m => `<button class="tchip" data-bm="${m.id}" aria-pressed="${battleUI.sel.includes(m.id)}">${esc(m.title)}</button>`).join("")}</div>
     <span class="hud">Questions (knockouts count from question 10)</span>
     <div class="goalpick">${BATTLE_SIZES.map(n => `<button data-bn="${n}" aria-pressed="${battleUI.n === n}">${n}</button>`).join("")}</div>
+    <span class="hud">Seconds per question</span>
+    ${timerChoicesHTML(battleUI.sec,"data-bsec")}
     <span class="hud">Source</span>
     <div class="srcpick">
       <button class="srcopt" data-bs="bank" aria-pressed="${battleUI.src === "bank"}"><b>Question bank</b><span>Instant.</span></button>
@@ -3622,6 +3649,7 @@ function renderBattleSheet(){
   s.querySelector("[data-ball]").onclick = () => { battleUI.sel = []; renderBattleSheet(); };
   s.querySelectorAll("[data-bm]").forEach(b => b.onclick = () => { const id = b.dataset.bm; battleUI.sel = battleUI.sel.includes(id) ? battleUI.sel.filter(x => x !== id) : [...battleUI.sel, id]; if (battleUI.sel.length === MODULES.length) battleUI.sel = []; renderBattleSheet(); });
   s.querySelectorAll("[data-bn]").forEach(b => b.onclick = () => { battleUI.n = Number(b.dataset.bn); renderBattleSheet(); });
+  s.querySelectorAll("[data-bsec]").forEach(b => b.onclick = () => { battleUI.sec = validQuizTimer(b.dataset.bsec); renderBattleSheet(); });
   s.querySelectorAll("[data-bs]").forEach(b => b.onclick = () => { if (b.disabled) return; battleUI.src = b.dataset.bs; battleUI.err = ""; renderBattleSheet(); });
   const go = $("bgo"); if (go) go.onclick = () => { if (mode === "readonly"){ toast("View only: ask David to add your email to the study list"); return; } if (!myHero()){ closeBattleSheet(); go2heroes(); return; } createBattle(); };
   const st = $("bstop"); if (st) st.onclick = () => { if (battleUI.ctl) battleUI.ctl.abort(); };
@@ -3643,12 +3671,12 @@ async function createBattle(){
     battleUI.busy = false;
   } else { src = "bank"; qs = battleQs(ids, n); }
   const id = "b" + (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(0, 14), t = new Date().toISOString();
-  const b = { id, m: ids, src, t, qs };
+  const b = { id, m: ids, src, t, sec:validQuizTimer(battleUI.sec), qs };
   const h = myHero();
   change(d => {
     d.battles.push(b); if (d.battles.length > 6) d.battles = d.battles.slice(-6);
     d.bt[id] = { h: h.id, tl: heroTier(d, h.id), ans: [] };
-    d.chat.push({ id: "c" + id.slice(1), t, x: `Battle challenge: ${quizTitle(b)} · ${qs.length} questions`, k: "b", q: id });
+    d.chat.push({ id: "c" + id.slice(1), t, x: `Battle challenge: ${quizTitle(b)} · ${qs.length} questions · ${b.sec}s each`, k: "b", q: id });
     if (d.chat.length > 120) d.chat = d.chat.slice(-120);
   }, { now: true, quiet: true });
   closeBattleSheet();
@@ -3658,10 +3686,11 @@ async function createBattle(){
 function cleanQsN(list, max){ const q = cleanQs(Array.isArray(list) ? list.slice(0, max) : list); return q; }
 
 // ---- battle screen
-let fight = null; // {id, qStart:{}, armed:null, shownTurn:-1, resultUntil:0}
+let fight = null, battleArchiveTimer=null; // {id, qStart:{}, armed:null, shownTurn:-1, resultUntil:0}
 function openBattle(id){
   const b = allBattles()[id]; if (!b){ toast("That battle isn't available any more"); return; }
   if (battleRemoved(id)){ toast("This battle was removed"); return; }
+  if(battleInviteExpired(b)){toast("This battle invitation expired after 1 hour");return;}
   if (!mine.bt[id]){
     const h = myHero(); if (!h){ go2heroes(id); return; }
     change(d => { d.bt[id] = { h: h.id, tl: heroTier(d, h.id), ans: [] }; }, { now: true, quiet: true });
@@ -3738,7 +3767,7 @@ function renderBattle(){
   if (!middle || (fight.early && i === 0 && !opp)){
     const q = b.qs[i];
     if (!fight.qStart[i]) fight.qStart[i] = Date.now();
-    const lim = turnLimit(i, myAns.concat([{ s: fight.armed, it: fight.item }]), opAns);
+    const lim = turnLimit(i, myAns.concat([{ s: fight.armed, it: fight.item }]), opAns,b.sec);
     const used = new Set(myAns.map(r => r.s).filter(Boolean));
     const silenced = i > 0 && st.eff[i - 1] && st.eff[i - 1][1] === "silence";
     if (silenced) fight.armed = null;
@@ -3779,7 +3808,7 @@ function tickBattle(){
   const el = $("btimer"), tx = $("btime"); if (!el) return;
   const left = fight.lim - (Date.now() - fight.qStart[fight.qi]);
   el.style.width = Math.max(0, left / fight.lim * 100) + "%";
-  el.className = left < 5000 ? "low" : "";
+  el.className = left < fight.lim*.3 ? "low" : "";
   const secs = Math.max(0, Math.ceil(left / 1000));
   if (tx) tx.textContent = secs + "s";
   if (secs <= 3 && secs > 0 && fight.lastTick !== secs){ fight.lastTick = secs; sfx.tick(); }
@@ -3817,15 +3846,17 @@ function renderArena(){
   const hx = (mine.heroXp && mine.heroXp[h.id]) || 0, tier = heroTier(mine, h.id), next = HERO_TIERS[tier];
   const hidden = new Set(mine.hiddenBattles || []);
   const battles = Object.values(allBattles()).sort((a, b) => a.t < b.t ? 1 : -1).map(b => [b, battleView(b)]);
-  const list = battles.filter(([b]) => !hidden.has(b.id) && !battleRemoved(b.id));
+  const visible = battles.filter(([b]) => !hidden.has(b.id) && !battleRemoved(b.id));
+  const expired=visible.filter(([b])=>battleInviteExpired(b)),list=visible.filter(([b])=>!battleInviteExpired(b));
   const won = battles.filter(([, v]) => v.st.winner === 0).length, lost = battles.filter(([, v]) => v.st.winner === 1).length;
   const rid = mate()[0], rd = rid ? normalize(players[rid]) : null, rh = rd && HERO[rd.hero];
   const ghost = `<span class="ghost">${heroSprite(HEROES[0])}<i>?</i></span>`;
   const tile = (H, flip) => `<span class="ftile${flip ? " flip" : ""}"${H ? ` style="--hc:${H.c}"` : ""}>${H ? heroSprite(H) : ghost}</span>`;
   const fight = ([b, v]) => { const st = v.st, live = st.winner === null, myH = v.me ? HERO[v.me.h] : null, opH = v.opp ? HERO[v.opp.d.bt[b.id].h] : null;
     const res = live ? (v.me ? (v.opp ? `Turn ${st.turns + 1}` : "Waiting for opponent") : "Challenge waiting") : st.winner === "draw" ? "Draw" : st.winner === 0 ? "Victory" : "Defeat";
-    return `<div class="fight ${live ? "live" : st.winner === 0 ? "won" : st.winner === 1 ? "lost" : ""}">${tile(myH)}<div class="fmid"><b>${esc(quizTitle(b))}</b><span class="hud">${b.qs.length} questions · ${st.hp[0]} vs ${st.hp[1]} HP</span><span class="fres hud">${res}</span></div>${tile(opH, true)}
+    return `<div class="fight ${live ? "live" : st.winner === 0 ? "won" : st.winner === 1 ? "lost" : ""}">${tile(myH)}<div class="fmid"><b>${esc(quizTitle(b))}</b><span class="hud">${b.qs.length} questions · ${validQuizTimer(b.sec)}s each · ${st.hp[0]} vs ${st.hp[1]} HP</span><span class="fres hud">${res}</span></div>${tile(opH, true)}
       <button class="gbtn ${live ? "gold" : ""}" data-openb="${esc(b.id)}">${live ? (v.me ? "Continue" : "Join") : "View"}</button><button class="fight-remove" data-removeb="${esc(b.id)}" aria-label="Remove fight card" title="Remove from your Arena">Remove</button></div>`; };
+  const archivedFight=([b,v])=>`<div class="fight archived">${tile(v.me?HERO[v.me.h]:null)}<div class="fmid"><b>${esc(quizTitle(b))}</b><span class="hud">${b.qs.length} questions · ${validQuizTimer(b.sec)}s each · Invitation expired after 1 hour</span></div>${tile(null,true)}<button class="gbtn" disabled>Expired</button></div>`;
   $("view").innerHTML = `<div class="wrap arena" style="gap:14px">
     <section class="colosseum" style="--hc:${h.c}">${arenaTiles()}<span class="arenatitle">The Arena</span>
       <div class="cside"><span class="nplate"><b>${esc(myName())}</b><span class="hud">${esc(h.n)}</span></span>${heroSpot(h, tier)}</div>
@@ -3842,11 +3873,12 @@ function renderArena(){
     </div><div class="main">
     <section class="panel apanel"><div class="row"><span class="abanner">Fight card</span><span class="spacer"></span><span class="hud">${list.length} battle${list.length === 1 ? "" : "s"}</span></div>
       ${list.length ? `<div class="fights">${list.map(fight).join("")}</div>`
-        : `<p class="muted">No battles yet. Tap Battle to challenge ${esc(rid ? mateName(rid) : "your partner")}.</p>`}
+        : `<p class="muted">No active battles. Tap Battle to challenge ${esc(rid ? mateName(rid) : "your partner")}.</p>`}
     </section>
+    ${expired.length?`<details class="panel apanel"><summary><span class="abanner">Archived invitations · ${expired.length}</span></summary><div class="fights" style="margin-top:12px">${expired.map(archivedFight).join("")}</div></details>`:""}
     <details class="panel apanel rulesd"${list.length ? "" : " open"}><summary><span class="abanner">Arena rules</span></summary>
       <div class="rules">
-        <div class="rule"><span>Both answer the same question. 10 seconds each turn.</span><b>100 HP</b></div>
+        <div class="rule"><span>Both answer the same question. Set 5–45 seconds per turn when creating a quiz.</span><b>100 HP</b></div>
         <div class="rule"><span>Correct answer hits your opponent; faster hits harder</span><b>6–14 dmg</b></div>
         <div class="rule"><span>Wrong answer or timeout hurts you</span><b>-5 HP</b></div>
         <div class="rule"><span>Six skills per hero, unlocked with hero XP. Each works once per battle; arm it before you answer.</span><b>1×</b></div>
@@ -3873,14 +3905,17 @@ function renderArena(){
     }, { now: true, quiet: true });
     toast("Battle removed for both players");
   });
+  clearTimeout(battleArchiveTimer);battleArchiveTimer=null;
+  const nextExpiry=Math.min(...visible.filter(([b])=>!opponentOf(b.id)&&!battleInviteExpired(b)).map(([b])=>Date.parse(b.t)+QUIZ_INVITE_TTL-Date.now()));
+  if(Number.isFinite(nextExpiry))battleArchiveTimer=setTimeout(()=>{if(view==="arena")renderArena();},Math.max(1,nextExpiry+1));
 }
 function battleCardHTML(m){
   const b = allBattles()[m.q];
   if (!b) return `<span class="bub">${esc(m.x)}</span>`;
-  const v = battleView(b), st = v.st, removed = battleRemoved(b.id);
-  const label = removed ? "Battle was removed" : st.winner !== null ? (st.winner === "draw" ? "Draw" : st.winner === 0 ? "You won" : `${esc(mateName(v.opp ? v.opp.id : m.who))} won`) : v.me && v.opp ? `Turn ${st.turns + 1} · ${st.hp[0]} vs ${st.hp[1]} HP` : v.me ? "Waiting for opponent" : "Open challenge";
-  const action = removed ? `<button class="gbtn" disabled>Battle removed</button>` : `<button class="gbtn ${st.winner !== null ? "cyan" : "gold"}" data-battle="${esc(b.id)}">${st.winner !== null ? "View battle" : v.me ? "Enter arena" : "Accept challenge"}</button>`;
-  return `<span class="bub qinvite battleinv"><span class="hud">${m.me ? "You issued a battle challenge" : `${esc(mateName(m.who))} challenges you to battle`}${b.src === "ai" ? " · AI" : ""}</span><b>${esc(quizTitle(b))}</b><span>${b.qs.length} questions · ${label}</span>
+  const v = battleView(b), st = v.st, removed = battleRemoved(b.id),expired=battleInviteExpired(b);
+  const label = removed ? "Battle was removed" : expired ? "Invitation expired after 1 hour" : st.winner !== null ? (st.winner === "draw" ? "Draw" : st.winner === 0 ? "You won" : `${esc(mateName(v.opp ? v.opp.id : m.who))} won`) : v.me && v.opp ? `Turn ${st.turns + 1} · ${st.hp[0]} vs ${st.hp[1]} HP` : v.me ? "Waiting for opponent" : "Open challenge";
+  const action = removed ? `<button class="gbtn" disabled>Battle removed</button>` : expired ? `<button class="gbtn" disabled>Expired</button>` : `<button class="gbtn ${st.winner !== null ? "cyan" : "gold"}" data-battle="${esc(b.id)}">${st.winner !== null ? "View battle" : v.me ? "Enter arena" : "Accept challenge"}</button>`;
+  return `<span class="bub qinvite battleinv${expired?" expired":""}"><span class="hud">${expired?"Invitation expired":m.me ? "You issued a battle challenge" : `${esc(mateName(m.who))} challenges you to battle`}${b.src === "ai" ? " · AI" : ""}</span><b>${esc(quizTitle(b))}</b><span>${b.qs.length} questions · ${validQuizTimer(b.sec)}s each · ${label}</span>
     ${action}</span>`;
 }
 
@@ -4267,6 +4302,7 @@ function bindTracker(){
 
 // ---- Certification
 const EXAM_N = 30, EXAM_PASS = 0.8, EXAM_COOLDOWN = 30 * 60 * 1000;
+let examTimerSec=10;
 const certReady = d => MODULES.every(m => starsOf(modPct(d, m)) >= 2);
 function certIdFor(uid, t){ let h = 7; for (const ch of String(uid) + t) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return `FDQ-${t.slice(0, 4)}-${h.toString(36).toUpperCase().padStart(6, "0").slice(0, 6)}`; }
 function buildExam(){
@@ -4293,11 +4329,13 @@ function certPanelHTML(){
   }
   const wait = examWait(mine);
   return `<section class="panel certpanel ready"><span class="hud">Final certification · unlocked</span><h3>FDE Quest Certification Exam</h3>
-    <p class="muted">${EXAM_N} questions across all ${MODULES.length} missions. 10 seconds each, no skills or items. Pass with ${Math.round(EXAM_PASS * 100)}% to earn your certificate, +200 XP and 150 coins.</p>
+    <p class="muted">${EXAM_N} questions across all ${MODULES.length} missions. Choose a timer for each question. No skills or items. Pass with ${Math.round(EXAM_PASS * 100)}% to earn your certificate, +200 XP and 150 coins.</p>
+    <span class="hud">Seconds per question</span>${timerChoicesHTML(examTimerSec,"data-examsec")}
     ${wait ? `<p class="hud" style="color:var(--orange)">Retake available in ${Math.ceil(wait / 60000)} min. Review your weak missions first.</p>` : `<button class="gbtn gold big" id="startexam">Begin the exam</button>`}</section>`;
 }
 function bindCertPanel(){
-  const s = $("startexam"); if (s) s.onclick = () => { examRun = { qs: buildExam(), i: 0, ans: [], start: 0, qi: -1 }; view = "exam"; render(); window.scrollTo({ top: 0, behavior: "auto" }); try { sfx.challenge(); } catch (e){} };
+  $("view").querySelectorAll("[data-examsec]").forEach(b=>b.onclick=()=>{examTimerSec=validQuizTimer(b.dataset.examsec);render();});
+  const s = $("startexam"); if (s) s.onclick = () => { examRun = { qs: buildExam(), i: 0, ans: [], sec:validQuizTimer(examTimerSec), start: 0, qi: -1 }; view = "exam"; render(); window.scrollTo({ top: 0, behavior: "auto" }); try { sfx.challenge(); } catch (e){} };
   const v = $("viewcert"); if (v) v.onclick = () => go("cert");
   $("view").querySelectorAll(".certpanel [data-mission], .roadmap [data-mission]").forEach(b => b.onclick = () => { current = b.dataset.mission; view = "missions"; setHash(current); render(); window.scrollTo({ top: 0, behavior: "auto" }); });
 }
@@ -4310,7 +4348,7 @@ function renderExam(){
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
     <div class="row"><span class="hud">FDE Quest Certification</span><span class="spacer"></span><span class="hud">${esc(MOD[q.mid] ? MOD[q.mid].title : "")}</span></div>
     <div class="qprog">${r.qs.map((x, k) => `<i class="${k < r.ans.length ? "ok" : k === r.i ? "cur" : ""}"></i>`).join("")}</div>
-    <section class="bcard qcard"><div class="row"><span class="hud">Question ${r.i + 1} / ${n}</span><span class="spacer"></span><span class="hud" id="exsecs" style="color:var(--cyan)">10s</span></div>
+    <section class="bcard qcard"><div class="row"><span class="hud">Question ${r.i + 1} / ${n}</span><span class="spacer"></span><span class="hud" id="exsecs" style="color:var(--cyan)">${validQuizTimer(r.sec)}s</span></div>
       <div class="timer"><i id="extimer" style="width:100%"></i></div><div class="q">${esc(q.q)}</div></section>
     <div class="opts">${q.o.map((o, k) => `<button class="opt" data-ex="${k}"><span class="key">${"ABCD"[k]}</span><span>${esc(o)}</span></button>`).join("")}</div>
     <p class="hud" style="text-align:center;color:var(--dim)">No feedback until the end. Trust your training.</p>
@@ -4325,8 +4363,8 @@ function examAnswer(k){
 function tickExam(){
   if (view !== "exam" || !examRun || examRun.i >= examRun.qs.length || !examRun.start) return;
   const el = $("extimer"); if (!el) return;
-  const left = 10000 - (Date.now() - examRun.start), secs = Math.max(0, Math.ceil(left / 1000));
-  el.style.width = Math.max(0, left / 100) + "%"; el.className = left < 3000 ? "low" : "";
+  const limit=validQuizTimer(examRun.sec)*1000,left = limit - (Date.now() - examRun.start), secs = Math.max(0, Math.ceil(left / 1000));
+  el.style.width = Math.max(0, left / limit * 100) + "%"; el.className = left < Math.min(3000,limit*.3) ? "low" : "";
   const t = $("exsecs"); if (t) t.textContent = secs + "s";
   if (secs <= 3 && secs > 0 && examRun.lastTick !== secs){ examRun.lastTick = secs; try { sfx.tick(); } catch (e){} }
   if (left <= 0) examAnswer(-1);
@@ -4697,6 +4735,17 @@ function refreshLog(){
   lastLogId=lastM?lastM.id:"";
   if(near||(newer&&lastM.me))log.scrollTop=log.scrollHeight;
   else if(newer){const j=$("jumpbtn");j.hidden=false;j.classList.add("new");j.textContent="↓ New messages";}
+  scheduleInviteExpiry();
+}
+let inviteExpiryTimer=null;
+function scheduleInviteExpiry(){
+  clearTimeout(inviteExpiryTimer);inviteExpiryTimer=null;
+  if(view!=="chat"||thread)return;
+  const now=Date.now(),expiries=[];
+  Object.values(allQuizzes()).forEach(z=>{const at=Date.parse(z.t)+QUIZ_INVITE_TTL;if(at>now&&quizInviteExpired(z,at))expiries.push(at);});
+  Object.values(allBattles()).forEach(b=>{const at=Date.parse(b.t)+QUIZ_INVITE_TTL;if(at>now&&battleInviteExpired(b,at))expiries.push(at);});
+  const next=Math.min(...expiries);
+  if(Number.isFinite(next))inviteExpiryTimer=setTimeout(()=>{if(view==="chat")refreshLog();},Math.max(1,next-now+1));
 }
 function renderReplyBar(){
   const bar=$("replybar");if(!bar)return;
@@ -4853,6 +4902,7 @@ function renderChat(){
     $("topicbtn").onclick=()=>openTopicSheet();
   }
   bindPlay();
+  scheduleInviteExpiry();
 }
 function bindPlay(){$("view").querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>playQuiz(b.dataset.play));$("view").querySelectorAll("[data-battle]").forEach(b=>b.onclick=()=>openBattle(b.dataset.battle));}
 function refreshChat(){if(view==="chat"){renderChat();renderBadge();}}
