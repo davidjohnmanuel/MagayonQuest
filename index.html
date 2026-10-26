@@ -2918,7 +2918,7 @@ async function createQuiz(){
     catch (e){
       quizUI.busy = false;
       if (e && e.code === "cancelled"){ renderQuizSheet(); return; }
-      quizUI.err = e && e.code === "not_configured" ? "AI quizzes aren't set up on the server yet. Add GEMINI_API_KEY in Vercel and redeploy." : e && e.code === "quota_exceeded" ? "The AI free-tier quota has been reached. Try again later, or use the question bank." : e && e.code === "not_granted" ? "AI quizzes aren't allowed in this view. Using the question bank instead." : "Couldn't generate an AI quiz just now. Try again, or use the question bank.";
+      quizUI.err = e && e.code === "not_configured" ? "AI quizzes need GEMINI_API_KEY, SUPABASE_URL and SUPABASE_ANON_KEY in Vercel Production. Add any missing values and redeploy." : e && e.code === "quota_exceeded" ? "The AI free-tier quota has been reached. Try again later, or use the question bank." : e && e.code === "not_granted" ? "AI quizzes aren't allowed in this view. Using the question bank instead." : "Couldn't generate an AI quiz just now. Try again, or use the question bank.";
       if (e && e.code === "not_granted"){ aiGen = null; quizUI.src = "bank"; }
       renderQuizSheet(); return;
     }
@@ -3567,7 +3567,7 @@ async function createBattle(){
     catch (e){
       battleUI.busy = false;
       if (e && e.code === "cancelled"){ renderBattleSheet(); return; }
-      battleUI.err = e && e.code === "not_configured" ? "AI quizzes aren't set up on the server yet. Add GEMINI_API_KEY in Vercel and redeploy." : e && e.code === "quota_exceeded" ? "The AI free-tier quota has been reached. Try again later, or use the question bank." : "Couldn't generate AI questions just now. Try again, or use the question bank.";
+      battleUI.err = e && e.code === "not_configured" ? "AI quizzes need GEMINI_API_KEY, SUPABASE_URL and SUPABASE_ANON_KEY in Vercel Production. Add any missing values and redeploy." : e && e.code === "quota_exceeded" ? "The AI free-tier quota has been reached. Try again later, or use the question bank." : "Couldn't generate AI questions just now. Try again, or use the question bank.";
       if (e && e.code === "not_granted"){ aiGen = null; battleUI.src = "bank"; battleUI.err = "AI questions aren't allowed here. Using the question bank instead."; }
       renderBattleSheet(); return;
     }

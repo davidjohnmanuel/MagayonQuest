@@ -267,7 +267,7 @@ delete from public.members where email = 'someone@example.com';
 | Confirmation email link opens localhost | Set the Site URL and Redirect URLs in step 5 |
 | Confirmation emails are slow or missing | Supabase's built-in email is rate-limited. Check spam, or connect your own email under Authentication → Emails |
 | "AI-generated" is greyed out | `aiQuiz` is `false` in `config.js`, or the app has not been rebuilt with the latest config |
-| AI quiz says it isn't set up | Add `GEMINI_API_KEY`, `SUPABASE_URL` and `SUPABASE_ANON_KEY` in Vercel, then redeploy |
+| AI quiz says it isn't set up | Add `GEMINI_API_KEY`, `SUPABASE_URL` and `SUPABASE_ANON_KEY` to the Vercel Production environment, then redeploy |
 | AI quiz reaches its free-tier limit | Wait for the quota to reset, or use the question bank |
 | Notifications panel says "Not available here" | Install the app (B or C) and open it from the home screen; plain browser tabs on some phones can't receive pushes |
 | "Send a test" says the server isn't set up | One of the Vercel environment variables is missing; add it and redeploy |
