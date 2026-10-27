@@ -54,15 +54,15 @@ async function feedNews(table, r){
   const nm = await names(), who = nm[r.user_id] || "Your partner";
   if (table === "posts"){
     const others = Object.keys(nm).filter(id => id !== r.user_id);
-    const sent = await pushTo(others, { title: `${who} posted an update`, body: r.body ? trim(String(r.body), 140) : "📷 Shared a photo", tag: "post-" + r.id, url: "/#us" });
+    const sent = await pushTo(others, { title: `${who} posted an update`, body: r.body ? trim(String(r.body), 140) : "📷 Shared a photo", tag: "post-" + r.id, url: "/#feed" });
     return { notes: 1, sent };
   }
   const [post] = (await db(`posts?select=user_id,body&id=eq.${encodeURIComponent(r.post_id)}`)) || [];
   if (!post || post.user_id === r.user_id) return { notes: 0, sent: 0 };
   const what = post.body ? `“${trim(String(post.body), 60)}”` : "your photo";
   const note = table === "post_comments"
-    ? { title: `${who} commented on your post`, body: trim(String(r.body || ""), 140), tag: "comments-" + r.post_id, url: "/#us" }
-    : { title: `${who} liked your post`, body: what, tag: "likes-" + r.post_id, url: "/#us" };
+    ? { title: `${who} commented on your post`, body: trim(String(r.body || ""), 140), tag: "comments-" + r.post_id, url: "/#feed" }
+    : { title: `${who} liked your post`, body: what, tag: "likes-" + r.post_id, url: "/#feed" };
   return { notes: 1, sent: await pushTo([post.user_id], note) };
 }
 
