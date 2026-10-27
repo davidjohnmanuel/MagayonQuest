@@ -967,6 +967,44 @@ body.locked{overflow:hidden}
 .avrow img{width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;flex:none}
 .updbox{gap:12px}
 .updnotes{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14.5px}
+/* Daily check-in: once a day, a swipeable deck of cards */
+#dailysheet{align-items:center}
+.dailybox{gap:12px;overflow:hidden}
+.dtrack{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -18px;overscroll-behavior-x:contain}
+.dtrack::-webkit-scrollbar{display:none}
+.dslide{flex:0 0 100%;scroll-snap-align:center;padding:4px 18px;display:grid;gap:10px;align-content:start;min-height:260px}
+.dslide h4{font-family:var(--f-display);font-size:21px;line-height:1.25;margin:0}
+.dslide .dbig{font-family:var(--f-display);font-size:20px;line-height:1.35}
+.dslide textarea{width:100%;min-height:96px;resize:vertical;border:2px solid var(--edge-hi);background:var(--shadow);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit}
+.dicon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:28px;background:var(--shadow);border:2px solid var(--edge-hi)}
+.dweek{display:flex;gap:6px}
+.dweek span{flex:1;display:grid;gap:3px;justify-items:center;font-family:var(--f-hud);font-size:10px;color:var(--muted)}
+.dweek i{width:100%;max-width:38px;aspect-ratio:1;border-radius:10px;border:2px solid var(--edge);background:var(--shadow);display:grid;place-items:center;font-style:normal;font-size:16px}
+.dweek .on i{border-color:var(--gold);background:#4A3A10}
+.dweek .now i{border-color:var(--cyan)}
+.dopts{display:grid;gap:8px}
+.dopts button{text-align:left;border:2px solid var(--edge);background:var(--shadow);color:var(--ink);border-radius:12px;padding:10px 12px;min-height:46px;font:inherit}
+.dopts button.right{border-color:var(--green);background:#123A24}
+.dopts button.wrong{border-color:var(--red);background:#3B2448}
+.dgames{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dgames .gbtn{font-size:13px;padding:8px 6px}
+.dmoods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.dmoods button{display:grid;justify-items:center;gap:2px;border:2px solid var(--edge);background:var(--shadow);color:var(--ink);border-radius:12px;padding:8px 2px;min-height:64px}
+.dmoods button span{font-size:26px;line-height:1}
+.dmoods button small{font-size:11px;color:var(--muted)}
+.dmoods button[aria-pressed="true"]{border-color:var(--gold);background:#4A3A10}
+.dseal{display:grid;justify-items:center;gap:4px;border:2px dashed var(--pink);background:radial-gradient(circle at 50% 30%,#4A1E3A,var(--shadow));color:var(--ink);border-radius:16px;padding:22px 12px;animation:dpulse 2.4s ease-in-out infinite}
+.dseal span{font-size:42px;line-height:1}
+.dseal b{font-family:var(--f-display);font-size:18px}
+.dseal small{color:var(--muted);font-family:var(--f-hud);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+@keyframes dpulse{50%{box-shadow:0 0 24px rgba(255,119,174,.35)}}
+@media (prefers-reduced-motion:reduce){.dseal{animation:none}}
+.dline{display:grid;gap:6px;border-top:1px solid var(--edge);padding-top:10px}
+.dline p{margin:0;font-size:13.5px}
+.dline input{flex:1;min-width:0;border:2px solid var(--edge-hi);background:var(--shadow);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit;min-height:46px}
+.ddots{display:flex;justify-content:center;gap:6px}
+.ddots button{width:9px;height:9px;padding:0;border-radius:50%;border:0;background:var(--edge-hi)}
+.ddots button[aria-current="true"]{background:var(--gold);width:22px;border-radius:5px}
 /* Pull to refresh: our own indicator replaces the browser's page reload */
 html{overscroll-behavior-y:contain}
 .ptr{position:fixed;top:env(safe-area-inset-top,0px);left:50%;z-index:40;width:42px;height:42px;border-radius:50%;background:var(--panel);border:2px solid var(--edge-hi);box-shadow:0 6px 20px rgba(0,0,0,.45);display:grid;place-items:center;transform:translate(-50%,-50px);opacity:0;pointer-events:none;transition:transform .2s,opacity .2s}
@@ -1239,6 +1277,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 <div class="sheetwrap" id="updsheet" hidden role="alertdialog" aria-modal="true" aria-label="App update"></div>
 <div class="sheetwrap" id="bellsheet" hidden role="dialog" aria-modal="true" aria-label="Notifications"></div>
 <div class="sheetwrap" id="progresssheet" hidden role="dialog" aria-modal="true" aria-labelledby="progress-title"></div>
+<div class="sheetwrap" id="dailysheet" hidden role="dialog" aria-modal="true" aria-label="Daily check-in"></div>
 <div class="photoview" id="photoview" hidden role="dialog" aria-modal="true" aria-label="Photo"></div>
 <div class="lvup" id="lvup" hidden role="dialog" aria-modal="true" aria-labelledby="lvup-t"></div>
 <div class="lock warn" id="idlewarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="warn-t"></div>
@@ -1991,7 +2030,7 @@ const QUIZ_TIMERS=[5,10,15,20,30,45];
 const QUIZ_INVITE_TTL=60*60*1000;
 const validQuizTimer=value=>QUIZ_TIMERS.includes(Number(value))?Number(value):10;
 const timerChoicesHTML=(seconds,attr)=>`<div class="goalpick" role="group" aria-label="Time per question">${QUIZ_TIMERS.map(n=>`<button type="button" ${attr}="${n}" aria-pressed="${validQuizTimer(seconds)===n}">${n}s</button>`).join("")}</div>`;
-function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],hiddenBattles:[],removedBattles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],av:"",updated:""};}
+function blank(){return{checks:{},cards:{},res:{},log:[],time:{},note:"",goal:30,chat:[],rx:{},seen:"",quizzes:[],qa:{},hero:"",heroXp:{},battles:[],hiddenBattles:[],removedBattles:[],bt:{},buys:[],title:"",apps:[],exams:[],cert:null,sess:[],ci:[],mood:{},nt:null,av:"",updated:""};}
 const okId=k=>typeof k==="string"&&k.length<24&&/^[a-z0-9]+$/.test(k);
 function normalize(raw){
   const d=blank(); if(!raw||typeof raw!=="object")return d;
@@ -2022,6 +2061,9 @@ function normalize(raw){
   if(typeof raw.note==="string")d.note=raw.note.slice(0,140);
   if(GOALS.includes(raw.goal))d.goal=raw.goal;
   if(Array.isArray(raw.sess))d.sess=raw.sess.filter(x=>x&&typeof x.t==="string"&&!isNaN(Date.parse(x.t))&&MOD[x.m]&&GOALS.includes(x.c)&&Number.isInteger(x.s)&&x.s>=0&&x.s<=600).map(x=>({t:x.t.slice(0,40),m:x.m,c:x.c,s:x.s})).slice(-400);
+  if(Array.isArray(raw.ci))d.ci=[...new Set(raw.ci.filter(x=>typeof x==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x)))].sort().slice(-400);
+  if(raw.mood&&typeof raw.mood==="object")Object.keys(raw.mood).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-60).forEach(k=>{const v=raw.mood[k];if(Number.isInteger(v)&&v>=0&&v<MOODS.length)d.mood[k]=v;});
+  if(raw.nt&&typeof raw.nt.x==="string"&&raw.nt.x.trim()&&typeof raw.nt.t==="string"&&!isNaN(Date.parse(raw.nt.t)))d.nt={x:raw.nt.x.trim().slice(0,140),t:raw.nt.t.slice(0,40)};
   if(typeof raw.av==="string"&&AV_RE.test(raw.av))d.av=raw.av;
   if(typeof raw.updated==="string")d.updated=raw.updated.slice(0,40);
   return d;
@@ -2039,7 +2081,7 @@ const totalMins=d=>Object.keys(d.time).reduce((s,day)=>s+minsOn(d,day),0);
 const weekByTopic=d=>{const o={};daysBack(7).forEach(day=>{const t=d.time[day]||{};for(const k in t)o[k]=(o[k]||0)+t[k];});return o;};
 const weekMins=d=>Object.values(weekByTopic(d)).reduce((s,v)=>s+v,0);
 const bonusDays=d=>Object.keys(d.time).filter(day=>minsOn(d,day)>=d.goal&&Object.keys(d.time[day]).length>=2).length;
-function xpOf(d,owner){return appsXP(d)+(d.cert?200:0)+battleXPFor(d,owner)+Object.keys(d.checks).length*10+Object.values(d.cards).filter(v=>v==="got").length*5+Object.keys(d.res).length*5+d.log.length*15+Math.floor(totalMins(d)/5)+bonusDays(d)*10+quizXP(d)+sessXP(d);}
+function xpOf(d,owner){return appsXP(d)+(d.cert?200:0)+battleXPFor(d,owner)+Object.keys(d.checks).length*10+Object.values(d.cards).filter(v=>v==="got").length*5+Object.keys(d.res).length*5+d.log.length*15+Math.floor(totalMins(d)/5)+bonusDays(d)*10+quizXP(d)+sessXP(d)+d.ci.length*5;}
 function battleXPFor(d,owner){if(typeof players!=="object"||!d.bt||!Object.keys(d.bt).length)return 0;owner=owner||myId||"me";const cands=[{id:myId||"me",d:mine},...Object.keys(players).filter(id=>id!==myId).map(id=>({id,d:normalize(players[id])}))].filter(c=>c.id!==owner);let x=0;const pool={};[d,...cands.map(c=>c.d)].forEach(p=>(p.battles||[]).forEach(z=>{if(!pool[z.id])pool[z.id]=z;}));for(const bid in d.bt){const b=pool[bid];if(!b)continue;const A=d.bt[bid].ans;x+=A.filter((r,i)=>b.qs[i]&&r.k===b.qs[i].a).length*3;const o=cands.find(c=>c.d.bt[bid]);if(o){const st=battleState(b,A,o.d.bt[bid].ans);if(st.winner!==null)x+=st.winner===0?35:10;}}return x;}
 function quizXP(d){let x=0;const pool={};d.quizzes.forEach(z=>pool[z.id]=z);if(typeof players==="object")for(const id in players){const p=players[id];if(p&&Array.isArray(p.quizzes))p.quizzes.forEach(z=>{if(z&&z.id&&!pool[z.id]){const qs=cleanQs(z.qs);if(qs.length)pool[z.id]={qs};}});}for(const k in d.qa){const z=pool[k];if(!z)continue;const r=d.qa[k];x+=r.ans.filter((v,i)=>z.qs[i]&&v===z.qs[i].a).length*3;if(r.ans.length>=z.qs.length)x+=5;}return x;}
 function levelOf(xp){let i=0;LEVELS.forEach((l,j)=>{if(xp>=l.min)i=j;});const cur=LEVELS[i],nxt=LEVELS[i+1];return{i,name:cur.n,next:nxt?nxt.n:null,pct:nxt?Math.round((xp-cur.min)/(nxt.min-cur.min)*100):100,toNext:nxt?nxt.min-xp:0};}
@@ -2136,7 +2178,7 @@ function render(){
   {const sb2=$("setbtn");if(sb2)sb2.setAttribute("aria-current",String(view==="settings"));}
   renderBadge();
   if(keep){const f=$(keep.id);if(f){f.value=keep.v;f.focus();}}
-  renderTimer(); renderNote(); syncLoader(); renderBell();
+  renderTimer(); renderNote(); syncLoader(); renderBell(); maybeDaily();
 }
 let viewer=null;
 function renderNote(){
@@ -4117,7 +4159,7 @@ function coinsEarned(d, owner){
     + Object.values(d.cards).filter(v => v === "got").length * 2 + Object.keys(d.res).length * 2 + Object.keys(d.checks).length * 5
     + q.correct * 2 + q.finished * 5 + q.won * 10
     + b.correct * 2 + b.finished * 10 + b.won * 25
-    + sessCoins(d);
+    + sessCoins(d) + ciCoins(d);
 }
 const coinsSpent = d => d.buys.reduce((s, x) => s + x.p, 0);
 const coinBalance = (d, owner) => Math.max(0, coinsEarned(d, owner) - coinsSpent(d));
@@ -5207,7 +5249,7 @@ async function onSession(session){
   viewer.name = nm; viewer.avatarUrl = initialsAvatar(nm);
   LS = "fde-field-prep-v1:" + u.id; mine = blank(); try { lastRead = localStorage.getItem(LS_READ()) || ""; } catch (e){} seenMsgs.clear(); seenReady = false;
   try { const raw = localStorage.getItem(LS); if (raw) mine = normalize(JSON.parse(raw)); } catch (e){}
-  myId = u.id; mode = "shared"; dirty = false; saveMsg = ""; started = true;
+  myId = u.id; mode = "shared"; dirty = false; saveMsg = ""; started = true; dailyReadyAt = Date.now() + 1500;
   document.body.classList.add("authed");
   renderAuth(); render(); subscribe(); checkIdle();
 }
@@ -5450,7 +5492,7 @@ function renderLock(){
   };
 }
 ["pointerdown", "pointermove", "keydown", "wheel", "touchstart", "scroll"].forEach(t => document.addEventListener(t, noteActive, { capture: true, passive: true }));
-document.addEventListener("visibilitychange", () => { if (!document.hidden) checkIdle(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden){ checkIdle(); maybeDaily(); } });
 setInterval(checkIdle, 1000);
 
 if (!sb){ authView = "setup"; renderAuth(); }
@@ -5686,7 +5728,7 @@ function nativeBack(){
   if (document.querySelector(".mmenu")){ closeMenu(); return; }
   if (!$("photoview").hidden){ closePhoto(); return; }
   const sheet = [...document.querySelectorAll(".sheetwrap")].find(s => !s.hidden);
-  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, bellsheet: closeBell, progresssheet: closeProfileProgress, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
+  if (sheet){ ({ quizsheet: closeQuizSheet, battlesheet: closeBattleSheet, topicsheet: closeTopicSheet, camsheet: closeCamSheet, confirmsheet: () => confirmDelete.close && confirmDelete.close(), updsheet: closeUpdate, bellsheet: closeBell, progresssheet: closeProfileProgress, dailysheet: closeDaily, cartsheet: closeShopSheet, prodsheet: closeShopSheet })[sheet.id](); return; }
   if (!$("lock").hidden || view === "exam"){ CAP.App.minimizeApp(); return; } // never drop an exam in progress
   if (view === "chat" && thread){ closeThread(); return; }
   const back = $("view").querySelector("button.back");
@@ -5725,6 +5767,7 @@ async function checkAppUpdate(force, inline){
     if (inline && !must) return false;
     let later = {}; try { later = JSON.parse(localStorage.getItem(LS_UPD)) || {}; } catch (e){}
     if (!must && !force && later.b === latest && Date.now() - later.at < UPD_SNOOZE) return;
+    if (!must && !force && daily) return; // the daily deck is open; the update shows in Settings and the bell
     showUpdate(v, info, must);
   } catch (e){ updChecked = 0; } // offline: try again on the next resume
 }
@@ -5765,6 +5808,161 @@ function refreshAppPanel(){ const el = $("set-app"); if (el){ el.innerHTML = app
 function closeUpdate(){
   if (updMust){ CAP.App.minimizeApp(); return; }
   const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
+}
+// ---- Daily check-in: the first time you open the app each day, a swipeable deck of cards: a waiting app update,
+// a mood check, the question of the day, check-in coins, a sealed note, a trivia question and a motivation.
+const CI_COINS = 5, CI_WEEK_BONUS = 20; // every 7th check-in in a row also pays the bonus
+function ciCoins(d){ let c = 0, run = 0, prev = null; d.ci.forEach(k => { const t = Date.parse(k + "T00:00:00"); run = prev !== null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; c += CI_COINS + (run % 7 === 0 ? CI_WEEK_BONUS : 0); }); return c; }
+const KILIG = ["Kahit gaano ka-busy, ikaw pa rin ang favorite kong notification.", "Proud ako sa'yo, kahit isang tanong lang ang na-review mo today.", "Every mission you clear brings us one step closer sa dream natin.", "Kung offer letter ka, tatanggapin kita agad. No negotiation.", "Pahinga ka rin, ha? Hindi kailangang perfect, basta tuloy lang tayo.", "Hindi ako magaling sa SQL, pero magaling akong maniwala sa'yo.", "Kahit 404 ang lahat, ikaw pa rin ang hinahanap ko.", "Isang session lang today, tapos kwentuhan tayo after. Deal?", "Smile ka muna bago mag-start. Mas cute ka pag confident.", "Co-op tayo dito. Hindi ka nag-iisa sa grind na 'to.", "Kung tanungin ka sa interview ng greatest strength mo, sabihin mo: may naniniwala sa'kin.", "You + coffee + 30 minutes = unstoppable. Kaya mo 'yan.", "Ang galing mo talaga. Sana alam mo 'yan kahit hindi ko sabihin araw-araw.", "Our streak is my favorite love language.", "Ikaw ang reason kung bakit gusto kong mag-level up."];
+const MOODS = [["😄", "Great"], ["🙂", "Good"], ["😐", "Okay"], ["🥰", "Loved"], ["🔥", "Motivated"], ["😴", "Tired"], ["😩", "Stressed"], ["😔", "Down"]];
+const NOTE_DAYS = 3; // a one-liner shows in the other's deck for this long
+const MOTIVES = ["Small steps every day beat big plans someday.", "You don't have to be ready. You just have to start.", "Every expert was once a beginner who didn't quit.", "Discipline is choosing what you want most over what you want now.", "The interview is just a conversation you've already practiced.", "Done is better than perfect. Ship today's session.", "Consistency compounds. Today counts.", "You're not behind. You're on your own timeline.", "Hard days build the confidence good days can't.", "One focused half hour beats a distracted afternoon.", "The offer goes to the one who kept showing up.", "Confidence is just evidence you collected yourself."];
+const dayNum = () => Math.floor(Date.parse(todayKey() + "T00:00:00Z") / 864e5);
+const dayPick = (arr, salt) => arr[(dayNum() * 7 + salt) % arr.length];
+// Today's trivia question from the quiz bank, its options in a shuffled order that's the same all day.
+function dailyTrivia(){
+  const all = Object.values(BANK).flat(), n = dayNum(), z = all[(n * 37) % all.length];
+  let x = n; const rnd = () => (x = (Math.imul(x, 1103515245) + 12345) >>> 0) / 4294967296;
+  const order = z.o.map((_, i) => i); for (let i = order.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  return { z, order };
+}
+// What's been done with today's deck is kept on this device: shown, trivia pick, posted, note opened.
+const LS_DAILY = () => LS + ":daily";
+function dailyMem(){ try { const m = JSON.parse(localStorage.getItem(LS_DAILY())) || {}; return m.day === todayKey() ? m : { day: todayKey() }; } catch (e){ return { day: todayKey() }; } }
+function saveDailyMem(o){ try { localStorage.setItem(LS_DAILY(), JSON.stringify({ ...dailyMem(), ...o })); } catch (e){} }
+let daily = null, dailyReadyAt = 0; // dailyReadyAt: a moment after sign-in, so the update check can finish first
+function maybeDaily(){
+  if (daily || !dataReady || !myId || mode !== "shared" || !mine.hero || ["heroes", "exam", "cert", "quiz", "battle"].includes(view) || dailyMem().shown) return;
+  if (!$("lock").hidden || !$("idlewarn").hidden || !$("lvup").hidden || !$("photoview").hidden || document.querySelector(".sheetwrap:not([hidden])")) return;
+  const wait = dailyReadyAt - Date.now();
+  if (wait > 0){ clearTimeout(maybeDaily.t); maybeDaily.t = setTimeout(maybeDaily, wait + 50); return; }
+  openDaily();
+}
+function openDaily(){
+  const m = dailyMem(), day = todayKey();
+  saveDailyMem({ shown: true });
+  const keys = [NATIVE && updAvail ? "update" : "", "mood", "ask", "checkin", "secret", "trivia", "motive"].filter(Boolean);
+  const posted = !!m.posted || feed.posts.some(p => p.user_id === myId && dayKey(new Date(p.created_at)) === day && (splitQ(p.body) || {}).q === dailyPrompt());
+  daily = { keys, i: 0, text: "", line: "", busy: false, posted, opened: !!m.opened, tv: Number.isInteger(m.tv) ? m.tv : -1 };
+  const h = new Date().getHours(), hi = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  const s = $("dailysheet");
+  s.innerHTML = `<section class="box qsheet dailybox"><div class="row"><span class="hud">${hi}, ${esc(myName().split(" ")[0])}</span><span class="spacer"></span><button class="back" id="dailyclose" aria-label="Close">✕</button></div>
+    <div class="dtrack" id="dtrack">${keys.map((k, i) => `<div class="dslide" data-slide="${k}" role="group" aria-roledescription="card" aria-label="${i + 1} of ${keys.length}"></div>`).join("")}</div>
+    <div class="ddots">${keys.map((k, i) => `<button data-dot="${i}" aria-label="Card ${i + 1} of ${keys.length}"></button>`).join("")}</div>
+    <div class="row"><button class="gbtn" id="dprev">Back</button><span class="spacer"></span><button class="gbtn gold" id="dnext">Next</button></div></section>`;
+  s.hidden = false;
+  keys.forEach(paintDaily);
+  const tr = $("dtrack");
+  tr.onscroll = () => { const i = Math.round(tr.scrollLeft / tr.clientWidth); if (daily && i !== daily.i){ daily.i = i; dailyNav(); } };
+  s.querySelectorAll("[data-dot]").forEach(b => b.onclick = () => dailyGoTo(Number(b.dataset.dot)));
+  $("dprev").onclick = () => dailyGoTo(daily.i - 1);
+  $("dnext").onclick = () => daily.i >= keys.length - 1 ? closeDaily() : dailyGoTo(daily.i + 1);
+  $("dailyclose").onclick = closeDaily;
+  s.onclick = e => { if (e.target === s) closeDaily(); };
+  s.onkeydown = e => { const typing = /^(TEXTAREA|INPUT)$/.test(e.target.tagName); if (e.key === "Escape") closeDaily(); else if (e.key === "ArrowRight" && !typing) dailyGoTo(daily.i + 1); else if (e.key === "ArrowLeft" && !typing) dailyGoTo(daily.i - 1); };
+  dailyNav(); $("dnext").focus({ preventScroll: true });
+}
+function dailyGoTo(i){
+  const tr = $("dtrack"); if (!daily || !tr) return;
+  daily.i = Math.max(0, Math.min(daily.keys.length - 1, i));
+  tr.scrollTo({ left: daily.i * tr.clientWidth, behavior: "smooth" }); dailyNav();
+}
+function dailyNav(){
+  const s = $("dailysheet"), last = daily.i >= daily.keys.length - 1;
+  s.querySelectorAll("[data-dot]").forEach((b, i) => b.setAttribute("aria-current", String(i === daily.i)));
+  s.querySelectorAll(".dslide").forEach((el, i) => { el.inert = i !== daily.i; });
+  $("dprev").disabled = daily.i === 0; $("dnext").textContent = last ? "Done" : "Next";
+}
+function closeDaily(){
+  const s = $("dailysheet"); s.hidden = true; s.innerHTML = ""; s.onclick = null; s.onkeydown = null; daily = null;
+}
+function paintDaily(k){
+  const el = $("dailysheet").querySelector(`[data-slide="${k}"]`); if (!el || !daily) return;
+  const t = todayKey(), mateId = mate()[0];
+  if (k === "update"){
+    const v = updAvail;
+    el.innerHTML = `<div class="dicon">⬇️</div><span class="hud">Update available</span><h4>FDE Quest ${esc(String(v.version || ""))}</h4>${updNotesHTML(v)}
+      <p class="muted">Download it, open the file, then tap Update. Your progress is saved to your account.</p><button class="gbtn gold big" data-d="upd">Download update</button>`;
+  } else if (k === "ask"){
+    el.innerHTML = `<div class="dicon">💬</div><span class="hud">Question of the day</span><h4>${esc(dailyPrompt())}</h4>` + (daily.posted
+      ? `<p class="updok">✓ Posted to the feed. Check back later for replies.</p><button class="gbtn" data-d="feed">See the feed</button>`
+      : `<textarea id="dask" maxlength="1800" placeholder="Your answer…" aria-label="Your answer">${esc(daily.text)}</textarea><button class="gbtn gold" data-d="post"${daily.busy ? " disabled" : ""}>${daily.busy ? "Posting…" : "Post to feed"}</button>`);
+    const ta = $("dask"); if (ta) ta.oninput = () => { daily.text = ta.value; };
+  } else if (k === "checkin"){
+    const done = mine.ci.includes(t), run = streakOf(mine.ci), next = done ? run : run + 1, pay = CI_COINS + (next % 7 === 0 ? CI_WEEK_BONUS : 0);
+    el.innerHTML = `<div class="dicon">${COIN_SVG}</div><span class="hud">Daily check-in</span><h4>${done ? `Checked in · ${run}-day streak` : `Claim +${pay} coins and +5 XP`}</h4>
+      <div class="dweek" aria-label="Check-ins this week">${daysBack(7).map(d => `<span class="${mine.ci.includes(d) ? "on" : ""}${d === t ? " now" : ""}"><i>${mine.ci.includes(d) ? "✓" : ""}</i>${"SMTWTFS"[new Date(d + "T00:00:00").getDay()]}</span>`).join("")}</div>
+      <p class="muted">${done ? "Come back tomorrow to keep it going." : next % 7 === 0 ? `Day ${next} in a row includes a +${CI_WEEK_BONUS} coin bonus!` : `Every 7th day in a row pays +${CI_WEEK_BONUS} bonus coins. Day ${next} today.`}</p>
+      <button class="gbtn ${done ? "" : "gold "}big" data-d="claim"${done ? " disabled" : ""}>${done ? "Claimed ✓" : "Claim"}</button>`;
+  } else if (k === "mood"){
+    const mi = mine.mood[t], mm = mateId ? normalize(players[mateId]).mood[t] : undefined;
+    el.innerHTML = `<div class="dicon">${mi >= 0 ? MOODS[mi][0] : "🌤️"}</div><span class="hud">Mood check</span><h4>How's your day going?</h4>
+      <div class="dmoods">${MOODS.map(([e, n], i) => `<button data-mood="${i}" aria-pressed="${i === mi}" aria-label="${n}"><span>${e}</span><small>${n}</small></button>`).join("")}</div>
+      ${mateId ? `<p class="muted">${mm >= 0 ? `${esc(mateName(mateId))} is feeling <b>${MOODS[mm][0]} ${MOODS[mm][1]}</b> today.` : `${esc(mateName(mateId))} hasn't shared a mood yet today.`}</p>` : ""}`;
+  } else if (k === "secret"){
+    // A sealed note: the other's one-liner if they left one lately, otherwise a line from the app.
+    const nt = mateId ? normalize(players[mateId]).nt : null, fresh = nt && Date.now() - Date.parse(nt.t) < NOTE_DAYS * 864e5;
+    const mineNt = mine.nt && Date.now() - Date.parse(mine.nt.t) < NOTE_DAYS * 864e5 ? mine.nt : null;
+    el.innerHTML = (daily.opened
+      ? `<div class="dicon">💌</div><span class="hud">${fresh ? `From ${esc(mateName(mateId))}` : "For you"}</span><p class="dbig">${esc(fresh ? nt.x : dayPick(KILIG, 3))}</p>`
+      : `<button class="dseal" data-d="open" aria-label="Open the note"><span>✉️</span><b>Something's waiting for you…</b><small>Tap to open</small></button>`)
+      + (mateId ? `<div class="dline"><span class="hud">Leave a one-liner for ${esc(mateName(mateId))}</span>
+        ${mineNt ? `<p class="muted">Yours: “${esc(mineNt.x)}”</p>` : ""}
+        <div class="row"><input id="dline" maxlength="140" placeholder="${mineNt ? "Write a new one…" : "Say something sweet…"}" aria-label="One-liner for ${esc(mateName(mateId))}" value="${esc(daily.line)}"><button class="gbtn gold" data-d="line">Send</button></div></div>` : "");
+    const li = $("dline"); if (li){ li.oninput = () => { daily.line = li.value; }; li.onkeydown = e => { if (e.key === "Enter") dailyAct("line"); }; }
+  } else if (k === "trivia"){
+    const { z, order } = dailyTrivia(), a = daily.tv;
+    el.innerHTML = `<div class="dicon">🧠</div><span class="hud">Trivia</span><h4>${esc(z.q)}</h4>
+      <div class="dopts">${order.map((o, i) => `<button data-tv="${i}"${a >= 0 ? " disabled" : ""} class="${a < 0 ? "" : o === 0 ? "right" : i === a ? "wrong" : ""}">${esc(z.o[o])}</button>`).join("")}</div>
+      ${a >= 0 ? `<p class="${order[a] === 0 ? "updok" : "muted"}">${order[a] === 0 ? "✓ Correct! " : "Not quite. "}${esc(z.w || "")}</p>` : ""}
+      <span class="hud">Up for more?</span><div class="dgames"><button class="gbtn" data-g="quiz">Quiz duel</button><button class="gbtn" data-g="battle">Battle</button><button class="gbtn" data-g="missions">Missions</button></div>`;
+  } else if (k === "motive"){
+    el.innerHTML = `<div class="dicon">🔥</div><span class="hud">Today's motivation</span><p class="dbig">${esc(dayPick(MOTIVES, 5))}</p>
+      <p class="muted">Daily goal: ${mine.goal} min · ${streakOf(mine.log)}-day combo</p><button class="gbtn gold big" data-d="start">Start training</button>`;
+  }
+  el.querySelectorAll("[data-d]").forEach(b => b.onclick = () => dailyAct(b.dataset.d, b));
+  el.querySelectorAll("[data-mood]").forEach(b => b.onclick = () => {
+    const v = Number(b.dataset.mood);
+    change(d => { d.mood[t] = v; }, { now: true, quiet: true }); try { sfx.click(); } catch (e){}
+    paintDaily("mood");
+  });
+  el.querySelectorAll("[data-tv]").forEach(b => b.onclick = () => {
+    daily.tv = Number(b.dataset.tv); saveDailyMem({ tv: daily.tv });
+    try { dailyTrivia().order[daily.tv] === 0 ? sfx.correct() : sfx.wrong(); } catch (e){}
+    paintDaily("trivia");
+  });
+  el.querySelectorAll("[data-g]").forEach(b => b.onclick = () => {
+    closeDaily();
+    if (b.dataset.g === "quiz") openQuizSheet(); else if (b.dataset.g === "battle"){ if (myHero()) openBattleSheet(); else go("heroes"); } else go("missions");
+  });
+}
+async function dailyAct(a, btn){
+  const t = todayKey();
+  if (a === "upd") downloadUpdate(updAvail);
+  else if (a === "feed"){ closeDaily(); go("feed"); }
+  else if (a === "start"){ closeDaily(); go("today"); }
+  else if (a === "claim"){
+    if (!mine.ci.includes(t)) change(d => { if (!d.ci.includes(t)){ d.ci.push(t); d.ci.sort(); } }, { now: true });
+    paintDaily("checkin");
+  } else if (a === "open"){
+    daily.opened = true; saveDailyMem({ opened: true }); try { sfx.heal(); } catch (e){} paintDaily("secret");
+  } else if (a === "line"){
+    const x = daily.line.trim().slice(0, 140);
+    if (!x){ const li = $("dline"); if (li) li.focus(); return; }
+    change(d => { d.nt = { x, t: new Date().toISOString() }; }, { now: true, quiet: true });
+    daily.line = ""; paintDaily("secret"); toast(`${mateName(mate()[0])} will find it in their next deck`);
+  } else if (a === "post"){
+    const answer = daily.text.trim().slice(0, 1800);
+    if (!answer){ const ta = $("dask"); if (ta) ta.focus(); toast("Write your answer first"); return; }
+    daily.busy = true; paintDaily("ask");
+    const { error } = await sb.from("posts").insert({ body: `${Q_MARK}${dailyPrompt()}\n${answer}` });
+    if (!daily) return;
+    daily.busy = false;
+    if (error){ paintDaily("ask"); toast("Couldn't post just now. Check your connection."); return; }
+    daily.posted = true; saveDailyMem({ posted: true }); paintDaily("ask");
+    toast("Posted to the feed"); try { sfx.coin(); } catch (e){}
+    loadFeed();
+  }
 }
 function nativeSetup(){
   if (CAP.App){ CAP.App.addListener("backButton", nativeBack); CAP.App.addListener("resume", () => checkAppUpdate()); checkAppUpdate();
