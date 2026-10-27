@@ -1,10 +1,11 @@
 {
-  "build": 14,
-  "version": "1.13",
+  "build": 15,
+  "version": "1.14",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Daily check-in cards: mood, notes, trivia and more",
-    "Leave one-liners for each other"
+    "Now called Magayon Quest, with a new world map",
+    "Salesforce Administrator realm, unlocked by the FDE certification",
+    "Check-in reminders at 7am, 12pm and 6pm open the matching card"
   ]
 }
