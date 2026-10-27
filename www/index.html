@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="A co-op quest game for Forward Deployed Engineer interview prep.">
+<meta name="description" content="Magayon Quest: a co-op quest game for career prep, from Forward Deployed Engineer to Salesforce Administrator.">
 <meta name="theme-color" content="#15122E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FDE Quest">
+<meta name="apple-mobile-web-app-title" content="Magayon Quest">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<title>FDE Field Prep</title>
+<title>Magayon Quest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Silkscreen&display=swap">
@@ -133,7 +133,45 @@ button:focus-visible,input:focus-visible,a:focus-visible,label:focus-within{outl
 .hearts{display:flex;gap:4px;margin-left:auto}
 .hearts svg{width:18px;height:18px}
 
-/* World map */
+/* World map: an inked sea chart; each land opens a realm's mission path */
+.world{position:relative;aspect-ratio:360/480;width:100%;max-width:520px;margin:0 auto;border-radius:14px;overflow:hidden;border:3px solid var(--edge-hi);box-shadow:0 6px 0 var(--shadow)}
+.world svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wcoast{fill:none;stroke:#2C3A7E;stroke-width:9;stroke-linejoin:round}
+.wland path,.wink{stroke:#5A4426;stroke-width:1.4;stroke-linejoin:round}
+.wland{cursor:pointer;transition:filter .2s}
+.wland:hover{filter:brightness(1.08)}
+.wlocked{filter:grayscale(.85) brightness(.62)}
+.wland.wlocked:hover{filter:grayscale(.85) brightness(.7)}
+.wcloud ellipse{fill:#fff;opacity:.92}
+.wroute{fill:none;stroke:#F1E2B8;stroke-width:1.6;stroke-dasharray:4 5;stroke-linecap:round;opacity:.85}
+.wroute.dim{opacity:.35}
+.wtxt{font-family:var(--f-display);font-style:italic;font-size:9px;fill:#9AA3DE;text-anchor:middle;letter-spacing:.04em}
+.wlbl{fill:#E9D8A6;font-weight:600}
+.wq{font-family:var(--f-display);font-weight:700;font-size:34px;fill:#6E6A8E;text-anchor:middle}
+.wfog ellipse{fill:#E4E0F2;opacity:.6}
+.wwaves{animation:wdrift 9s linear infinite}
+.wfog{animation:wfogd 7s ease-in-out infinite alternate}
+.wsmoke{animation:wsmoke 3s ease-in-out infinite}
+@keyframes wdrift{to{transform:translateX(26px)}}
+@keyframes wfogd{to{transform:translateX(10px)}}
+@keyframes wsmoke{50%{opacity:.35;transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){.wwaves,.wfog,.wsmoke{animation:none}}
+.wbanner{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:1px;padding:5px 10px 6px;background:#F1E2B8;color:#3B2A12;border:2px solid #6B4F24;border-radius:6px;box-shadow:0 3px 0 rgba(0,0,0,.35);font-family:var(--f-display);font-weight:700;font-size:13px;line-height:1.15;max-width:46%;text-align:center;cursor:pointer}
+.wbanner small{font-family:var(--f-hud);font-size:9px;font-weight:400;letter-spacing:.05em;text-transform:uppercase;color:#7A5A2A}
+.wbanner.wb-lock{background:#C9C2AE;color:#4A4234}
+.wbanner.wb-soon{background:#DCD8EA;color:#3A3756;border-style:dashed;border-color:#6E6A8E}
+.wbanner:active{transform:translate(-50%,-46%)}
+.wnew{display:inline-block;background:var(--pink);color:#2A0718;border-radius:6px;padding:1px 6px;font-size:9px}
+.wbanner .wnew{position:absolute;top:-9px;right:-8px}
+.realms{display:grid;gap:8px}
+.realm{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:12px;background:var(--panel2);border:2px solid var(--edge);color:var(--ink);font:inherit;cursor:pointer}
+.realm:hover{border-color:var(--edge-hi)}
+.realm.off{opacity:.72}
+.realm .ri{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:22px;background:var(--shadow);flex:none}
+.realm .rt{display:grid;gap:3px;flex:1;min-width:0}
+.realm b{font-family:var(--f-display);font-size:16px}
+.realm small{color:var(--muted);font-size:13px}
+.realm .xpbar{display:block}
 .map{position:relative;height:calc(var(--n) * 108px + 20px)}
 .map svg.path{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .node{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:4px;background:none;border:0;padding:0}
@@ -1154,7 +1192,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 @keyframes sp-tick{from{opacity:0;transform:scale(1.5)}to{opacity:1;transform:scale(1)}}
 @keyframes sp-spin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
 @keyframes sp-glow{50%{filter:drop-shadow(0 0 30px rgba(255,200,61,.6))}}
-.sp-logo{font-family:var(--f-hud);font-size:30px;letter-spacing:.1em;color:var(--gold);text-shadow:0 3px 0 #7A5200;display:flex}
+.sp-logo{font-family:var(--f-hud);font-size:clamp(18px,6.4vw,30px);letter-spacing:.1em;color:var(--gold);text-shadow:0 3px 0 #7A5200;display:flex}
 .sp-logo span{display:inline-block;opacity:0;transform:translateY(-18px);animation:sp-drop .4s cubic-bezier(.3,1.6,.5,1) forwards;animation-delay:calc(1s + var(--i) * 60ms)}
 .sp-logo .sl{color:var(--cyan);text-shadow:0 3px 0 #13605E}
 @keyframes sp-drop{to{opacity:1;transform:none}}
@@ -1188,14 +1226,14 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 
 </head>
 <body>
-<div class="splash" id="splash" aria-label="FDE Quest" role="img">
+<div class="splash" id="splash" aria-label="Magayon Quest" role="img">
   <svg class="sp-crest" viewBox="0 0 512 512" aria-hidden="true">
     <g class="spin"><circle class="ring" cx="256" cy="256" r="150"/><circle class="ring in" cx="256" cy="256" r="78"/></g>
     <circle class="core" cx="256" cy="256" r="24"/>
     <path class="tick" d="M256 70v62M256 380v62M70 256h62M380 256h62"/>
   </svg>
-  <div class="sp-logo" aria-hidden="true"><span style="--i:0">F</span><span style="--i:1">D</span><span style="--i:2">E</span><span class="sl" style="--i:3">/</span><span class="sl" style="--i:4">/</span><span style="--i:5">Q</span><span style="--i:6">U</span><span style="--i:7">E</span><span style="--i:8">S</span><span style="--i:9">T</span></div>
-  <span class="hud sp-tag">Co-op interview prep</span>
+  <div class="sp-logo" aria-hidden="true"><span style="--i:0">M</span><span style="--i:1">A</span><span style="--i:2">G</span><span style="--i:3">A</span><span style="--i:4">Y</span><span style="--i:5">O</span><span style="--i:6">N</span><span class="sl" style="--i:7">/</span><span class="sl" style="--i:8">/</span><span style="--i:9">Q</span><span style="--i:10">U</span><span style="--i:11">E</span><span style="--i:12">S</span><span style="--i:13">T</span></div>
+  <span class="hud sp-tag">Co-op career quests</span>
   <div class="sp-bar" aria-hidden="true"><i></i></div>
 </div>
 <script>
@@ -1228,7 +1266,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
 </div>
 <div class="wrap">
   <header class="mast">
-    <span class="logo">FDE<b>//</b>QUEST</span>
+    <span class="logo">MAGAYON<b>//</b>QUEST</span>
     <span class="hud" id="today-label"></span>
     <button class="soundbtn" id="soundbtn" aria-pressed="true" aria-label="Mute sound"></button>
     <button class="soundbtn bellbtn" id="bellbtn" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20.5a2.2 2.2 0 004 0"/></svg><span class="tbadge" id="bellbadge" hidden></span></button>
@@ -1236,11 +1274,11 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
     <span class="who" id="who"></span>
   </header>
   <section class="landing">
-    <span class="hud">Co-op interview prep</span>
-    <h1>Train for the Forward Deployed Engineer interview, together.</h1>
-    <p>Clear missions on the world map, battle your party in timed quiz duels, and keep a shared streak alive until you both land the role.</p>
+    <span class="hud">Co-op career quests</span>
+    <h1>Level up your career together, one realm at a time.</h1>
+    <p>Start in the FDE Kingdom, earn your certification to open the Salesforce Cloudlands, and clear missions on the world map, battle your party in timed quiz duels, and keep a shared streak alive until you both land the role.</p>
     <ul class="lfeat">
-      <li><b>World map</b><span>Missions with loot, battle cards and skill unlocks.</span></li>
+      <li><b>World map</b><span>Realms of missions with loot, battle cards and skill unlocks.</span></li>
       <li><b>Arena</b><span>Pick a hero and fight 10-question battles.</span></li>
       <li><b>Party</b><span>Chat, a shared feed and co-op streaks.</span></li>
     </ul>
@@ -1248,7 +1286,7 @@ body[data-view="feed"] #view>.wrap{max-width:680px}
   <section class="gate" id="gate" hidden></section>
   <main id="view"></main>
   <p class="note" id="save-note"></p>
-  <footer class="sitefoot"><span class="logo">FDE<b>//</b>QUEST</span><span>Co-op prep for Forward Deployed Engineer interviews</span></footer>
+  <footer class="sitefoot"><span class="logo">MAGAYON<b>//</b>QUEST</span><span>Co-op career quests: Forward Deployed Engineer, then Salesforce Administrator</span></footer>
 </div>
 
 <div class="dock">
@@ -1867,7 +1905,245 @@ const NEW_MODS = {
 MODULES.push(...Object.values(NEW_MODS));
 {const ORDER=["role","loop","tech","ts","data","sqldb","apis","cloud","security","observe","git","product","ai","agents","evals","customer","stories","drills","portfolio","jobhunt","offer","ready"];MODULES.sort((a,b)=>ORDER.indexOf(a.id)-ORDER.indexOf(b.id));}
 MODULES.forEach((m,i)=>{m.code="FDE-"+String(i+1).padStart(2,"0");});
-const MOD=Object.fromEntries(MODULES.map(m=>[m.id,m]));
+// ---- Salesforce Administrator realm: unlocks once the FDE certification is passed. Same shape as MODULES; ids start with "sf".
+// Follows the Salesforce Administration course outline: intro, setup, first app, automation, security, analytics, data,
+// sales, service, productivity, then the certification boss.
+const YTS=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+const TH=p=>"https://trailhead.salesforce.com/content/learn/"+p;
+const SF_MODULES = [
+ {id:"sforg", title:"Salesforce introduction",
+  lead:"Salesforce is a cloud CRM. An admin turns business requests into working configuration, mostly without code.",
+  watch:[{id:"sfogv1",t:"Videos: what is CRM and what a Salesforce Admin does",u:YTS("what is CRM Salesforce Administrator explained")}],
+  read:[
+   {id:"sfogr1",t:"Salesforce Platform Basics",s:"Trailhead",u:TH("modules/starting_force_com")},
+   {id:"sfogr2",t:"Admin Beginner trail",s:"Trailhead",u:TH("trails/force_com_admin_beginner")}],
+  points:[
+   "CRM (customer relationship management) keeps every customer, deal, case and conversation in one place, so sales, service and marketing work from the same data.",
+   "Salesforce runs in the cloud: no servers to install, three upgrades a year (Spring, Summer, Winter), and every customer shares the same platform.",
+   "An org is your company's instance of Salesforce: its data, its metadata (configuration) and its users.",
+   "Clicks before code: admins use declarative tools. Developers write Apex and Lightning Web Components when clicks run out.",
+   "Sandboxes are copies of production for building and testing. Change sets move configuration from a sandbox to production."],
+  cards:[
+   {id:"sfogq1",q:"What is CRM, in one line?",a:"Software that keeps every customer interaction in one place so sales, service and marketing share the same picture of the customer."},
+   {id:"sfogq2",q:"What's the difference between data and metadata?",a:"Data is the records (an Account named Acme). Metadata is the configuration that shapes them: objects, fields, page layouts, flows, profiles."},
+   {id:"sfogq3",q:"Name the sandbox types, smallest to largest.",a:"Developer, Developer Pro, Partial Copy (a sample of data) and Full (a complete copy of production)."},
+   {id:"sfogq4",q:"How many major releases does Salesforce ship a year?",a:"Three: Spring, Summer and Winter."}],
+  checks:[
+   {id:"sfogc1",t:"I can explain CRM and what a Salesforce Admin does in 60 seconds"},
+   {id:"sfogc2",t:"I signed up for a free Developer Edition org or Trailhead Playground"}]},
+ {id:"sfusers", title:"Configuration and setup",
+  lead:"Set up the org: how it looks, the company profile, the users, and who else can help administer it.",
+  watch:[{id:"sfusv1",t:"Videos: Salesforce org setup and user management",u:YTS("Salesforce admin org setup user management delegated administration")}],
+  read:[
+   {id:"sfusr1",t:"User Management",s:"Trailhead",u:TH("modules/lex_implementation_user_setup_mgmt")},
+   {id:"sfusr2",t:"Lightning Experience Customization",s:"Trailhead",u:TH("modules/lex_customization")}],
+  points:[
+   "Lightning Experience is the modern interface; Classic is the older one. A few older features still only work in Classic.",
+   "Themes and Branding set colours and logo. Density settings switch between Comfy and Compact. Users can personalize their navigation bar.",
+   "Company Information holds the default locale, time zone, currency, fiscal year and license counts.",
+   "Every user needs a license and one profile. Freeze a user to block login right away; deactivate when they leave. Users can't be deleted.",
+   "Delegated administration lets chosen non-admins manage users in certain roles, reset passwords and assign permission sets.",
+   "Setup Audit Trail records who changed what in Setup over the last 180 days."],
+  cards:[
+   {id:"sfusq1",q:"Why freeze a user instead of deactivating them?",a:"Freezing blocks login immediately when you can't deactivate yet, for example while they're still a default owner or in a hierarchy field."},
+   {id:"sfusq2",q:"What does delegated administration allow?",a:"A non-admin can manage users in specified roles (create, edit, reset passwords, assign permission sets) and manage custom objects, without full admin rights."},
+   {id:"sfusq3",q:"Someone changed a field and nobody knows who. Where do you look?",a:"Setup Audit Trail. It shows setup changes for the last 180 days."},
+   {id:"sfusq4",q:"Where do you restrict when and from where a user can log in?",a:"On their profile: Login Hours and Login IP Ranges."},
+   {id:"sfusq5",q:"Can you delete a user?",a:"No. You deactivate them; their records stay until you reassign them."}],
+  checks:[
+   {id:"sfusc1",t:"I set the company profile, a theme and my org's branding"},
+   {id:"sfusc2",t:"I can create, freeze and deactivate a user, and set up a delegated admin group"}]},
+ {id:"sfobj", title:"My first app",
+  lead:"Build an app the admin way: objects and tabs, fields and relationships, then layouts, record types and list views.",
+  watch:[{id:"sfobv1",t:"Videos: build your first Salesforce custom app",u:YTS("Salesforce build first custom app objects fields relationships")}],
+  read:[
+   {id:"sfobr1",t:"Data Modeling",s:"Trailhead",u:TH("modules/data_modeling")},
+   {id:"sfobr2",t:"Lightning App Builder",s:"Trailhead",u:TH("modules/lightning_app_builder")}],
+  points:[
+   "The standard object model: Account, Contact, Lead, Opportunity, Case and more. Custom objects end in __c and each can get a tab.",
+   "Changes not showing up? Turn off secure and persistent browser caching in Session Settings while you build, then refresh.",
+   "Lookup: a loose link where the child can exist alone. Master-detail: the child is owned by the parent, inherits its sharing and is deleted with it, and the parent can have roll-up summaries.",
+   "Field dependencies filter a dependent picklist by a controlling field. Field history tracking logs changes to up to 20 fields per object.",
+   "Record types give different picklist values and page layouts to different teams. Page layouts, compact layouts and Lightning pages decide what users see.",
+   "List views filter records on a tab. Search layouts choose the columns shown in search results."],
+  cards:[
+   {id:"sfobq1",q:"Lookup vs master-detail: name three differences.",a:"A master-detail child requires a parent, inherits its sharing and owner, is deleted with it, and lets the parent have roll-up summaries. A lookup parent is optional."},
+   {id:"sfobq2",q:"How do you model a many-to-many relationship?",a:"A junction object with two master-detail relationships, one to each object."},
+   {id:"sfobq3",q:"How do you show a formula of a parent's field on the child?",a:"A cross-object formula, like Account.Industry on a Contact. Going the other way (summing children) needs a roll-up summary."},
+   {id:"sfobq4",q:"How many fields per object can field history tracking follow?",a:"Up to 20."},
+   {id:"sfobq5",q:"A common record type mistake?",a:"Forgetting to assign the record type to profiles, or leaving picklist values off it, so users can't pick the type or the values."}],
+  checks:[
+   {id:"sfobc1",t:"I built a custom app with objects, tabs, a master-detail and a roll-up summary"},
+   {id:"sfobc2",t:"I set up two record types with their own page layouts and a dependent picklist"}]},
+ {id:"sfflow", title:"Workflow and process automation",
+  lead:"Automate the business: validation rules guard the data, approvals route sign-offs, and Flow does the rest.",
+  watch:[{id:"sfflv1",t:"Videos: record-triggered flows for beginners",u:YTS("Salesforce record-triggered flow tutorial beginners")}],
+  read:[
+   {id:"sfflr1",t:"Flow Basics",s:"Trailhead",u:TH("modules/flow-basics")},
+   {id:"sfflr2",t:"Formulas and Validations",s:"Trailhead",u:TH("modules/point_click_business_logic")},
+   {id:"sfflr3",t:"Business Process Automation (approvals)",s:"Trailhead",u:TH("modules/business_process_automation")}],
+  points:[
+   "Validation rules block a save when their formula is true. They run after before-save flows, so a flow can fix a value before it's checked.",
+   "Approval processes route a record for sign-off and lock it while it waits.",
+   "Workflow Rules and Process Builder still show up in older orgs and courses, but they're retired. New automation goes in Flow.",
+   "Record-triggered flows: fast field updates (before save) change the same record; actions and related records (after save) can touch other records.",
+   "Screen flows guide users; schedule-triggered flows run on a timetable. Pick the simplest tool: formula or validation rule, then Flow, then Apex."],
+  cards:[
+   {id:"sfflq1",q:"When does a validation rule block a save?",a:"When its error condition formula evaluates to true."},
+   {id:"sfflq2",q:"A before-save flow sets a field, and a validation rule checks it. Which runs first?",a:"The before-save flow, so the validation rule sees the value the flow set."},
+   {id:"sfflq3",q:"Before-save vs after-save record-triggered flow?",a:"Before save updates fields on the triggering record cheaply. After save can create or update other records, send emails and call actions."},
+   {id:"sfflq4",q:"A manager must sign off any discount over 20%. Which tool?",a:"An approval process with entry criteria Discount greater than 20%."},
+   {id:"sfflq5",q:"What replaced Workflow Rules and Process Builder?",a:"Flow, mainly record-triggered flows."}],
+  checks:[
+   {id:"sfflc1",t:"I wrote a validation rule and built a before-save and an after-save flow"},
+   {id:"sfflc2",t:"I built an approval process with an approval step and a rejection action"}]},
+ {id:"sfsec", title:"Salesforce security",
+  lead:"Access is layered: org, object, field, then record. Get the order right and most security questions answer themselves.",
+  watch:[{id:"sfsev1",t:"Videos: Salesforce sharing and security model explained",u:YTS("Salesforce sharing model OWD role hierarchy sharing rules explained")}],
+  read:[{id:"sfser1",t:"Data Security",s:"Trailhead",u:TH("modules/data_security")}],
+  points:[
+   "Org security settings: password policies, session timeouts, trusted IP ranges and multi-factor authentication.",
+   "Object permissions on profiles and permission sets grant Create, Read, Edit and Delete, plus View All and Modify All. Field-level security hides or locks fields.",
+   "Every record has one owner, a user or a queue. Organization-wide defaults set the most restrictive baseline.",
+   "Access then opens up through the role hierarchy, sharing rules (owner- or criteria-based) and manual sharing.",
+   "The recommended model is a minimal profile plus permission sets and permission set groups. Sharing can only open access, never restrict it."],
+  cards:[
+   {id:"sfseq1",q:"The org-wide default for Opportunity is Private. Who can see an opportunity?",a:"Its owner, users above the owner in the role hierarchy, anyone given access by sharing rules or manual shares, and users with View All."},
+   {id:"sfseq2",q:"Profile vs permission set?",a:"Every user has exactly one profile, the baseline. Permission sets add extra access, and a user can have many."},
+   {id:"sfseq3",q:"A field is removed from the page layout. Can the user still see it in a report?",a:"Yes, if field-level security gives them access. Layouts aren't security."},
+   {id:"sfseq4",q:"Name the two kinds of sharing rule.",a:"Owner-based (records owned by a role or group) and criteria-based (records whose fields match values)."},
+   {id:"sfseq5",q:"What's a permission set group?",a:"A bundle of permission sets assigned together, for example everything a Sales Ops user needs."}],
+  checks:[
+   {id:"sfsec1",t:"I can explain org-wide defaults, role hierarchy, sharing rules and manual sharing in order"},
+   {id:"sfsec2",t:"I set up a permission set group for a new team in my practice org"}]},
+ {id:"sfreports", title:"Analytics management",
+  lead:"Reports answer the business's questions; dashboards keep the answers in front of them.",
+  watch:[{id:"sfrpv1",t:"Videos: Salesforce reports and dashboards",u:YTS("Salesforce reports and dashboards tutorial for admins")}],
+  read:[{id:"sfrpr1",t:"Reports & Dashboards for Lightning Experience",s:"Trailhead",u:TH("modules/lex_implementation_reports_dashboards")}],
+  points:[
+   "Formats: tabular (a list), summary (grouped rows), matrix (grouped rows and columns) and joined (several blocks).",
+   "Report types decide which objects and fields a report can use. Custom report types add related objects with \"with\" or \"with or without\" joins, and their layout picks the fields.",
+   "Bucket fields group values without a new field. Charts and conditional formatting make results readable. Report charts can sit on record pages.",
+   "Subscriptions email a report or dashboard on a schedule. Dashboards run as a chosen user or as the viewer (dynamic).",
+   "Reports and dashboards live in folders, and folder sharing decides who sees them. Users can follow dashboards in Chatter."],
+  cards:[
+   {id:"sfrpq1",q:"Name the four report formats.",a:"Tabular, summary, matrix and joined."},
+   {id:"sfrpq2",q:"What decides which fields you can add to a report?",a:"The report type and its layout."},
+   {id:"sfrpq3",q:"What's a dynamic dashboard?",a:"One that runs as whoever views it, so each person sees only the data they can access."},
+   {id:"sfrpq4",q:"Group Industry values into Tech and Non-Tech without a new field?",a:"A bucket field in the report."},
+   {id:"sfrpq5",q:"Custom report type \"Accounts with Opportunities\" vs \"with or without\"?",a:"\"With\" shows only accounts that have an opportunity. \"With or without\" shows every account."}],
+  checks:[
+   {id:"sfrpc1",t:"I built summary and matrix reports with a bucket field and a chart"},
+   {id:"sfrpc2",t:"I built a dashboard, subscribed to it and shared its folder"}]},
+ {id:"sfdata", title:"Data management",
+  lead:"Clean data is the admin's job: importing it, deduplicating it, mass-updating it and backing it up.",
+  watch:[{id:"sfdav1",t:"Videos: Data Import Wizard vs Data Loader",u:YTS("Salesforce Data Import Wizard vs Data Loader")}],
+  read:[{id:"sfdar1",t:"Data Management",s:"Trailhead",u:TH("modules/lex_implementation_data_management")}],
+  points:[
+   "Matching rules and duplicate rules warn about or block duplicates as records are saved or imported.",
+   "Data Import Wizard: browser, up to 50,000 records, common objects. Data Loader: desktop, up to 5 million records, any object, with delete and export. Dataloader.io is the web-based option.",
+   "Record IDs are 15 characters (case-sensitive) or 18 (case-insensitive). External ID fields hold another system's ID, so upsert can match on it.",
+   "Mass actions transfer, update or delete many records at once. Clean the file first and test on a sandbox.",
+   "Back up with weekly or monthly Data Export. Deleted records stay in the Recycle Bin for 15 days. Files and Salesforce Content store documents."],
+  cards:[
+   {id:"sfdaq1",q:"Data Import Wizard vs Data Loader?",a:"Wizard: browser, up to 50,000 records, common objects, duplicate checks. Data Loader: desktop, up to 5 million records, any object, plus delete and export."},
+   {id:"sfdaq2",q:"15-character vs 18-character record ID?",a:"15 is case-sensitive. 18 adds a checksum so it's case-insensitive, which is safer in Excel and other tools."},
+   {id:"sfdaq3",q:"What does an upsert need?",a:"A record ID or an External ID field to match on."},
+   {id:"sfdaq4",q:"Matching rule vs duplicate rule?",a:"A matching rule defines how records are compared. A duplicate rule decides what happens on a match: alert or block."},
+   {id:"sfdaq5",q:"How long do deleted records stay in the Recycle Bin?",a:"15 days."}],
+  checks:[
+   {id:"sfdac1",t:"I imported records with Data Loader using upsert on an External ID"},
+   {id:"sfdac2",t:"I set up a duplicate rule and scheduled a weekly data export"}]},
+ {id:"sfsales", title:"Sales and marketing applications",
+  lead:"Sales Cloud follows a lead to a closed deal. Know each object, each rule and exactly what lead conversion does.",
+  watch:[{id:"sfsav1",t:"Videos: Sales Cloud for admins",u:YTS("Salesforce Sales Cloud admin leads opportunities tutorial")}],
+  read:[
+   {id:"sfsar1",t:"Leads and Opportunities for Lightning Experience",s:"Trailhead",u:TH("modules/leads_opportunities_lightning_experience")},
+   {id:"sfsar2",t:"Accounts and Contacts for Lightning Experience",s:"Trailhead",u:TH("modules/accounts_contacts_lightning_experience")},
+   {id:"sfsar3",t:"Campaign Basics",s:"Trailhead",u:TH("modules/campaign_basics")}],
+  points:[
+   "Web-to-Lead captures leads from a website form. Lead assignment rules route them; auto-response rules email the person back.",
+   "Converting a lead creates an Account, a Contact and optionally an Opportunity. Custom lead fields carry over through lead field mapping.",
+   "Opportunity stages carry a probability and a forecast category. Path shows the stages with key fields and guidance for each.",
+   "Products live in price books. The standard price book holds every product's standard price.",
+   "Campaigns track marketing efforts with members and statuses. Einstein Lead and Opportunity Scoring rank which records are most likely to convert or close."],
+  cards:[
+   {id:"sfsaq1",q:"What records does converting a lead create?",a:"An Account, a Contact and optionally an Opportunity. The lead is marked Converted and becomes read-only."},
+   {id:"sfsaq2",q:"How do custom lead fields carry over on conversion?",a:"Map them to Account, Contact or Opportunity fields in lead field mapping."},
+   {id:"sfsaq3",q:"Assignment rule vs auto-response rule for leads?",a:"Assignment decides who owns the new lead. Auto-response decides which email template goes back to the person who submitted it."},
+   {id:"sfsaq4",q:"What does Path do?",a:"Shows a record's stages across the top, with key fields and guidance for each stage."},
+   {id:"sfsaq5",q:"What controls an opportunity's forecast category?",a:"Its stage. Each stage maps to a probability and a forecast category."}],
+  checks:[
+   {id:"sfsac1",t:"I set up Web-to-Lead with an assignment rule and an auto-response rule"},
+   {id:"sfsac2",t:"I converted a lead, added products from a price book and set up Path"}]},
+ {id:"sfservice", title:"Service and support applications",
+  lead:"Service Cloud gets every case to the right agent fast, and closes it with an answer.",
+  watch:[{id:"sfsvv1",t:"Videos: case assignment and escalation rules",u:YTS("Salesforce case assignment rules escalation rules queues tutorial")}],
+  read:[{id:"sfsvr1",t:"Lightning Knowledge Basics",s:"Trailhead",u:TH("modules/lightning-knowledge-basics")}],
+  points:[
+   "The Case object tracks a customer's issue. Support processes choose which case statuses each record type uses.",
+   "Cases come in through Email-to-Case, Web-to-Case, phone and chat. Assignment rules route them; only one case assignment rule can be active.",
+   "Escalation rules reassign or notify when a case stays open too long, measured in business hours.",
+   "Knowledge articles answer common questions (Solutions is the older version). Ideas let customers suggest and vote.",
+   "Experience Cloud sites (formerly Communities) give customers, partners and employees their own portal."],
+  cards:[
+   {id:"sfsvq1",q:"How many case assignment rules can be active at once?",a:"One. It can have many rule entries, checked in order."},
+   {id:"sfsvq2",q:"Assignment rule vs escalation rule?",a:"Assignment routes a case when it's created. Escalation acts later, when a case hasn't been resolved in time."},
+   {id:"sfsvq3",q:"What's a support process?",a:"The set of case Status values available to a case record type, like a sales process for opportunities."},
+   {id:"sfsvq4",q:"Two ways to capture cases without an agent typing them in?",a:"Email-to-Case and Web-to-Case."},
+   {id:"sfsvq5",q:"What were Communities renamed to?",a:"Experience Cloud sites."}],
+  checks:[
+   {id:"sfsvc1",t:"I set up a queue, an assignment rule and an escalation rule"},
+   {id:"sfsvc2",t:"I set up Email-to-Case or Web-to-Case and published a Knowledge article"}]},
+ {id:"sfcollab", title:"Productivity and collaboration",
+  lead:"Activities, Chatter, the mobile apps and AppExchange keep people working inside Salesforce instead of around it.",
+  watch:[{id:"sfcov1",t:"Videos: Chatter and the Salesforce mobile app for admins",u:YTS("Salesforce admin Chatter feed tracking mobile app")}],
+  read:[
+   {id:"sfcor1",t:"Chatter Administration for Lightning Experience",s:"Trailhead",u:TH("modules/lex_implementation_chatter")},
+   {id:"sfcor2",t:"Salesforce Mobile App Customization",s:"Trailhead",u:TH("modules/salesforce1_mobile_app")},
+   {id:"sfcor3",t:"AppExchange Basics",s:"Trailhead",u:TH("modules/appexchange_basics")}],
+  points:[
+   "Activities are tasks and events. Name links a person (lead or contact); Related To links a record (account, opportunity, case).",
+   "Chatter adds feeds, groups and @mentions. Feed tracking chooses which field changes post to a record's feed.",
+   "Salesforce1 is now the Salesforce mobile app. It uses compact layouts, quick actions and phone-friendly Lightning pages.",
+   "SalesforceA is the admin's mobile app: unlock and reset users, freeze them and assign permission sets on the go.",
+   "AppExchange packages: install in a sandbox first. Managed packages get upgrades; unmanaged ones are editable but don't."],
+  cards:[
+   {id:"sfcoq1",q:"Name vs Related To on a task?",a:"Name links a person (lead or contact). Related To links a record such as an account, opportunity or case."},
+   {id:"sfcoq2",q:"How do field changes show up in a record's Chatter feed?",a:"Turn on feed tracking for the object and pick the fields."},
+   {id:"sfcoq3",q:"What can an admin do in SalesforceA?",a:"Manage users from a phone: reset passwords, unlock, freeze or deactivate them, and assign permission sets."},
+   {id:"sfcoq4",q:"Managed vs unmanaged package?",a:"Managed packages get upgrades and their code is hidden. Unmanaged packages give you editable components but no upgrades."}],
+  checks:[
+   {id:"sfcoc1",t:"I set up feed tracking, a Chatter group and the mobile navigation menu"},
+   {id:"sfcoc2",t:"I installed an AppExchange package in a sandbox or Playground"}]},
+ {id:"sfexam", title:"Certification day",
+  lead:"The Platform Administrator exam is scenario-based multiple choice. Read every word and pick the simplest solution that meets every requirement.",
+  watch:[{id:"sfexv1",t:"Videos: Salesforce Administrator exam tips",u:YTS("Salesforce Platform Administrator exam tips")}],
+  read:[
+   {id:"sfexr1",t:"Salesforce Certified Platform Administrator",s:"Trailhead",u:"https://trailhead.salesforce.com/credentials/administrator"},
+   {id:"sfexr2",t:"Admin Intermediate trail",s:"Trailhead",u:TH("trails/force_com_admin_intermediate")}],
+  points:[
+   "Read the official exam guide on Trailhead for the current question count, time limit, passing score and fee.",
+   "Most questions are scenarios. The right answer is usually the declarative, least-effort option that meets every requirement.",
+   "Watch for \"choose 2\" or \"choose 3\", and words like only, all, and without code.",
+   "Take it online with a proctor or at a test center. Have your ID ready and a clear desk.",
+   "Keep the credential active with the yearly maintenance module on Trailhead."],
+  cards:[
+   {id:"sfexq1",q:"The options are Apex, Flow and a validation rule. Which is usually right?",a:"The simplest declarative tool that fully meets the requirement, often a validation rule or Flow."},
+   {id:"sfexq2",q:"You're unsure of a question. What's the play?",a:"Eliminate the wrong answers, pick the best one left, mark it for review and keep moving."},
+   {id:"sfexq3",q:"How do you keep the certification active?",a:"Complete the yearly maintenance module on Trailhead."}],
+  checks:[
+   {id:"sfexc1",t:"Scored 80% or more on two full practice exams"},
+   {id:"sfexc2",t:"Booked my exam date"},
+   {id:"sfexc3",t:"Passed the Salesforce Platform Administrator exam"}]}
+];
+SF_MODULES.forEach((m,i)=>{m.code="SFA-"+String(i+1).padStart(2,"0");});
+// The realms on the world map. "fde" is the original curriculum; "sf" opens once the FDE certification is passed.
+const REALMS={fde:{name:"FDE Kingdom",sub:"Forward Deployed Engineer",mods:MODULES,boss:"ready"},sf:{name:"Salesforce Cloudlands",sub:"Salesforce Administrator",mods:SF_MODULES,boss:"sfexam"}};
+const realmOf=id=>SF_MODULES.some(m=>m.id===id)?"sf":"fde";
+const isBoss=m=>m.id===REALMS[realmOf(m.id)].boss;
+const sfOpen=d=>!!d.cert;
+const MOD=Object.fromEntries(MODULES.concat(SF_MODULES).map(m=>[m.id,m]));
 // Quiz bank: first option is the correct one; options are shuffled when a quiz is built.
 const BANK = {
  role: [
@@ -2298,19 +2574,114 @@ function renderToday(){
   tick();
 }
 
+let realm=null; // the realm whose mission path is open on the Map tab; null shows the world map
+function realmStats(d,k){
+  const L=REALMS[k].mods, all=L.reduce((s,m)=>s+m.checks.length+m.cards.length+m.watch.length+m.read.length,0);
+  return {p:Math.round(L.reduce((s,m)=>s+doneCount(d,m),0)/all*100),st:L.reduce((s,m)=>s+starsOf(modPct(d,m)),0),max:L.length*3};
+}
+// The world map: an inked sea chart of the realm. Each land opens its own mission path.
+function worldSVG(open){
+  const cloud=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})" class="wcloud"><ellipse rx="14" ry="7"/><ellipse cx="-7" cy="-4" rx="8" ry="6"/><ellipse cx="5" cy="-6" rx="9" ry="7"/></g>`;
+  const LANDS={fde:"M34 74C62 42 132 30 178 52C214 70 212 118 186 144C166 164 176 200 140 222C104 244 54 226 36 192C22 162 12 104 34 74Z",
+    sf:"M222 168C254 146 318 152 336 192C352 230 336 284 304 300C272 316 228 302 212 270C198 240 194 190 222 168Z",
+    soon:"M58 338C96 306 168 312 198 344C226 374 206 428 156 442C104 456 52 430 44 394C38 368 42 350 58 338Z"};
+  const isle="M70 286C72 266 96 252 118 258C140 264 146 290 128 302C108 314 70 306 70 286Z";
+  const islets=["M300 332c8-6 20-2 20 8s-14 12-20 6-6-10 0-14Z","M244 410c6-6 16-4 16 4s-10 10-16 6-4-6 0-10Z","M196 40c6-5 15-2 15 5s-10 9-15 5-4-6 0-10Z"];
+  return `<svg viewBox="0 0 360 480" aria-hidden="true">
+    <defs>
+      <pattern id="wv" width="26" height="16" patternUnits="userSpaceOnUse"><path d="M3 9q4-4 8 0t8 0" fill="none" stroke="#33407F" stroke-width="1.1" stroke-linecap="round"/></pattern>
+      <filter id="wrough"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+      <filter id="wfog" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
+    </defs>
+    <rect width="360" height="480" fill="#17204A"/>
+    <rect class="wwaves" x="-26" width="412" height="480" fill="url(#wv)"/>
+    <g filter="url(#wrough)">
+      ${[...Object.values(LANDS),isle,...islets].map(d=>`<path d="${d}" class="wcoast"/>`).join("")}
+      <g data-realm="fde" class="wland"><path d="${LANDS.fde}" fill="#E7D3A0"/></g>
+      <g data-realm="sf" class="wland${open?"":" wlocked"}"><path d="${LANDS.sf}" fill="#CFE6EE"/></g>
+      <g data-realm="soon" class="wland"><path d="${LANDS.soon}" fill="#BDB8CF"/></g>
+      <path d="${isle}" fill="#D8C49A" class="wink"/>
+      ${islets.map(d=>`<path d="${d}" fill="#D8C49A" class="wink"/>`).join("")}
+    </g>
+    <path d="M122 142C170 150 200 172 230 205S272 252 258 300 182 360 132 374" class="wroute${open?"":" dim"}"/>
+    <g class="wdeco" pointer-events="none">
+      <path d="M48 124l13-22 13 22zM64 116l11-18 11 18zM82 128l13-24 13 24zM150 92l10-17 10 17zM164 98l9-15 9 15z" fill="#B59A66" class="wink"/>
+      <path d="M58 106l3-4 3 4M90 110l5-6 5 6M157 81l3-6 3 6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      <g class="wink" fill="#C9A86A"><rect x="104" y="126" width="9" height="26"/><rect x="131" y="126" width="9" height="26"/><rect x="110" y="134" width="24" height="18"/><path d="M104 126h9l-4.5-7zM131 126h9l-4.5-7z" fill="#B0412F"/></g>
+      <path d="M122 134v-16" stroke="#5A4426" stroke-width="1.4"/><path d="M122 118l10 4-10 4z" fill="#FFC83D" stroke="#5A4426" stroke-width=".8"/>
+      <rect x="118" y="142" width="8" height="10" rx="4" fill="#5A4426"/>
+      <g fill="#6E8B4E" class="wink"><circle cx="150" cy="182" r="6"/><circle cx="160" cy="174" r="5"/><circle cx="161" cy="188" r="5"/><circle cx="142" cy="192" r="5"/><circle cx="72" cy="176" r="5"/><circle cx="64" cy="184" r="5"/></g>
+      <g class="${open?"":"wlocked"}">
+        ${cloud(246,192,1)}${cloud(316,246,.8)}${cloud(250,284,.9)}
+        <g class="wink" fill="#EAF4FA"><rect x="270" y="212" width="12" height="30"/><rect x="258" y="226" width="9" height="16"/><rect x="285" y="226" width="9" height="16"/><path d="M270 212l6-14 6 14zM258 226l4.5-9 4.5 9zM285 226l4.5-9 4.5 9z" fill="#4FA8D8"/></g>
+        <circle cx="276" cy="222" r="2.6" fill="#4FA8D8"/>
+      </g>
+      ${open?"":`<g><path d="M270 196v-6a6 6 0 0112 0v6" fill="none" stroke="#FFC83D" stroke-width="2.6"/><rect x="266" y="195" width="20" height="15" rx="3" fill="#FFC83D" stroke="#7A5200" stroke-width="1.2"/><circle cx="276" cy="202" r="2" fill="#7A5200"/></g>`}
+      <path d="M84 292L100 262h6L122 292Z" fill="#8C6A4A" class="wink"/><path d="M100 262h6l3 6-6 3-6-3z" fill="#fff"/>
+      <path class="wsmoke" d="M103 257c-3-4 3-6 0-10s3-5 1-8" fill="none" stroke="#D9D3E8" stroke-width="2" stroke-linecap="round"/>
+      <text x="104" y="322" class="wtxt wlbl">Mt. Magayon</text>
+      <text x="236" y="112" class="wtxt">Sea of Trials</text>
+      <text x="268" y="372" class="wtxt">Quiet Waters</text>
+      <g class="wfog" filter="url(#wfog)"><ellipse cx="96" cy="360" rx="52" ry="22"/><ellipse cx="160" cy="392" rx="50" ry="24"/><ellipse cx="98" cy="418" rx="46" ry="20"/><ellipse cx="174" cy="350" rx="30" ry="16"/></g>
+      <text x="168" y="372" class="wq">?</text>
+      <g transform="translate(318 428)"><circle r="17" fill="none" stroke="#C9B98A" stroke-width="1"/><path d="M0-22L4-4 22 0 4 4 0 22-4 4-22 0-4-4Z" fill="#E9D8A6" stroke="#5A4426" stroke-width=".8"/><path d="M0-22L4-4 0 0zM22 0L4 4 0 0zM0 22L-4 4 0 0zM-22 0L-4-4 0 0z" fill="#B59A66"/><text y="-25" class="wtxt" style="font-style:normal;font-weight:700">N</text></g>
+    </g>
+    <rect x="5" y="5" width="350" height="470" rx="8" fill="none" stroke="#C9B98A" stroke-width="1.5"/>
+    <rect x="10" y="10" width="340" height="460" rx="5" fill="none" stroke="#C9B98A" stroke-width=".6" stroke-dasharray="3 3"/>
+  </svg>`;
+}
+function renderWorld(){
+  const open=sfOpen(mine), f=realmStats(mine,"fde"), s=realmStats(mine,"sf"), fresh=open&&s.p===0;
+  const lands=[
+    {k:"fde",icon:"⚔️",x:33,y:35,line:`${f.p}% · ${f.st}/${f.max} ★${mine.cert?" · Certified":""}`,p:f.p},
+    {k:"sf",icon:open?"☁️":"🔒",x:77,y:56,line:open?`${s.p}% · ${s.st}/${s.max} ★`:"Locked",p:open?s.p:0,lock:!open,fresh},
+    {k:"soon",icon:"🌫️",x:35,y:84,name:"Uncharted Isles",sub:"A new realm",line:"Opening soon",soon:true}
+  ].map(l=>({...l,name:l.name||REALMS[l.k].name,sub:l.sub||REALMS[l.k].sub}));
+  $("view").innerHTML=`<div class="wrap" style="gap:14px">
+    ${playerHUD()}
+    <section class="panel"><div class="ptitle"><h3>The Realm of Magayon</h3><span class="hud">Tap a land to travel</span></div>
+      <div class="world">${worldSVG(open)}
+        ${lands.map(l=>`<button class="wbanner${l.lock?" wb-lock":""}${l.soon?" wb-soon":""}" style="left:${l.x}%;top:${l.y}%" data-realm="${l.k}" tabindex="-1" aria-hidden="true">${l.fresh?`<span class="wnew hud">New</span>`:""}<span>${esc(l.name)}</span><small>${esc(l.line)}</small></button>`).join("")}
+      </div>
+      <div class="realms">${lands.map(l=>`<button class="realm${l.lock||l.soon?" off":""}" data-realm="${l.k}" aria-label="${esc(`${l.name}, ${l.sub}. ${l.lock?"Locked until you pass the FDE Certification Exam":l.line}`)}">
+        <span class="ri">${l.icon}</span>
+        <span class="rt"><b>${esc(l.name)}${l.fresh?` <span class="wnew hud">New</span>`:""}</b><small>${esc(l.sub)} · ${l.lock?"Pass the FDE Certification Exam to unlock":esc(l.line)}</small>${l.soon?"":`<span class="xpbar slim"><i style="width:${l.p}%"></i></span>`}</span>
+      </button>`).join("")}</div>
+    </section>
+  </div>`;
+  bindHudShop();
+  $("view").querySelectorAll("[data-realm]").forEach(b=>b.onclick=()=>travel(b.dataset.realm));
+}
+function travel(k){
+  if(k==="soon"){toast("Opening soon. This land is still being charted.");return;}
+  if(k==="sf"&&!sfOpen(mine)){toast("Pass the FDE Certification Exam to open the Salesforce Cloudlands");return;}
+  try{sfx.click();}catch(e){}
+  realm=k;render();window.scrollTo({top:0,behavior:"auto"});
+}
+// What the Salesforce realm's side column shows (the FDE realm has its roadmap there).
+function sfGuideHTML(){
+  return `<section class="panel"><div class="ptitle"><h3>Salesforce Administrator</h3></div>
+    <p class="muted">${SF_MODULES.length} missions on the way to the Salesforce Platform Administrator certification. Practise every skill in a free Trailhead Playground, then take on the final boss.</p>
+    <a class="gbtn" href="https://trailhead.salesforce.com/credentials/administrator" target="_blank" rel="noopener">Official exam guide</a></section>`;
+}
+
 function renderMap(){
-  const xs=MODULES.map((m,i)=>i===MODULES.length-1?50:(i%2?70:30));
-  const pts=MODULES.map((m,i)=>[xs[i],i*108+60]);
-  const H=MODULES.length*108+20;
-  const firstOpen=MODULES.findIndex(m=>modPct(mine,m)<100);
+  if(realm==="sf"&&!sfOpen(mine))realm=null;
+  if(!realm){renderWorld();return;}
+  const R=REALMS[realm], L=R.mods;
+  const xs=L.map((m,i)=>i===L.length-1?50:(i%2?70:30));
+  const pts=L.map((m,i)=>[xs[i],i*108+60]);
+  const H=L.length*108+20;
+  const firstOpen=L.findIndex(m=>modPct(mine,m)<100);
   const pathD=pts.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" ");
   $("view").innerHTML=`<div class="wrap" style="gap:14px">
     ${playerHUD()}
-    <div class="cols"><div class="side">${roadmapHTML()}</div><div class="main">
-    <section class="panel"><div class="ptitle"><h3>World map</h3><span class="hud">${MODULES.reduce((s,m)=>s+starsOf(modPct(mine,m)),0)} / ${MODULES.length*3} stars</span></div>
-    <div class="map" style="--n:${MODULES.length}">
+    <button class="back" id="back">← Realm of Magayon</button>
+    <div class="cols"><div class="side">${realm==="fde"?roadmapHTML():sfGuideHTML()}</div><div class="main">
+    <section class="panel"><div class="ptitle"><h3>${esc(R.name)}</h3><span class="hud">${L.reduce((s,m)=>s+starsOf(modPct(mine,m)),0)} / ${L.length*3} stars</span></div>
+    <div class="map" style="--n:${L.length}">
       <svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${pathD}" fill="none" stroke="#463F8E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${pathD}" fill="none" stroke="#7068D0" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
-      ${MODULES.map((m,i)=>{const p=modPct(mine,m),st=starsOf(p),boss=m.id==="ready";const cls=boss?"boss"+(p>=100?" done":""):p>=100?"done":p>0?"prog":"";
+      ${L.map((m,i)=>{const p=modPct(mine,m),st=starsOf(p),boss=isBoss(m);const cls=boss?"boss"+(p>=100?" done":""):p>=100?"done":p>0?"prog":"";
         return `<button class="node" style="left:${xs[i]}%;top:${pts[i][1]}px" data-mission="${m.id}" aria-label="${esc(m.title)}, ${p}% complete, ${st} stars">
           <span class="orb ${cls}">${boss?"BOSS":String(i+1).padStart(2,"0")}${i===firstOpen?`<span class="here hud">NEXT</span>`:""}</span>
           <span class="stars">${[0,1,2].map(k=>IC.star(k<st)).join("")}</span>
@@ -2318,11 +2689,12 @@ function renderMap(){
         </button>`;}).join("")}
     </div></section>
     </div></div>
-    ${certPanelHTML()}
+    ${realm==="fde"?certPanelHTML():""}
   </div>`;
   bindHudShop();
+  $("back").onclick=()=>{realm=null;render();window.scrollTo({top:0,behavior:"auto"});};
   $("view").querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>{current=b.dataset.mission;setHash(current);render();window.scrollTo({top:0,behavior:"auto"});});
-  bindCertPanel();
+  if(realm==="fde")bindCertPanel();
 }
 
 function moduleXP(d,m){
@@ -2369,15 +2741,16 @@ function lootList(items,kind){
 
 function renderMissions(){
   if(!current){renderMap();return;}
-  const m=MOD[current], idx=MODULES.indexOf(m);
+  if(realmOf(current)==="sf"&&!sfOpen(mine)){current=null;realm=null;setHash("missions");renderMap();return;}
+  const m=MOD[current], rk=realmOf(m.id), idx=REALMS[rk].mods.indexOf(m);
   const i=deckPos[m.id]??(()=>{const k=m.cards.findIndex(c=>mine.cards[c.id]!=="got");return k<0?0:k;})();
   deckPos[m.id]=i;
   const c=m.cards[i], st=mine.cards[c.id]||"new", open=revealed[c.id];
   const got=m.cards.filter(x=>mine.cards[x.id]==="got").length, done=m.checks.filter(x=>mine.checks[x.id]).length;
   const p=modPct(mine,m), wk=weekByTopic(mine)[m.id]||0, all=Object.values(mine.time).reduce((s,t)=>s+(t[m.id]||0),0);
-  const boss=m.id==="ready";
+  const boss=isBoss(m);
   $("view").innerHTML=`<div class="wrap" style="gap:14px">
-    <button class="back" id="back">← World map</button>
+    <button class="back" id="back">← ${esc(REALMS[rk].name)}</button>
     <section class="panel mhead"${boss?' style="border-color:var(--red)"':""}>
       <span class="hud">${boss?"Final boss":`Mission ${String(idx+1).padStart(2,"0")}`} · ${fmtMin(wk)} this week · ${fmtMin(all)} total</span>
       <h2>${esc(m.title)}</h2>
@@ -2413,7 +2786,7 @@ function renderMissions(){
   </div>`;
   const V=$("view");
   if(m.id==="jobhunt")bindTracker();
-  $("back").onclick=()=>{current=null;setHash("missions");render();window.scrollTo({top:0,behavior:"auto"});};
+  $("back").onclick=()=>{current=null;realm=rk;setHash("missions");render();window.scrollTo({top:0,behavior:"auto"});};
   const mv=d=>{deckPos[m.id]=Math.max(0,Math.min(m.cards.length-1,i+d));render();};
   $("prev").onclick=()=>mv(-1); $("next").onclick=()=>mv(1);
   const rv=$("reveal"); if(rv)rv.onclick=()=>{revealed[c.id]=true;render();};
@@ -3022,7 +3395,7 @@ function badges(){
     {n:"First Blood",s:"Win your first quiz battle",on:Object.values(allBattles()).some(b=>battleView(b).st.winner===0),ic:"shield"},
     {n:"Untouchable",s:"Win a battle with 70+ HP left",on:Object.values(allBattles()).some(b=>{const st=battleView(b).st;return st.winner===0&&st.hp[0]>=70;}),ic:"star"},
     {n:"Hero Ascended",s:"Unlock all three skills of a hero",on:HEROES.some(h=>heroTier(d,h.id)>=3),ic:"flame"},
-    {n:"Certified FDE",s:"Pass the FDE Quest Certification Exam",on:!!d.cert,ic:"shield"},
+    {n:"Certified FDE",s:"Pass the FDE Certification Exam",on:!!d.cert,ic:"shield"},
     {n:"First Application",s:"Log your first job application",on:d.apps.some(a=>appHi(a)>=1),ic:"flag"},
     {n:"Interview Landed",s:"Reach the interview stage",on:d.apps.some(a=>appHi(a)>=3),ic:"mic"},
     {n:"Offer!",s:"Receive an FDE job offer",on:d.apps.some(a=>appHi(a)>=5),ic:"star",love:true},
@@ -4373,7 +4746,7 @@ const ROADMAP = [
   { n: "Build and ship",           when: "Jan–Feb 2027", from: "2027-01", m: ["sqldb", "apis", "cloud", "security", "observe"], goal: "Ship real services safely" },
   { n: "AI deployment",            when: "Mar–Apr 2027", from: "2027-03", m: ["ai", "agents", "evals", "product"], goal: "Build and measure AI features" },
   { n: "Customer craft and portfolio", when: "May 2027", from: "2027-05", m: ["customer", "stories", "drills", "portfolio"], goal: "Three deployed projects and five sharp stories" },
-  { n: "Certify and launch",       when: "Jun 2027",     from: "2027-06", m: ["ready", "jobhunt"], goal: "Pass the FDE Quest certification and start applying" },
+  { n: "Certify and launch",       when: "Jun 2027",     from: "2027-06", m: ["ready", "jobhunt"], goal: "Pass the FDE certification and start applying" },
   { n: "Interviews to offer",      when: "Jul–Sep 2027", from: "2027-07", m: ["offer"], goal: "Land the FDE role" }
 ];
 function phaseNow(){ const ym = todayKey().slice(0, 7); let k = 0; ROADMAP.forEach((p, i) => { if (ym >= p.from) k = i; }); return k; }
@@ -4437,13 +4810,13 @@ function certPanelHTML(){
   if (mine.cert) return `<section class="panel certpanel done"><span class="hud">Final certification</span><h3>Certified Forward Deployed Engineer ★</h3><p class="muted">Passed with ${Math.round(mine.cert.sc / mine.cert.n * 100)}% on ${esc(new Date(mine.cert.t).toLocaleDateString())}.</p><div class="row"><button class="gbtn gold" id="viewcert">View certificate</button></div></section>`;
   if (!ready){
     const left = MODULES.filter(m => starsOf(modPct(mine, m)) < 2);
-    return `<section class="panel certpanel"><span class="hud">Final certification · locked</span><h3>FDE Quest Certification Exam</h3>
+    return `<section class="panel certpanel"><span class="hud">Final certification · locked</span><h3>FDE Certification Exam</h3>
       <p class="muted">Unlocks when every mission has at least 2 stars. ${have} / ${MODULES.length} done.</p>
       <div class="xpbar"><i style="width:${Math.round(have / MODULES.length * 100)}%"></i></div>
       <div class="pmods">${left.slice(0, 6).map(m => `<button class="pmod" data-mission="${m.id}">${esc(m.title)}<i style="width:${modPct(mine, m)}%"></i></button>`).join("")}${left.length > 6 ? `<span class="hud">+${left.length - 6} more</span>` : ""}</div></section>`;
   }
   const wait = examWait(mine);
-  return `<section class="panel certpanel ready"><span class="hud">Final certification · unlocked</span><h3>FDE Quest Certification Exam</h3>
+  return `<section class="panel certpanel ready"><span class="hud">Final certification · unlocked</span><h3>FDE Certification Exam</h3>
     <p class="muted">${EXAM_N} questions across all ${MODULES.length} missions. Choose a timer for each question. No skills or items. Pass with ${Math.round(EXAM_PASS * 100)}% to earn your certificate, +200 XP and 150 coins.</p>
     <span class="hud">Seconds per question</span>${timerChoicesHTML(examTimerSec,"data-examsec")}
     ${wait ? `<p class="hud" style="color:var(--orange)">Retake available in ${Math.ceil(wait / 60000)} min. Review your weak missions first.</p>` : `<button class="gbtn gold big" id="startexam">Begin the exam</button>`}</section>`;
@@ -4461,7 +4834,7 @@ function renderExam(){
   const q = r.qs[r.i];
   if (r.qi !== r.i){ r.qi = r.i; r.start = Date.now(); r.lastTick = null; }
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
-    <div class="row"><span class="hud">FDE Quest Certification</span><span class="spacer"></span><span class="hud">${esc(MOD[q.mid] ? MOD[q.mid].title : "")}</span></div>
+    <div class="row"><span class="hud">FDE Certification</span><span class="spacer"></span><span class="hud">${esc(MOD[q.mid] ? MOD[q.mid].title : "")}</span></div>
     <div class="qprog">${r.qs.map((x, k) => `<i class="${k < r.ans.length ? "ok" : k === r.i ? "cur" : ""}"></i>`).join("")}</div>
     <section class="bcard qcard"><div class="row"><span class="hud">Question ${r.i + 1} / ${n}</span><span class="spacer"></span><span class="hud" id="exsecs" style="color:var(--cyan)">${validQuizTimer(r.sec)}s</span></div>
       <div class="timer"><i id="extimer" style="width:100%"></i></div><div class="q">${esc(q.q)}</div></section>
@@ -4498,7 +4871,7 @@ function examResultHTML(){
   const res = examRun.result, pct = Math.round(res.sc / res.n * 100);
   const weak = Object.entries(res.by).filter(([, v]) => v[0] < v[1]).map(([mid]) => mid).filter(id => MOD[id]);
   return `<div class="wrap" style="gap:14px">
-    <section class="panel results"><span class="hud">FDE Quest Certification</span><div class="big">${res.pass ? "CERTIFIED!" : "Not yet"}</div>
+    <section class="panel results"><span class="hud">FDE Certification</span><div class="big">${res.pass ? "CERTIFIED!" : "Not yet"}</div>
       <div class="vs" style="grid-template-columns:1fr"><div class="side me"><span class="hud">Your score</span><b>${res.sc} / ${res.n} · ${pct}%</b></div></div>
       <p class="muted">${res.pass ? "You passed. Your certificate is ready, plus 200 XP and 150 coins." : `You need ${Math.round(EXAM_PASS * 100)}% to pass. Review the missions below, then retake in 30 minutes.`}</p>
       <div class="row">${res.pass ? `<button class="gbtn gold" id="excert">View certificate</button>` : ""}<button class="gbtn" id="exback">Back to map</button></div></section>
@@ -4515,22 +4888,22 @@ function renderCert(){
   if (!c){ current = null; go("missions"); return; }
   const h = myHero(), partner = mate()[0], pct = Math.round(c.sc / c.n * 100), date = new Date(c.t).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
   $("view").innerHTML = `<div class="wrap" style="gap:14px">
-    <button class="back" id="certback">← World map</button>
+    <button class="back" id="certback">← FDE Kingdom</button>
     <article class="certificate" id="certcard">
       <div class="certin">
-        <div class="certtop">${h ? `<span class="certpix">${pixelArt(h.el, h.c)}</span>` : ""}<span class="hud">FDE Quest · Certificate of Completion</span></div>
+        <div class="certtop">${h ? `<span class="certpix">${pixelArt(h.el, h.c)}</span>` : ""}<span class="hud">Magayon Quest · FDE Certificate of Completion</span></div>
         <p class="certpre">This certifies that</p>
         <h2 class="certname">${esc(myName())}</h2>
-        <p class="certbody">completed all ${MODULES.length} missions of the FDE Quest curriculum and passed the Certification Exam with a score of <b>${pct}%</b>, and is recognised as a</p>
+        <p class="certbody">completed all ${MODULES.length} missions of the FDE curriculum and passed the Certification Exam with a score of <b>${pct}%</b>, and is recognised as a</p>
         <h3 class="certtitle">Forward Deployed Engineer · Field Ready</h3>
         <div class="certmeta"><span><em>Awarded</em>${esc(date)}</span><span><em>Hero</em>${h ? esc(h.n) : "—"}</span><span><em>Certificate ID</em>${esc(c.id)}</span></div>
         ${partner ? `<p class="certpartner">Studied alongside ${esc(mateName(partner))} ♡</p>` : ""}
-        <p class="certnote">A completion certificate from FDE Quest, a self-study program. Not an accredited credential.</p>
+        <p class="certnote">A completion certificate from Magayon Quest, a self-study program. Not an accredited credential.</p>
       </div>
     </article>
     <div class="row"><button class="gbtn gold" id="savecert">Save as image</button><span class="spacer"></span><span class="hud">Share it on LinkedIn with your portfolio</span></div>
   </div>`;
-  $("certback").onclick = () => { current = null; go("missions"); };
+  $("certback").onclick = () => { current = null; realm = "fde"; go("missions"); };
   $("savecert").onclick = saveCertImage;
 }
 function certCanvas(){
@@ -4545,14 +4918,14 @@ function certCanvas(){
   g.textAlign = "center"; g.fillStyle = "#6E4F00"; g.font = "600 30px 'Silkscreen', monospace"; g.fillText("FDE QUEST · CERTIFICATE OF COMPLETION", W / 2, 330);
   g.fillStyle = "#14202B"; g.font = "28px 'Nunito Sans', sans-serif"; g.fillText("This certifies that", W / 2, 400);
   g.font = "700 76px 'Chakra Petch', sans-serif"; g.fillText(myName(), W / 2, 490);
-  g.font = "28px 'Nunito Sans', sans-serif"; g.fillText(`completed all ${MODULES.length} missions of the FDE Quest curriculum and passed the`, W / 2, 560);
+  g.font = "28px 'Nunito Sans', sans-serif"; g.fillText(`completed all ${MODULES.length} missions of the FDE curriculum and passed the`, W / 2, 560);
   g.fillText(`Certification Exam with a score of ${Math.round(c.sc / c.n * 100)}%, and is recognised as a`, W / 2, 602);
   g.fillStyle = "#B8860B"; g.font = "700 50px 'Chakra Petch', sans-serif"; g.fillText("Forward Deployed Engineer · Field Ready", W / 2, 690);
   g.fillStyle = "#14202B"; g.font = "26px 'Nunito Sans', sans-serif";
   const date = new Date(c.t).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
   [["AWARDED", date], ["HERO", h ? h.n : "—"], ["CERTIFICATE ID", c.id]].forEach(([k, v], i) => { const x = W / 2 + (i - 1) * 440; g.fillStyle = "#6E4F00"; g.font = "20px 'Silkscreen', monospace"; g.fillText(k, x, 800); g.fillStyle = "#14202B"; g.font = "600 30px 'Nunito Sans', sans-serif"; g.fillText(v, x, 845); });
   const p = mate()[0]; if (p){ g.fillStyle = "#8E2A40"; g.font = "italic 26px 'Nunito Sans', sans-serif"; g.fillText(`Studied alongside ${mateName(p)} ♡`, W / 2, 930); }
-  g.fillStyle = "#586674"; g.font = "20px 'Nunito Sans', sans-serif"; g.fillText("A completion certificate from FDE Quest, a self-study program. Not an accredited credential.", W / 2, 1020);
+  g.fillStyle = "#586674"; g.font = "20px 'Nunito Sans', sans-serif"; g.fillText("A completion certificate from Magayon Quest, a self-study program. Not an accredited credential.", W / 2, 1020);
   return cv;
 }
 async function saveCertImage(){
@@ -5304,7 +5677,7 @@ const LS_BELL = () => "fde-bell:" + (myId || "me");
 const bellSeen = () => { try { return localStorage.getItem(LS_BELL()) || ""; } catch (e){ return ""; } };
 function bellItems(){
   const out = [], seen = bellSeen(), snip = postSnip;
-  if (updAvail) out.push({ t: updAt, icon: DL_SVG, text: `<b>FDE Quest ${esc(String(updAvail.version || ""))}</b> is ready to install`, sub: "Tap to see what's new", go: () => go("settings") });
+  if (updAvail) out.push({ t: updAt, icon: DL_SVG, text: `<b>Magayon Quest ${esc(String(updAvail.version || ""))}</b> is ready to install`, sub: "Tap to see what's new", go: () => go("settings") });
   for (const p of feed.posts){
     const mineP = p.user_id === myId;
     if (!mineP) out.push({ t: p.created_at, who: p.user_id, text: `<b>${esc(whoOf(p.user_id).name)}</b> ${p.image_path && !p.body ? "posted a photo" : "posted"}`, sub: snip(p.body), go: () => openPost(p.id) });
@@ -5777,7 +6150,7 @@ async function checkAppUpdate(force, inline){
 function showUpdate(v, info, must){
   const s = $("updsheet"), notes = Array.isArray(v.notes) ? v.notes.filter(n => typeof n === "string").slice(0, 6) : [];
   updMust = must; s.hidden = false;
-  s.innerHTML = `<div class="box qsheet updbox"><span class="hud">${must ? "Update required" : "Update available"}</span><h3>FDE Quest ${esc(String(v.version || ""))}</h3>
+  s.innerHTML = `<div class="box qsheet updbox"><span class="hud">${must ? "Update required" : "Update available"}</span><h3>Magayon Quest ${esc(String(v.version || ""))}</h3>
     ${notes.length ? `<ul class="updnotes">${notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : ""}
     <p class="muted">You have version ${esc(info.version || "")}.${must ? " This version is too old to keep working with your party." : ""} Tap <b>Download update</b>, open the file when it finishes, then tap <b>Update</b>. Your progress is saved to your account, so nothing is lost.</p>
     <div class="row">${must ? "" : `<button class="gbtn" id="updlater">Later</button>`}<span class="spacer"></span><button class="gbtn gold" id="updgo">Download update</button></div></div>`;
@@ -5791,11 +6164,11 @@ function updNotesHTML(v){ const n = Array.isArray(v.notes) ? v.notes.filter(x =>
 function appPanelHTML(){
   if (!NATIVE) return `<div class="ptitle"><h3>App</h3></div>
     <div class="setrow"><span><b>Version</b><small>${esc(verText())}</small></span></div>
-    <div class="setrow"><span><b>Android app</b><small>Install FDE Quest on an Android phone</small></span><a class="gbtn" href="/downloads/FDE-Quest.apk" download>Download</a></div>`;
+    <div class="setrow"><span><b>Android app</b><small>Install Magayon Quest on an Android phone</small></span><a class="gbtn" href="/downloads/FDE-Quest.apk" download>Download</a></div>`;
   const busy = updState === "checking", v = updAvail;
   return `<div class="ptitle"><h3>App updates</h3>${v ? `<span class="pill good">Update ready</span>` : ""}</div>
     <div class="setrow"><span><b>Installed version</b><small>${esc(verText())}</small></span><button class="gbtn" id="set-upd"${busy ? " disabled" : ""}>${busy ? "Checking…" : "Check for updates"}</button></div>
-    ${v ? `<div class="updcard"><span class="hud">New version</span><b>FDE Quest ${esc(String(v.version || ""))}</b>${updNotesHTML(v)}<button class="gbtn gold" id="set-updgo">Download update</button><small>Open the file when it finishes, then tap Update. Your progress is saved to your account.</small></div>`
+    ${v ? `<div class="updcard"><span class="hud">New version</span><b>Magayon Quest ${esc(String(v.version || ""))}</b>${updNotesHTML(v)}<button class="gbtn gold" id="set-updgo">Download update</button><small>Open the file when it finishes, then tap Update. Your progress is saved to your account.</small></div>`
       : updState === "latest" ? `<p class="updok">✓ You're on the latest version.</p>` : updState === "offline" ? `<p class="amsg">Couldn't check for updates. Check your connection.</p>` : ""}`;
 }
 function bindAppPanel(){
@@ -5887,7 +6260,7 @@ function paintDaily(k){
   const t = todayKey(), mateId = mate()[0];
   if (k === "update"){
     const v = updAvail;
-    el.innerHTML = `<div class="dicon">⬇️</div><span class="hud">Update available</span><h4>FDE Quest ${esc(String(v.version || ""))}</h4>${updNotesHTML(v)}
+    el.innerHTML = `<div class="dicon">⬇️</div><span class="hud">Update available</span><h4>Magayon Quest ${esc(String(v.version || ""))}</h4>${updNotesHTML(v)}
       <p class="muted">Download it, open the file, then tap Update. Your progress is saved to your account.</p><button class="gbtn gold big" data-d="upd">Download update</button>`;
   } else if (k === "ask"){
     el.innerHTML = `<div class="dicon">💬</div><span class="hud">Question of the day</span><h4>${esc(dailyPrompt())}</h4>` + (daily.posted
@@ -5977,7 +6350,7 @@ function nativeSetup(){
   if (P && CFG.androidPush){
     P.addListener("pushNotificationActionPerformed", a => openFromPush(a.notification.data && a.notification.data.url));
     // One high-importance channel, so pushes pop down as banners with sound (server sends channel_id "fde").
-    const channel = { id: "fde", name: "FDE Quest", description: "Chats, duels, battle turns and reminders", importance: 5, visibility: 1, vibration: true };
+    const channel = { id: "fde", name: "Magayon Quest", description: "Chats, duels, battle turns and reminders", importance: 5, visibility: 1, vibration: true };
     P.createChannel(channel).catch(() => {});
     // Android only shows a push itself when the app is in the background. While it's open, post it as a local
     // notification instead, except chat pings while you're already looking at the chat.
@@ -5986,7 +6359,7 @@ function nativeSetup(){
       const d = n.data || {}, url = d.url || "/";
       if (!d.always && view === "chat" && /#chat$/.test(url) && document.visibilityState === "visible") return;
       const tag = d.tag || "fde", id = [...tag].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7) & 0x7fffffff; // same tag replaces the last one
-      if (L) L.schedule({ notifications: [{ id, title: n.title || d.title || "FDE Quest", body: n.body || d.body || "", channelId: "fde", smallIcon: "ic_stat_notify", iconColor: "#E3A400", extra: { url } }] }).catch(() => toast(n.body || d.body || ""));
+      if (L) L.schedule({ notifications: [{ id, title: n.title || d.title || "Magayon Quest", body: n.body || d.body || "", channelId: "fde", smallIcon: "ic_stat_notify", iconColor: "#E3A400", extra: { url } }] }).catch(() => toast(n.body || d.body || ""));
       else toast(n.body || d.body || "");
     });
     if (L) L.addListener("localNotificationActionPerformed", a => openFromPush(a.notification.extra && a.notification.extra.url));

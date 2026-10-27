@@ -55,7 +55,7 @@ async function fcmAccessToken(acc){
 async function sendFcm(token, payload){
   const acc = fcmAccount();
   if (!acc) throw new Error("FCM_SERVICE_ACCOUNT is not set");
-  const data = { url: String(payload.url || "/"), tag: String(payload.tag || "fde"), always: payload.always ? "1" : "", title: payload.title || "FDE Quest", body: payload.body || "" };
+  const data = { url: String(payload.url || "/"), tag: String(payload.tag || "fde"), always: payload.always ? "1" : "", title: payload.title || "Magayon Quest", body: payload.body || "" };
   const r = await fetch(`https://fcm.googleapis.com/v1/projects/${acc.project_id}/messages:send`, {
     method: "POST",
     headers: { authorization: `Bearer ${await fcmAccessToken(acc)}`, "content-type": "application/json" },

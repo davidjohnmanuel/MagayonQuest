@@ -21,7 +21,7 @@ if (!code || !name) { console.error(`Couldn't find versionCode and versionName i
 const [major, minor = 0] = name.split(".").map(Number), build = code + 1, version = `${major}.${minor + 1}`;
 gradle = gradle.replace(/versionCode \d+/, `versionCode ${build}`).replace(/versionName "[^"]+"/, `versionName "${version}"`);
 writeFileSync(GRADLE, gradle);
-console.log(`Building FDE Quest ${version} (build ${build})…`);
+console.log(`Building Magayon Quest ${version} (build ${build})…`);
 
 try {
   execSync("npm run android:apk", { stdio: "inherit" });
@@ -36,5 +36,5 @@ copyFileSync(APK_OUT, APK);
 const prev = existsSync("version.json") ? JSON.parse(readFileSync("version.json", "utf8")) : {};
 writeFileSync("version.json", JSON.stringify({ build, version, min: required ? build : prev.min || 0, apk: "/" + APK, notes }, null, 2) + "\n");
 
-console.log(`\nFDE Quest ${version} is ready in ${APK}.${required ? " Older apps will have to update." : ""}`);
+console.log(`\nMagayon Quest ${version} is ready in ${APK}.${required ? " Older apps will have to update." : ""}`);
 console.log(`Put it live:\n  git add ${GRADLE} ${APK} version.json && git commit -m "Release Android ${version}" && git push`);

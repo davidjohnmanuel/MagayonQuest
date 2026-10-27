@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">FDE Quest</string>
-    <string name="title_activity_main">FDE Quest</string>
+    <string name="app_name">Magayon Quest</string>
+    <string name="title_activity_main">Magayon Quest</string>
     <string name="package_name">app.magayonquest.fdequest</string>
     <string name="custom_url_scheme">app.magayonquest.fdequest</string>
 </resources>

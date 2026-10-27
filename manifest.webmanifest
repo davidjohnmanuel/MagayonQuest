@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "FDE Quest",
-  "short_name": "FDE Quest",
-  "description": "A co-op quest game for Forward Deployed Engineer interview prep.",
+  "name": "Magayon Quest",
+  "short_name": "Magayon Quest",
+  "description": "A co-op quest game for career prep, from Forward Deployed Engineer to Salesforce Administrator.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

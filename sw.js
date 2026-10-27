@@ -1,4 +1,4 @@
-// FDE Quest service worker: offline app shell + push notifications.
+// Magayon Quest service worker: offline app shell + push notifications.
 const CACHE = "fde-quest-v1";
 const SHELL = ["/", "/index.html", "/config.js", "/supabase.js", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
@@ -25,8 +25,8 @@ self.addEventListener("fetch", e => {
 // Push: show the notification unless the app is already open on screen.
 self.addEventListener("push", e => {
   let data = {};
-  try { data = e.data ? e.data.json() : {}; } catch (err){ data = { title: "FDE Quest", body: e.data ? e.data.text() : "" }; }
-  const title = data.title || "FDE Quest";
+  try { data = e.data ? e.data.json() : {}; } catch (err){ data = { title: "Magayon Quest", body: e.data ? e.data.text() : "" }; }
+  const title = data.title || "Magayon Quest";
   const opts = {
     body: data.body || "",
     icon: "/icon-192.png",

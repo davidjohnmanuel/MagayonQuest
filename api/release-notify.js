@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     if (!(await claim(build))) return res.status(200).json({ sent: 0, build, reason: "Already announced" });
     const notes = Array.isArray(v.notes) ? v.notes.filter(n => typeof n === "string").slice(0, 3) : [];
     const sent = await pushTo("android", {
-      title: v.version ? `FDE Quest ${v.version} is out` : "A new FDE Quest is out",
+      title: v.version ? `Magayon Quest ${v.version} is out` : "A new Magayon Quest is out",
       body: notes.length ? `${notes.join(" · ")}. Tap to update.` : "Tap to update the app.",
       tag: "update", url: "/#update", always: true
     });
