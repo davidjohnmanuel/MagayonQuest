@@ -1,10 +1,10 @@
 {
-  "build": 13,
-  "version": "1.12",
+  "build": 14,
+  "version": "1.13",
   "min": 0,
   "apk": "/downloads/FDE-Quest.apk",
   "notes": [
-    "Profile progress map modal",
-    "Inline party feed and post composer"
+    "Daily check-in cards: mood, notes, trivia and more",
+    "Leave one-liners for each other"
   ]
 }
