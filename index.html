@@ -5809,7 +5809,7 @@ function closeUpdate(){
   if (updMust){ CAP.App.minimizeApp(); return; }
   const s = $("updsheet"); s.hidden = true; s.innerHTML = "";
 }
-// ---- Daily check-in: the first time you open the app each day, a swipeable deck of cards: a waiting app update,
+// ---- Daily check-in: each time the app or site opens, a swipeable deck of 3 random cards from: a waiting app update (always included),
 // a mood check, the question of the day, check-in coins, a sealed note, a trivia question and a motivation.
 const CI_COINS = 5, CI_WEEK_BONUS = 20; // every 7th check-in in a row also pays the bonus
 function ciCoins(d){ let c = 0, run = 0, prev = null; d.ci.forEach(k => { const t = Date.parse(k + "T00:00:00"); run = prev !== null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; prev = t; c += CI_COINS + (run % 7 === 0 ? CI_WEEK_BONUS : 0); }); return c; }
@@ -5826,13 +5826,13 @@ function dailyTrivia(){
   const order = z.o.map((_, i) => i); for (let i = order.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
   return { z, order };
 }
-// What's been done with today's deck is kept on this device: shown, trivia pick, posted, note opened.
+// What's been done with today's cards is kept on this device: trivia pick, posted, note opened.
 const LS_DAILY = () => LS + ":daily";
 function dailyMem(){ try { const m = JSON.parse(localStorage.getItem(LS_DAILY())) || {}; return m.day === todayKey() ? m : { day: todayKey() }; } catch (e){ return { day: todayKey() }; } }
 function saveDailyMem(o){ try { localStorage.setItem(LS_DAILY(), JSON.stringify({ ...dailyMem(), ...o })); } catch (e){} }
-let daily = null, dailyReadyAt = 0; // dailyReadyAt: a moment after sign-in, so the update check can finish first
+let daily = null, dailyDone = false, dailyReadyAt = 0; // dailyDone: shown once per open; dailyReadyAt: a moment after sign-in, so the update check can finish first
 function maybeDaily(){
-  if (daily || !dataReady || !myId || mode !== "shared" || !mine.hero || ["heroes", "exam", "cert", "quiz", "battle"].includes(view) || dailyMem().shown) return;
+  if (daily || dailyDone || !dataReady || !myId || mode !== "shared" || !mine.hero || ["heroes", "exam", "cert", "quiz", "battle"].includes(view)) return;
   if (!$("lock").hidden || !$("idlewarn").hidden || !$("lvup").hidden || !$("photoview").hidden || document.querySelector(".sheetwrap:not([hidden])")) return;
   const wait = dailyReadyAt - Date.now();
   if (wait > 0){ clearTimeout(maybeDaily.t); maybeDaily.t = setTimeout(maybeDaily, wait + 50); return; }
@@ -5840,8 +5840,8 @@ function maybeDaily(){
 }
 function openDaily(){
   const m = dailyMem(), day = todayKey();
-  saveDailyMem({ shown: true });
-  const keys = [NATIVE && updAvail ? "update" : "", "mood", "ask", "checkin", "secret", "trivia", "motive"].filter(Boolean);
+  dailyDone = true;
+  const up = NATIVE && updAvail ? ["update"] : [], keys = [...up, ...shuffle(["mood", "ask", "checkin", "secret", "trivia", "motive"]).slice(0, 3 - up.length)];
   const posted = !!m.posted || feed.posts.some(p => p.user_id === myId && dayKey(new Date(p.created_at)) === day && (splitQ(p.body) || {}).q === dailyPrompt());
   daily = { keys, i: 0, text: "", line: "", busy: false, posted, opened: !!m.opened, tv: Number.isInteger(m.tv) ? m.tv : -1 };
   const h = new Date().getHours(), hi = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
