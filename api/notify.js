@@ -57,13 +57,22 @@ async function feedNews(table, r){
     const sent = await pushTo(others, { title: `${who} posted an update`, body: r.body ? trim(String(r.body), 140) : "📷 Shared a photo", tag: "post-" + r.id, url: "/#feed" });
     return { notes: 1, sent };
   }
-  const [post] = (await db(`posts?select=user_id,body&id=eq.${encodeURIComponent(r.post_id)}`)) || [];
-  if (!post || post.user_id === r.user_id) return { notes: 0, sent: 0 };
+  const pid = encodeURIComponent(r.post_id);
+  const [post] = (await db(`posts?select=user_id,body&id=eq.${pid}`)) || [];
+  if (!post) return { notes: 0, sent: 0 };
+  if (table === "post_comments"){
+    // Like the bell: the post's author, plus everyone else who has commented on it.
+    const body = trim(String(r.body || ""), 140), tag = "comments-" + r.post_id;
+    const thread = [...new Set(((await db(`post_comments?select=user_id&post_id=eq.${pid}`)) || []).map(c => c.user_id))]
+      .filter(id => id !== r.user_id && id !== post.user_id);
+    let sent = 0, notes = 0;
+    if (post.user_id !== r.user_id){ notes++; sent += await pushTo([post.user_id], { title: `${who} commented on your post`, body, tag, url: "/#feed" }); }
+    if (thread.length){ notes++; sent += await pushTo(thread, { title: `${who} commented on a post you commented on`, body, tag, url: "/#feed" }); }
+    return { notes, sent };
+  }
+  if (post.user_id === r.user_id) return { notes: 0, sent: 0 };
   const what = post.body ? `“${trim(String(post.body), 60)}”` : "your photo";
-  const note = table === "post_comments"
-    ? { title: `${who} commented on your post`, body: trim(String(r.body || ""), 140), tag: "comments-" + r.post_id, url: "/#feed" }
-    : { title: `${who} liked your post`, body: what, tag: "likes-" + r.post_id, url: "/#feed" };
-  return { notes: 1, sent: await pushTo([post.user_id], note) };
+  return { notes: 1, sent: await pushTo([post.user_id], { title: `${who} liked your post`, body: what, tag: "likes-" + r.post_id, url: "/#feed" }) };
 }
 
 module.exports = async (req, res) => {
