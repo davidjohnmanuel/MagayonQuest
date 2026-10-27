@@ -2100,7 +2100,7 @@ let mine=blank(), players={};
 let dirty=false, writing=false, again=false, saveTimer=null, saveMsg="";
 let view="today", current=null, pickTopic=null;
 const deckPos={}, revealed={};
-{const h=(location.hash||"").slice(1);if(["today","feed","missions","arena","us","chat","shop","trophies"].includes(h))view=h;else if(MOD[h]){view="missions";current=h;}}
+{const h=(location.hash||"").slice(1);if(["today","feed","missions","arena","us","chat","shop","trophies"].includes(h))view=h;else if(MOD[h]){view="missions";current=h;}else if(h.startsWith("daily-"))dailyFirst=h.slice(6);}
 let timer=null; try{const t=JSON.parse(localStorage.getItem(LS_T)||"null");if(t&&MOD[t.topic]&&typeof t.acc==="number"){if(!GOALS.includes(t.c))delete t.c;timer=t;}}catch(e){}
 let pickCommit=null; // minutes chosen for the next training session; defaults to the daily goal
 const saveTimerState=()=>{try{timer?localStorage.setItem(LS_T,JSON.stringify(timer)):localStorage.removeItem(LS_T);}catch(e){}};
@@ -5741,6 +5741,9 @@ function openFromPush(url){
   if (["today", "feed", "missions", "arena", "us", "chat", "shop", "trophies"].includes(h)) go(h);
   else if (MOD[h]) go("missions", h);
   else if (h === "update") checkAppUpdate(true); // "new release" push (api/release-notify.js)
+  else if (h.startsWith("daily-")){ // check-in reminder (api/checkin-remind.js): reopen the deck on that card
+    dailyFirst = h.slice(6); if (daily) closeDaily(); dailyDone = false; maybeDaily();
+  }
 }
 // ---- Android app updates
 // The website's version.json names the newest APK (scripts/release-android.mjs writes it). When its build is
@@ -5831,6 +5834,7 @@ const LS_DAILY = () => LS + ":daily";
 function dailyMem(){ try { const m = JSON.parse(localStorage.getItem(LS_DAILY())) || {}; return m.day === todayKey() ? m : { day: todayKey() }; } catch (e){ return { day: todayKey() }; } }
 function saveDailyMem(o){ try { localStorage.setItem(LS_DAILY(), JSON.stringify({ ...dailyMem(), ...o })); } catch (e){} }
 let daily = null, dailyDone = false, dailyReadyAt = 0; // dailyDone: shown once per open; dailyReadyAt: a moment after sign-in, so the update check can finish first
+var dailyFirst; // a card to put first, from a tapped check-in reminder (var, no initializer: the start-up hash check sets it before this line runs)
 function maybeDaily(){
   if (daily || dailyDone || !dataReady || !myId || mode !== "shared" || !mine.hero || ["heroes", "exam", "cert", "quiz", "battle"].includes(view)) return;
   if (!$("lock").hidden || !$("idlewarn").hidden || !$("lvup").hidden || !$("photoview").hidden || document.querySelector(".sheetwrap:not([hidden])")) return;
@@ -5841,7 +5845,9 @@ function maybeDaily(){
 function openDaily(){
   const m = dailyMem(), day = todayKey();
   dailyDone = true;
-  const up = NATIVE && updAvail ? ["update"] : [], keys = [...up, ...shuffle(["mood", "ask", "checkin", "secret", "trivia", "motive"]).slice(0, 3 - up.length)];
+  const cards = ["mood", "ask", "checkin", "secret", "trivia", "motive"], lead = cards.includes(dailyFirst) ? [dailyFirst] : [];
+  dailyFirst = "";
+  const up = NATIVE && updAvail ? ["update"] : [], keys = [...up, ...lead, ...shuffle(cards.filter(k => !lead.includes(k)))].slice(0, 3);
   const posted = !!m.posted || feed.posts.some(p => p.user_id === myId && dayKey(new Date(p.created_at)) === day && (splitQ(p.body) || {}).q === dailyPrompt());
   daily = { keys, i: 0, text: "", line: "", busy: false, posted, opened: !!m.opened, tv: Number.isInteger(m.tv) ? m.tv : -1 };
   const h = new Date().getHours(), hi = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
